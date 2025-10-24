@@ -15,12 +15,12 @@ class UserModel with _$UserModel {
     required String id,
     required String email,
     @JsonKey(name: 'full_name') required String fullName,
-    @JsonKey(name: 'phone_number') String? phoneNumber,
-    @JsonKey(name: 'profile_photo_url') String? profilePhotoUrl,
+    @JsonKey(name: 'phone_number') required String? phoneNumber,
+    @JsonKey(name: 'profile_photo_url') required String? profilePhotoUrl,
     required String role,
     @JsonKey(name: 'account_status') required String accountStatus,
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-    @JsonKey(name: 'last_login_at') DateTime? lastLoginAt,
+    @JsonKey(name: 'created_at') required DateTime? createdAt,
+    @JsonKey(name: 'last_login_at') required DateTime? lastLoginAt,
   }) = _UserModel;
 
   /// Create UserModel from JSON
