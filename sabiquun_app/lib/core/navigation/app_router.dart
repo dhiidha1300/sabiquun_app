@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -153,11 +155,11 @@ class GoRouterRefreshStream extends ChangeNotifier {
         );
   }
 
-  late final Stream<dynamic>? _subscription;
+  late final StreamSubscription<dynamic>? _subscription;
 
   @override
   void dispose() {
-    _subscription?.drain();
+    _subscription?.cancel();
     super.dispose();
   }
 }
