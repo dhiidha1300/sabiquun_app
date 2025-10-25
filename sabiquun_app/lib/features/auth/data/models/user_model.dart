@@ -14,13 +14,13 @@ class UserModel with _$UserModel {
   const factory UserModel({
     required String id,
     required String email,
-    @JsonKey(name: 'full_name') required String fullName,
-    @JsonKey(name: 'phone_number') required String? phoneNumber,
-    @JsonKey(name: 'profile_photo_url') required String? profilePhotoUrl,
+    @JsonKey(name: 'name') required String fullName,
+    @JsonKey(name: 'phone') required String? phoneNumber,
+    @JsonKey(name: 'photo_url') required String? profilePhotoUrl,
     required String role,
     @JsonKey(name: 'account_status') required String accountStatus,
     @JsonKey(name: 'created_at') required DateTime? createdAt,
-    @JsonKey(name: 'last_login_at') required DateTime? lastLoginAt,
+    @JsonKey(name: 'updated_at') required DateTime? lastLoginAt,
   }) = _UserModel;
 
   /// Create UserModel from JSON

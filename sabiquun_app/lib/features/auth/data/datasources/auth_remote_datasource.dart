@@ -56,18 +56,17 @@ class AuthRemoteDataSource {
         throw Exception('Sign up failed: No user returned');
       }
 
-      // Create user profile in users table
-      final userData = await _supabase.from('users').insert({
-        'id': response.user!.id,
-        'email': email,
-        'full_name': fullName,
-        'phone_number': phoneNumber,
-        'profile_photo_url': profilePhotoUrl,
-        'role': 'user', // Default role
-        'account_status': 'pending', // Awaiting admin approval
-      }).select().single();
+      // Create user profile using RPC function (bypasses RLS)
+      // Pass user_id and email explicitly since session might not be fully established
+      final userData = await _supabase.rpc('create_user_profile', params: {
+        'p_user_id': response.user!.id,
+        'p_email': email,
+        'p_name': fullName,
+        'p_phone': phoneNumber,
+        'p_photo_url': profilePhotoUrl,
+      });
 
-      return UserModel.fromJson(userData);
+      return UserModel.fromJson(userData as Map<String, dynamic>);
     } on AuthException catch (e) {
       throw Exception('Authentication error: ${e.message}');
     } catch (e) {
@@ -154,10 +153,10 @@ class AuthRemoteDataSource {
       }
 
       final updates = <String, dynamic>{};
-      if (fullName != null) updates['full_name'] = fullName;
-      if (phoneNumber != null) updates['phone_number'] = phoneNumber;
+      if (fullName != null) updates['name'] = fullName;
+      if (phoneNumber != null) updates['phone'] = phoneNumber;
       if (profilePhotoUrl != null) {
-        updates['profile_photo_url'] = profilePhotoUrl;
+        updates['photo_url'] = profilePhotoUrl;
       }
 
       final userData = await _supabase

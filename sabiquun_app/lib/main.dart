@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sabiquun_app/core/di/injection.dart';
 import 'package:sabiquun_app/core/navigation/app_router.dart';
 import 'package:sabiquun_app/core/theme/app_theme.dart';
@@ -9,6 +10,15 @@ import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
 void main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables from .env file
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    // If .env file fails to load, show error
+    runApp(ErrorApp(error: 'Failed to load .env file: ${e.toString()}'));
+    return;
+  }
 
   // Initialize dependencies (Supabase, services, etc.)
   try {

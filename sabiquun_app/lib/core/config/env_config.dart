@@ -1,42 +1,26 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// Environment configuration for the application
 ///
 /// This class holds all environment-specific configuration values
 /// such as Supabase credentials, API keys, etc.
 class EnvConfig {
   // Supabase Configuration
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: '',
-  );
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
 
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: '',
-  );
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
   // App Configuration
-  static const String appEnv = String.fromEnvironment(
-    'APP_ENV',
-    defaultValue: 'development',
-  );
+  static String get appEnv => dotenv.env['APP_ENV'] ?? 'development';
 
   // Firebase Configuration (for FCM)
-  static const String fcmServerKey = String.fromEnvironment(
-    'FCM_SERVER_KEY',
-    defaultValue: '',
-  );
+  static String get fcmServerKey => dotenv.env['FCM_SERVER_KEY'] ?? '';
 
   // Mailgun Configuration (Admin configurable, stored in Supabase settings)
   // These are just defaults, actual values should be configured by admin
-  static const String mailgunApiKey = String.fromEnvironment(
-    'MAILGUN_API_KEY',
-    defaultValue: '',
-  );
+  static String get mailgunApiKey => dotenv.env['MAILGUN_API_KEY'] ?? '';
 
-  static const String mailgunDomain = String.fromEnvironment(
-    'MAILGUN_DOMAIN',
-    defaultValue: '',
-  );
+  static String get mailgunDomain => dotenv.env['MAILGUN_DOMAIN'] ?? '';
 
   // Validation
   static bool get isProduction => appEnv == 'production';
