@@ -6,6 +6,7 @@ import 'package:sabiquun_app/core/navigation/app_router.dart';
 import 'package:sabiquun_app/core/theme/app_theme.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -42,8 +43,11 @@ class SabiquunApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: Injection.authBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: Injection.authBloc),
+        BlocProvider.value(value: Injection.deedBloc),
+      ],
       child: Builder(
         builder: (context) {
           final router = AppRouter(context.read<AuthBloc>()).router;

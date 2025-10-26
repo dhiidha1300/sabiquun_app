@@ -151,17 +151,21 @@ class HomePage extends StatelessWidget {
       crossAxisSpacing: 16,
       children: [
         // Common features for all users
-        _FeatureCard(
-          icon: Icons.library_books,
-          title: 'My Reports',
-          color: AppColors.primary,
-          onTap: () {},
+        Builder(
+          builder: (context) => _FeatureCard(
+            icon: Icons.library_books,
+            title: 'My Reports',
+            color: AppColors.primary,
+            onTap: () => context.push('/my-reports'),
+          ),
         ),
-        _FeatureCard(
-          icon: Icons.event_note,
-          title: 'Today\'s Deeds',
-          color: AppColors.accent,
-          onTap: () {},
+        Builder(
+          builder: (context) => _FeatureCard(
+            icon: Icons.event_note,
+            title: 'Today\'s Deeds',
+            color: AppColors.accent,
+            onTap: () => context.push('/today-deeds'),
+          ),
         ),
         _FeatureCard(
           icon: Icons.payment,
