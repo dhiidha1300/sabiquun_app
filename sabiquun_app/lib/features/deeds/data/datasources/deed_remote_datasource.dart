@@ -1,21 +1,20 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabiquun_app/features/deeds/data/models/deed_template_model.dart';
 import 'package:sabiquun_app/features/deeds/data/models/deed_report_model.dart';
-import 'package:sabiquun_app/features/deeds/data/models/deed_entry_model.dart';
 
 class DeedRemoteDataSource {
   final SupabaseClient _supabase;
 
   DeedRemoteDataSource(this._supabase);
 
-  /// Get all active deed templates ordered by display_order
+  /// Get all active deed templates ordered by sort_order
   Future<List<DeedTemplateModel>> getDeedTemplates() async {
     try {
       final response = await _supabase
           .from('deed_templates')
           .select()
           .eq('is_active', true)
-          .order('display_order');
+          .order('sort_order');
 
       return (response as List)
           .map((json) => DeedTemplateModel.fromJson(json))
@@ -29,28 +28,35 @@ class DeedRemoteDataSource {
   Future<DeedReportModel> createDeedReport({
     required String userId,
     required DateTime reportDate,
-    required Map<String, int> deedValues,
-    String? notes,
+    required Map<String, double> deedValues,
   }) async {
     try {
-      // Calculate penalty amount
       final templates = await getDeedTemplates();
-      double penaltyAmount = 0.0;
+
+      // Calculate totals
+      double totalDeeds = 0.0;
+      double sunnahCount = 0.0;
+      double faraidCount = 0.0;
+
       for (var template in templates) {
-        final value = deedValues[template.id] ?? 0;
-        if (value == 0) {
-          penaltyAmount += template.penaltyAmount;
+        final value = deedValues[template.id] ?? 0.0;
+        totalDeeds += value;
+
+        if (template.category == 'sunnah') {
+          sunnahCount += value;
+        } else if (template.category == 'faraid') {
+          faraidCount += value;
         }
       }
 
-      // Create the report
+      // Create the report as 'draft' initially
       final reportData = {
         'user_id': userId,
         'report_date': reportDate.toIso8601String().split('T')[0],
-        'status': 'pending',
-        'notes': notes,
-        'penalty_amount': penaltyAmount,
-        'submitted_at': DateTime.now().toIso8601String(),
+        'total_deeds': totalDeeds,
+        'sunnah_count': sunnahCount,
+        'faraid_count': faraidCount,
+        'status': 'draft',
       };
 
       final reportResponse = await _supabase
@@ -61,13 +67,13 @@ class DeedRemoteDataSource {
 
       final reportId = reportResponse['id'] as String;
 
-      // Create deed entries
+      // Create deed entries with correct column names
       final entries = <Map<String, dynamic>>[];
       for (var template in templates) {
         entries.add({
           'report_id': reportId,
-          'template_id': template.id,
-          'value': deedValues[template.id] ?? 0,
+          'deed_template_id': template.id,
+          'deed_value': deedValues[template.id] ?? 0.0,
         });
       }
 
@@ -90,8 +96,7 @@ class DeedRemoteDataSource {
       var query = _supabase
           .from('deeds_reports')
           .select('*, deed_entries(*)')
-          .eq('user_id', userId)
-          .order('report_date', ascending: false);
+          .eq('user_id', userId);
 
       if (startDate != null) {
         query = query.gte('report_date', startDate.toIso8601String().split('T')[0]);
@@ -100,7 +105,7 @@ class DeedRemoteDataSource {
         query = query.lte('report_date', endDate.toIso8601String().split('T')[0]);
       }
 
-      final response = await query;
+      final response = await query.order('report_date', ascending: false);
 
       return (response as List)
           .map((json) => DeedReportModel.fromJson(json))
@@ -119,8 +124,7 @@ class DeedRemoteDataSource {
     try {
       var query = _supabase
           .from('deeds_reports')
-          .select('*, deed_entries(*)')
-          .order('report_date', ascending: false);
+          .select('*, deed_entries(*)');
 
       if (userId != null) {
         query = query.eq('user_id', userId);
@@ -132,7 +136,7 @@ class DeedRemoteDataSource {
         query = query.lte('report_date', endDate.toIso8601String().split('T')[0]);
       }
 
-      final response = await query;
+      final response = await query.order('report_date', ascending: false);
 
       return (response as List)
           .map((json) => DeedReportModel.fromJson(json))
@@ -160,33 +164,40 @@ class DeedRemoteDataSource {
   /// Update a deed report
   Future<DeedReportModel> updateDeedReport({
     required String reportId,
-    required Map<String, int> deedValues,
-    String? notes,
+    required Map<String, double> deedValues,
   }) async {
     try {
-      // Calculate new penalty amount
       final templates = await getDeedTemplates();
-      double penaltyAmount = 0.0;
+
+      // Calculate new totals
+      double totalDeeds = 0.0;
+      double sunnahCount = 0.0;
+      double faraidCount = 0.0;
+
       for (var template in templates) {
-        final value = deedValues[template.id] ?? 0;
-        if (value == 0) {
-          penaltyAmount += template.penaltyAmount;
+        final value = deedValues[template.id] ?? 0.0;
+        totalDeeds += value;
+
+        if (template.category == 'sunnah') {
+          sunnahCount += value;
+        } else if (template.category == 'faraid') {
+          faraidCount += value;
         }
       }
 
-      // Update the report
+      // Update the report with recalculated totals
       await _supabase.from('deeds_reports').update({
-        'notes': notes,
-        'penalty_amount': penaltyAmount,
+        'total_deeds': totalDeeds,
+        'sunnah_count': sunnahCount,
+        'faraid_count': faraidCount,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', reportId);
 
-      // Update deed entries
+      // Update deed entries with correct column names
       for (var entry in deedValues.entries) {
         await _supabase.from('deed_entries').update({
-          'value': entry.value,
-          'updated_at': DateTime.now().toIso8601String(),
-        }).eq('report_id', reportId).eq('template_id', entry.key);
+          'deed_value': entry.value,
+        }).eq('report_id', reportId).eq('deed_template_id', entry.key);
       }
 
       // Fetch the updated report
@@ -196,7 +207,7 @@ class DeedRemoteDataSource {
     }
   }
 
-  /// Submit a deed report
+  /// Submit a deed report (change from draft to submitted)
   Future<DeedReportModel> submitDeedReport(String reportId) async {
     try {
       await _supabase.from('deeds_reports').update({
@@ -214,52 +225,22 @@ class DeedRemoteDataSource {
   /// Delete a deed report
   Future<void> deleteDeedReport(String reportId) async {
     try {
-      // Delete entries first (due to foreign key constraint)
-      await _supabase.from('deed_entries').delete().eq('report_id', reportId);
+      // Delete the report (cascade will handle deed_entries automatically)
+      // Note: ON DELETE CASCADE is set in the database schema
+      await _supabase
+          .from('deeds_reports')
+          .delete()
+          .eq('id', reportId);
 
-      // Delete the report
-      await _supabase.from('deeds_reports').delete().eq('id', reportId);
+      // No need to validate response - if no error is thrown, delete succeeded
     } catch (e) {
       throw Exception('Failed to delete deed report: $e');
     }
   }
 
-  /// Approve a deed report
-  Future<DeedReportModel> approveDeedReport(String reportId, String approvedByUserId) async {
-    try {
-      await _supabase.from('deeds_reports').update({
-        'status': 'approved',
-        'approved_by_user_id': approvedByUserId,
-        'approved_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', reportId);
-
-      return await getReportById(reportId);
-    } catch (e) {
-      throw Exception('Failed to approve deed report: $e');
-    }
-  }
-
-  /// Reject a deed report
-  Future<DeedReportModel> rejectDeedReport(
-    String reportId,
-    String rejectionReason,
-    String rejectedByUserId,
-  ) async {
-    try {
-      await _supabase.from('deeds_reports').update({
-        'status': 'rejected',
-        'rejection_reason': rejectionReason,
-        'approved_by_user_id': rejectedByUserId, // Using same field for reject
-        'approved_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', reportId);
-
-      return await getReportById(reportId);
-    } catch (e) {
-      throw Exception('Failed to reject deed report: $e');
-    }
-  }
+  // NOTE: The database schema only supports 'draft' and 'submitted' statuses.
+  // Approval/rejection functionality would need to be implemented via a separate
+  // system (e.g., penalties table, excuses table) or by extending the schema.
 
   /// Get today's report for a user
   Future<DeedReportModel?> getTodayReport(String userId) async {

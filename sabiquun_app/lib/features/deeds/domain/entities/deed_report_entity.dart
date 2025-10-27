@@ -1,41 +1,32 @@
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_entry_entity.dart';
 
 enum ReportStatus {
-  pending,
-  submitted,
-  approved,
-  rejected;
+  draft,
+  submitted;
 
   String get displayName {
     switch (this) {
-      case ReportStatus.pending:
-        return 'Pending';
+      case ReportStatus.draft:
+        return 'Draft';
       case ReportStatus.submitted:
         return 'Submitted';
-      case ReportStatus.approved:
-        return 'Approved';
-      case ReportStatus.rejected:
-        return 'Rejected';
     }
   }
 
-  bool get isEditable => this == ReportStatus.pending;
+  bool get isDraft => this == ReportStatus.draft;
+  bool get isEditable => this == ReportStatus.draft;
   bool get isSubmitted => this == ReportStatus.submitted;
-  bool get isApproved => this == ReportStatus.approved;
-  bool get isRejected => this == ReportStatus.rejected;
 }
 
 class DeedReportEntity {
   final String id;
   final String userId;
   final DateTime reportDate;
+  final double totalDeeds;
+  final double sunnahCount;
+  final double faraidCount;
   final ReportStatus status;
-  final String? notes;
-  final double penaltyAmount;
-  final DateTime submittedAt;
-  final String? approvedByUserId;
-  final DateTime? approvedAt;
-  final String? rejectionReason;
+  final DateTime? submittedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<DeedEntryEntity>? entries;
@@ -44,26 +35,29 @@ class DeedReportEntity {
     required this.id,
     required this.userId,
     required this.reportDate,
+    required this.totalDeeds,
+    required this.sunnahCount,
+    required this.faraidCount,
     required this.status,
-    this.notes,
-    required this.penaltyAmount,
-    required this.submittedAt,
-    this.approvedByUserId,
-    this.approvedAt,
-    this.rejectionReason,
+    this.submittedAt,
     required this.createdAt,
     required this.updatedAt,
     this.entries,
   });
 
+  // Total possible deeds (number of deed templates)
+  int get totalDeedsCount => entries?.length ?? 0;
+
+  // For backward compatibility - count of deeds with any completion
   int get completedDeedsCount =>
       entries?.where((e) => e.isCompleted).length ?? 0;
   int get missedDeedsCount => entries?.where((e) => e.isMissed).length ?? 0;
-  int get totalDeeds => entries?.length ?? 0;
 
   double get completionPercentage {
-    if (totalDeeds == 0) return 0.0;
-    return (completedDeedsCount / totalDeeds) * 100;
+    if (totalDeedsCount == 0) return 0.0;
+    // Use the totalDeeds field from database which has the actual sum
+    // Max possible is totalDeedsCount (each deed worth 1.0)
+    return (totalDeeds / totalDeedsCount) * 100;
   }
 
   @override
@@ -74,13 +68,11 @@ class DeedReportEntity {
         other.id == id &&
         other.userId == userId &&
         other.reportDate == reportDate &&
+        other.totalDeeds == totalDeeds &&
+        other.sunnahCount == sunnahCount &&
+        other.faraidCount == faraidCount &&
         other.status == status &&
-        other.notes == notes &&
-        other.penaltyAmount == penaltyAmount &&
         other.submittedAt == submittedAt &&
-        other.approvedByUserId == approvedByUserId &&
-        other.approvedAt == approvedAt &&
-        other.rejectionReason == rejectionReason &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt;
   }
@@ -90,13 +82,11 @@ class DeedReportEntity {
     return id.hashCode ^
         userId.hashCode ^
         reportDate.hashCode ^
+        totalDeeds.hashCode ^
+        sunnahCount.hashCode ^
+        faraidCount.hashCode ^
         status.hashCode ^
-        notes.hashCode ^
-        penaltyAmount.hashCode ^
         submittedAt.hashCode ^
-        approvedByUserId.hashCode ^
-        approvedAt.hashCode ^
-        rejectionReason.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode;
   }

@@ -1,20 +1,24 @@
 class DeedTemplateEntity {
   final String id;
-  final String name;
-  final String description;
-  final int displayOrder;
-  final double penaltyAmount;
+  final String deedName;
+  final String deedKey;
+  final String category; // 'sunnah' or 'faraid'
+  final String valueType; // 'binary' or 'fractional'
+  final int sortOrder;
   final bool isActive;
+  final bool isSystemDefault;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   const DeedTemplateEntity({
     required this.id,
-    required this.name,
-    required this.description,
-    required this.displayOrder,
-    required this.penaltyAmount,
+    required this.deedName,
+    required this.deedKey,
+    required this.category,
+    required this.valueType,
+    required this.sortOrder,
     required this.isActive,
+    required this.isSystemDefault,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -25,11 +29,13 @@ class DeedTemplateEntity {
 
     return other is DeedTemplateEntity &&
         other.id == id &&
-        other.name == name &&
-        other.description == description &&
-        other.displayOrder == displayOrder &&
-        other.penaltyAmount == penaltyAmount &&
+        other.deedName == deedName &&
+        other.deedKey == deedKey &&
+        other.category == category &&
+        other.valueType == valueType &&
+        other.sortOrder == sortOrder &&
         other.isActive == isActive &&
+        other.isSystemDefault == isSystemDefault &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt;
   }
@@ -37,11 +43,13 @@ class DeedTemplateEntity {
   @override
   int get hashCode {
     return id.hashCode ^
-        name.hashCode ^
-        description.hashCode ^
-        displayOrder.hashCode ^
-        penaltyAmount.hashCode ^
+        deedName.hashCode ^
+        deedKey.hashCode ^
+        category.hashCode ^
+        valueType.hashCode ^
+        sortOrder.hashCode ^
         isActive.hashCode ^
+        isSystemDefault.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode;
   }

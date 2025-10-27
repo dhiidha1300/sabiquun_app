@@ -112,26 +112,6 @@ class DeedReportDeleted extends DeedState {
   const DeedReportDeleted();
 }
 
-/// Report approved successfully
-class DeedReportApproved extends DeedState {
-  final DeedReportEntity report;
-
-  const DeedReportApproved(this.report);
-
-  @override
-  List<Object?> get props => [report];
-}
-
-/// Report rejected successfully
-class DeedReportRejected extends DeedState {
-  final DeedReportEntity report;
-
-  const DeedReportRejected(this.report);
-
-  @override
-  List<Object?> get props => [report];
-}
-
 /// Error state
 class DeedError extends DeedState {
   final String message;

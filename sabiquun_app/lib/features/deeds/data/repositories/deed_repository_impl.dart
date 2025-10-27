@@ -31,15 +31,13 @@ class DeedRepositoryImpl implements DeedRepository {
   @override
   Future<DeedReportEntity> createDeedReport({
     required DateTime reportDate,
-    required Map<String, int> deedValues,
-    String? notes,
+    required Map<String, double> deedValues,
   }) async {
     try {
       final model = await _remoteDataSource.createDeedReport(
         userId: _currentUserId,
         reportDate: reportDate,
         deedValues: deedValues,
-        notes: notes,
       );
       return model.toEntity();
     } catch (e) {
@@ -95,14 +93,12 @@ class DeedRepositoryImpl implements DeedRepository {
   @override
   Future<DeedReportEntity> updateDeedReport({
     required String reportId,
-    required Map<String, int> deedValues,
-    String? notes,
+    required Map<String, double> deedValues,
   }) async {
     try {
       final model = await _remoteDataSource.updateDeedReport(
         reportId: reportId,
         deedValues: deedValues,
-        notes: notes,
       );
       return model.toEntity();
     } catch (e) {
@@ -126,36 +122,6 @@ class DeedRepositoryImpl implements DeedRepository {
       await _remoteDataSource.deleteDeedReport(reportId);
     } catch (e) {
       throw Exception('Failed to delete deed report: $e');
-    }
-  }
-
-  @override
-  Future<DeedReportEntity> approveDeedReport(String reportId) async {
-    try {
-      final model = await _remoteDataSource.approveDeedReport(
-        reportId,
-        _currentUserId,
-      );
-      return model.toEntity();
-    } catch (e) {
-      throw Exception('Failed to approve deed report: $e');
-    }
-  }
-
-  @override
-  Future<DeedReportEntity> rejectDeedReport(
-    String reportId,
-    String rejectionReason,
-  ) async {
-    try {
-      final model = await _remoteDataSource.rejectDeedReport(
-        reportId,
-        rejectionReason,
-        _currentUserId,
-      );
-      return model.toEntity();
-    } catch (e) {
-      throw Exception('Failed to reject deed report: $e');
     }
   }
 

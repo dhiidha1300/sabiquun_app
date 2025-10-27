@@ -93,15 +93,6 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
           _buildStatsCard(report),
           const SizedBox(height: 16),
           _buildDeedsListCard(report, templates),
-          if (report.notes != null && report.notes!.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            _buildNotesCard(report.notes!),
-          ],
-          if (report.status == ReportStatus.rejected &&
-              report.rejectionReason != null) ...[
-            const SizedBox(height: 16),
-            _buildRejectionCard(report.rejectionReason!),
-          ],
           const SizedBox(height: 16),
           if (report.status.isEditable) _buildActions(report),
         ],
@@ -133,22 +124,16 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                 _buildStatusChip(report.status),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Submitted: ${DateFormat('MMM dd, yyyy HH:mm').format(report.submittedAt)}',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            if (report.approvedAt != null)
+            if (report.submittedAt != null) ...[
+              const SizedBox(height: 8),
               Text(
-                '${report.status.isApproved ? 'Approved' : 'Rejected'}: ${DateFormat('MMM dd, yyyy HH:mm').format(report.approvedAt!)}',
+                'Submitted: ${DateFormat('MMM dd, yyyy HH:mm').format(report.submittedAt!)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
                 ),
               ),
+            ],
           ],
         ),
       ),
@@ -157,6 +142,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
 
   Widget _buildStatsCard(DeedReportEntity report) {
     final completionPercentage = report.completionPercentage;
+    final missedDeeds = report.totalDeedsCount - report.totalDeeds;
 
     return Card(
       color: Colors.blue.shade50,
@@ -169,21 +155,15 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
               children: [
                 _buildStatItem(
                   'Completed',
-                  '${report.completedDeedsCount}',
+                  report.totalDeeds.toStringAsFixed(1),
                   Icons.check_circle,
                   Colors.green,
                 ),
                 _buildStatItem(
                   'Missed',
-                  '${report.missedDeedsCount}',
+                  missedDeeds.toStringAsFixed(1),
                   Icons.cancel,
                   Colors.red,
-                ),
-                _buildStatItem(
-                  'Penalty',
-                  '\$${report.penaltyAmount.toStringAsFixed(2)}',
-                  Icons.warning_amber,
-                  Colors.orange,
                 ),
               ],
             ),
@@ -261,13 +241,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             const SizedBox(height: 16),
             ...templates.map((template) {
               final entry = report.entries?.firstWhere(
-                (e) => e.templateId == template.id,
+                (e) => e.deedTemplateId == template.id,
                 orElse: () => throw Exception('Entry not found'),
               );
 
               return _buildDeedDetailItem(
                 template,
-                entry?.isCompleted ?? false,
+                entry?.deedValue ?? 0.0,
               );
             }),
           ],
@@ -276,14 +256,33 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     );
   }
 
-  Widget _buildDeedDetailItem(DeedTemplateEntity template, bool completed) {
+  Widget _buildDeedDetailItem(DeedTemplateEntity template, double deedValue) {
+    final isCompleted = deedValue >= 1.0;
+    final isPartial = deedValue > 0.0 && deedValue < 1.0;
+    final isMissed = deedValue == 0.0;
+    final isFractional = template.valueType == 'fractional';
+
+    // Determine icon and color based on completion status
+    IconData icon;
+    Color color;
+    if (isCompleted) {
+      icon = Icons.check_circle;
+      color = Colors.green;
+    } else if (isPartial && isFractional) {
+      icon = Icons.warning;
+      color = Colors.orange;
+    } else {
+      icon = Icons.cancel;
+      color = Colors.red;
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           Icon(
-            completed ? Icons.check_circle : Icons.cancel,
-            color: completed ? Colors.green : Colors.red,
+            icon,
+            color: color,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -292,97 +291,50 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  template.name,
+                  template.deedName,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                if (template.description.isNotEmpty)
-                  Text(
-                    template.description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
+                Row(
+                  children: [
+                    Text(
+                      template.category.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: template.category == 'faraid'
+                            ? Colors.blue.shade700
+                            : Colors.green.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
+                    if (isFractional) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        '${deedValue.toStringAsFixed(1)}/1.0',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ),
           ),
-          if (!completed)
+          if (isMissed || isPartial)
             Text(
-              '\$${template.penaltyAmount.toStringAsFixed(2)}',
-              style: const TextStyle(
+              isMissed ? '5,000' : ((1.0 - deedValue) * 5000).toStringAsFixed(0),
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.red,
+                color: isPartial ? Colors.orange : Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildNotesCard(String notes) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.note, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Notes',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              notes,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRejectionCard(String reason) {
-    return Card(
-      color: Colors.red.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.error, size: 20, color: Colors.red.shade700),
-                const SizedBox(width: 8),
-                Text(
-                  'Rejection Reason',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red.shade700,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              reason,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -393,25 +345,15 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     IconData icon;
 
     switch (status) {
-      case ReportStatus.pending:
+      case ReportStatus.draft:
         backgroundColor = Colors.orange.shade100;
         textColor = Colors.orange.shade900;
         icon = Icons.edit;
         break;
       case ReportStatus.submitted:
-        backgroundColor = Colors.blue.shade100;
-        textColor = Colors.blue.shade900;
-        icon = Icons.send;
-        break;
-      case ReportStatus.approved:
         backgroundColor = Colors.green.shade100;
         textColor = Colors.green.shade900;
         icon = Icons.check_circle;
-        break;
-      case ReportStatus.rejected:
-        backgroundColor = Colors.red.shade100;
-        textColor = Colors.red.shade900;
-        icon = Icons.cancel;
         break;
     }
 
@@ -442,11 +384,17 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
   Widget _buildActions(DeedReportEntity report) {
     return Column(
       children: [
-        if (report.status.isPending)
+        if (report.status.isDraft)
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => context.push('/today-deeds'),
+              onPressed: () async {
+                await context.push('/today-deeds');
+                // Reload report after returning from edit
+                if (mounted) {
+                  context.read<DeedBloc>().add(LoadReportByIdRequested(widget.reportId));
+                }
+              },
               icon: const Icon(Icons.edit),
               label: const Text('Edit Report'),
               style: ElevatedButton.styleFrom(
@@ -457,13 +405,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             ),
           ),
         const SizedBox(height: 12),
-        if (report.status.isPending)
+        if (report.status.isDraft)
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _submitReport(report.id),
               icon: const Icon(Icons.send),
-              label: const Text('Submit for Approval'),
+              label: const Text('Submit Report'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2E7D32),
                 foregroundColor: Colors.white,

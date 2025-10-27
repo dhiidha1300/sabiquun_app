@@ -1,22 +1,20 @@
 class DeedEntryEntity {
   final String id;
   final String reportId;
-  final String templateId;
-  final int value;
+  final String deedTemplateId;
+  final double deedValue; // 0.0 to 1.0, supports 0.1 increments
   final DateTime createdAt;
-  final DateTime updatedAt;
 
   const DeedEntryEntity({
     required this.id,
     required this.reportId,
-    required this.templateId,
-    required this.value,
+    required this.deedTemplateId,
+    required this.deedValue,
     required this.createdAt,
-    required this.updatedAt,
   });
 
-  bool get isCompleted => value > 0;
-  bool get isMissed => value == 0;
+  bool get isCompleted => deedValue > 0;
+  bool get isMissed => deedValue == 0;
 
   @override
   bool operator ==(Object other) {
@@ -25,19 +23,17 @@ class DeedEntryEntity {
     return other is DeedEntryEntity &&
         other.id == id &&
         other.reportId == reportId &&
-        other.templateId == templateId &&
-        other.value == value &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.deedTemplateId == deedTemplateId &&
+        other.deedValue == deedValue &&
+        other.createdAt == createdAt;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
         reportId.hashCode ^
-        templateId.hashCode ^
-        value.hashCode ^
-        createdAt.hashCode ^
-        updatedAt.hashCode;
+        deedTemplateId.hashCode ^
+        deedValue.hashCode ^
+        createdAt.hashCode;
   }
 }

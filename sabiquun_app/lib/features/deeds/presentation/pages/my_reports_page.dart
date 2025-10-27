@@ -84,7 +84,11 @@ class _MyReportsPageState extends State<MyReportsPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/today-deeds'),
+        onPressed: () async {
+          await context.push('/today-deeds');
+          // Reload reports after returning from today's deeds page
+          _loadReports();
+        },
         backgroundColor: const Color(0xFF2E7D32),
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -130,7 +134,11 @@ class _MyReportsPageState extends State<MyReportsPage> {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       child: InkWell(
-        onTap: () => context.push('/report-detail/${report.id}'),
+        onTap: () async {
+          await context.push('/report-detail/${report.id}');
+          // Reload reports after returning from detail page
+          _loadReports();
+        },
         borderRadius: BorderRadius.circular(4),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -167,7 +175,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${report.completedDeedsCount}/${report.totalDeeds} deeds completed',
+                    '${report.totalDeeds.toStringAsFixed(1)} / ${report.totalDeedsCount} deeds completed',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade700,
@@ -187,27 +195,8 @@ class _MyReportsPageState extends State<MyReportsPage> {
                   ),
                 ],
               ),
-              if (report.penaltyAmount > 0) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.warning_amber,
-                      size: 16,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Penalty: \$${report.penaltyAmount.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.red,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              // Note: Penalties are tracked in a separate penalties table
+              // and calculated by the backend based on missed deeds
             ],
           ),
         ),
@@ -221,25 +210,15 @@ class _MyReportsPageState extends State<MyReportsPage> {
     IconData icon;
 
     switch (status) {
-      case ReportStatus.pending:
+      case ReportStatus.draft:
         backgroundColor = Colors.orange.shade100;
         textColor = Colors.orange.shade900;
         icon = Icons.edit;
         break;
       case ReportStatus.submitted:
-        backgroundColor = Colors.blue.shade100;
-        textColor = Colors.blue.shade900;
-        icon = Icons.send;
-        break;
-      case ReportStatus.approved:
         backgroundColor = Colors.green.shade100;
         textColor = Colors.green.shade900;
         icon = Icons.check_circle;
-        break;
-      case ReportStatus.rejected:
-        backgroundColor = Colors.red.shade100;
-        textColor = Colors.red.shade900;
-        icon = Icons.cancel;
         break;
     }
 

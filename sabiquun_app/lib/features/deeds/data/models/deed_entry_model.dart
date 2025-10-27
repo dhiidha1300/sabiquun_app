@@ -4,20 +4,18 @@ class DeedEntryModel extends DeedEntryEntity {
   const DeedEntryModel({
     required super.id,
     required super.reportId,
-    required super.templateId,
-    required super.value,
+    required super.deedTemplateId,
+    required super.deedValue,
     required super.createdAt,
-    required super.updatedAt,
   });
 
   factory DeedEntryModel.fromJson(Map<String, dynamic> json) {
     return DeedEntryModel(
       id: json['id'] as String,
       reportId: json['report_id'] as String,
-      templateId: json['template_id'] as String,
-      value: json['value'] as int,
+      deedTemplateId: json['deed_template_id'] as String,
+      deedValue: (json['deed_value'] as num).toDouble(),
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
@@ -25,10 +23,9 @@ class DeedEntryModel extends DeedEntryEntity {
     return {
       'id': id,
       'report_id': reportId,
-      'template_id': templateId,
-      'value': value,
+      'deed_template_id': deedTemplateId,
+      'deed_value': deedValue,
       'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
@@ -36,10 +33,9 @@ class DeedEntryModel extends DeedEntryEntity {
     return DeedEntryEntity(
       id: id,
       reportId: reportId,
-      templateId: templateId,
-      value: value,
+      deedTemplateId: deedTemplateId,
+      deedValue: deedValue,
       createdAt: createdAt,
-      updatedAt: updatedAt,
     );
   }
 }

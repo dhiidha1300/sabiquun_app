@@ -3,11 +3,13 @@ import 'package:sabiquun_app/features/deeds/domain/entities/deed_template_entity
 class DeedTemplateModel extends DeedTemplateEntity {
   const DeedTemplateModel({
     required super.id,
-    required super.name,
-    required super.description,
-    required super.displayOrder,
-    required super.penaltyAmount,
+    required super.deedName,
+    required super.deedKey,
+    required super.category,
+    required super.valueType,
+    required super.sortOrder,
     required super.isActive,
+    required super.isSystemDefault,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -15,11 +17,13 @@ class DeedTemplateModel extends DeedTemplateEntity {
   factory DeedTemplateModel.fromJson(Map<String, dynamic> json) {
     return DeedTemplateModel(
       id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String? ?? '',
-      displayOrder: json['display_order'] as int,
-      penaltyAmount: (json['penalty_amount'] as num).toDouble(),
+      deedName: json['deed_name'] as String,
+      deedKey: json['deed_key'] as String,
+      category: json['category'] as String,
+      valueType: json['value_type'] as String,
+      sortOrder: json['sort_order'] as int,
       isActive: json['is_active'] as bool? ?? true,
+      isSystemDefault: json['is_system_default'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -28,11 +32,13 @@ class DeedTemplateModel extends DeedTemplateEntity {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      'description': description,
-      'display_order': displayOrder,
-      'penalty_amount': penaltyAmount,
+      'deed_name': deedName,
+      'deed_key': deedKey,
+      'category': category,
+      'value_type': valueType,
+      'sort_order': sortOrder,
       'is_active': isActive,
+      'is_system_default': isSystemDefault,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -41,11 +47,13 @@ class DeedTemplateModel extends DeedTemplateEntity {
   DeedTemplateEntity toEntity() {
     return DeedTemplateEntity(
       id: id,
-      name: name,
-      description: description,
-      displayOrder: displayOrder,
-      penaltyAmount: penaltyAmount,
+      deedName: deedName,
+      deedKey: deedKey,
+      category: category,
+      valueType: valueType,
+      sortOrder: sortOrder,
       isActive: isActive,
+      isSystemDefault: isSystemDefault,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

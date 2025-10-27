@@ -16,8 +16,6 @@ class DeedBloc extends Bloc<DeedEvent, DeedState> {
     on<UpdateDeedReportRequested>(_onUpdateDeedReportRequested);
     on<SubmitDeedReportRequested>(_onSubmitDeedReportRequested);
     on<DeleteDeedReportRequested>(_onDeleteDeedReportRequested);
-    on<ApproveDeedReportRequested>(_onApproveDeedReportRequested);
-    on<RejectDeedReportRequested>(_onRejectDeedReportRequested);
     on<ResetDeedStateRequested>(_onResetDeedStateRequested);
   }
 
@@ -104,7 +102,6 @@ class DeedBloc extends Bloc<DeedEvent, DeedState> {
       final report = await _repository.createDeedReport(
         reportDate: event.reportDate,
         deedValues: event.deedValues,
-        notes: event.notes,
       );
       emit(DeedReportCreated(report));
     } catch (e) {
@@ -121,7 +118,6 @@ class DeedBloc extends Bloc<DeedEvent, DeedState> {
       final report = await _repository.updateDeedReport(
         reportId: event.reportId,
         deedValues: event.deedValues,
-        notes: event.notes,
       );
       emit(DeedReportUpdated(report));
     } catch (e) {
@@ -150,35 +146,6 @@ class DeedBloc extends Bloc<DeedEvent, DeedState> {
     try {
       await _repository.deleteDeedReport(event.reportId);
       emit(const DeedReportDeleted());
-    } catch (e) {
-      emit(DeedError(e.toString()));
-    }
-  }
-
-  Future<void> _onApproveDeedReportRequested(
-    ApproveDeedReportRequested event,
-    Emitter<DeedState> emit,
-  ) async {
-    emit(const DeedLoading());
-    try {
-      final report = await _repository.approveDeedReport(event.reportId);
-      emit(DeedReportApproved(report));
-    } catch (e) {
-      emit(DeedError(e.toString()));
-    }
-  }
-
-  Future<void> _onRejectDeedReportRequested(
-    RejectDeedReportRequested event,
-    Emitter<DeedState> emit,
-  ) async {
-    emit(const DeedLoading());
-    try {
-      final report = await _repository.rejectDeedReport(
-        event.reportId,
-        event.rejectionReason,
-      );
-      emit(DeedReportRejected(report));
     } catch (e) {
       emit(DeedError(e.toString()));
     }

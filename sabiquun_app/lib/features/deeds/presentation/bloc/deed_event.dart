@@ -57,33 +57,29 @@ class LoadReportByIdRequested extends DeedEvent {
 /// Create a new deed report
 class CreateDeedReportRequested extends DeedEvent {
   final DateTime reportDate;
-  final Map<String, int> deedValues;
-  final String? notes;
+  final Map<String, double> deedValues; // 0.0-1.0 for each deed
 
   const CreateDeedReportRequested({
     required this.reportDate,
     required this.deedValues,
-    this.notes,
   });
 
   @override
-  List<Object?> get props => [reportDate, deedValues, notes];
+  List<Object?> get props => [reportDate, deedValues];
 }
 
 /// Update an existing deed report
 class UpdateDeedReportRequested extends DeedEvent {
   final String reportId;
-  final Map<String, int> deedValues;
-  final String? notes;
+  final Map<String, double> deedValues; // 0.0-1.0 for each deed
 
   const UpdateDeedReportRequested({
     required this.reportId,
     required this.deedValues,
-    this.notes,
   });
 
   @override
-  List<Object?> get props => [reportId, deedValues, notes];
+  List<Object?> get props => [reportId, deedValues];
 }
 
 /// Submit a deed report
@@ -104,30 +100,6 @@ class DeleteDeedReportRequested extends DeedEvent {
 
   @override
   List<Object?> get props => [reportId];
-}
-
-/// Approve a deed report (supervisor/admin)
-class ApproveDeedReportRequested extends DeedEvent {
-  final String reportId;
-
-  const ApproveDeedReportRequested(this.reportId);
-
-  @override
-  List<Object?> get props => [reportId];
-}
-
-/// Reject a deed report (supervisor/admin)
-class RejectDeedReportRequested extends DeedEvent {
-  final String reportId;
-  final String rejectionReason;
-
-  const RejectDeedReportRequested({
-    required this.reportId,
-    required this.rejectionReason,
-  });
-
-  @override
-  List<Object?> get props => [reportId, rejectionReason];
 }
 
 /// Reset state to initial
