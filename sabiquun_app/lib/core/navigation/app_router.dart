@@ -10,6 +10,9 @@ import 'package:sabiquun_app/features/auth/presentation/pages/pending_approval_p
 import 'package:sabiquun_app/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:sabiquun_app/features/home/pages/home_page.dart';
+import 'package:sabiquun_app/features/deeds/presentation/pages/today_deeds_page.dart';
+import 'package:sabiquun_app/features/deeds/presentation/pages/my_reports_page.dart';
+import 'package:sabiquun_app/features/deeds/presentation/pages/report_detail_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -96,12 +99,27 @@ class AppRouter {
         builder: (context, state) => const HomePage(),
       ),
 
+      // Deed/Report Routes
+      GoRoute(
+        path: '/today-deeds',
+        name: 'today-deeds',
+        builder: (context, state) => const TodayDeedsPage(),
+      ),
+      GoRoute(
+        path: '/my-reports',
+        name: 'my-reports',
+        builder: (context, state) => const MyReportsPage(),
+      ),
+      GoRoute(
+        path: '/report-detail/:id',
+        name: 'report-detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ReportDetailPage(reportId: id);
+        },
+      ),
+
       // Add more routes as features are implemented
-      // GoRoute(
-      //   path: '/reports',
-      //   name: 'reports',
-      //   builder: (context, state) => const ReportsPage(),
-      // ),
       // GoRoute(
       //   path: '/payments',
       //   name: 'payments',
