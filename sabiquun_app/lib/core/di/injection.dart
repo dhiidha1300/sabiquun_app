@@ -8,6 +8,14 @@ import 'package:sabiquun_app/features/deeds/data/datasources/deed_remote_datasou
 import 'package:sabiquun_app/features/deeds/data/repositories/deed_repository_impl.dart';
 import 'package:sabiquun_app/features/deeds/domain/repositories/deed_repository.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
+import 'package:sabiquun_app/features/penalties/data/datasources/penalty_remote_datasource.dart';
+import 'package:sabiquun_app/features/penalties/data/repositories/penalty_repository_impl.dart';
+import 'package:sabiquun_app/features/penalties/domain/repositories/penalty_repository.dart';
+import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
+import 'package:sabiquun_app/features/payments/data/datasources/payment_remote_datasource.dart';
+import 'package:sabiquun_app/features/payments/data/repositories/payment_repository_impl.dart';
+import 'package:sabiquun_app/features/payments/domain/repositories/payment_repository.dart';
+import 'package:sabiquun_app/features/payments/presentation/bloc/payment_bloc.dart';
 import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
 
 /// Dependency injection container
@@ -22,6 +30,12 @@ class Injection {
   static late DeedRemoteDataSource _deedRemoteDataSource;
   static late DeedRepository _deedRepository;
   static late DeedBloc _deedBloc;
+  static late PenaltyRemoteDataSource _penaltyRemoteDataSource;
+  static late PenaltyRepository _penaltyRepository;
+  static late PenaltyBloc _penaltyBloc;
+  static late PaymentRemoteDataSource _paymentRemoteDataSource;
+  static late PaymentRepository _paymentRepository;
+  static late PaymentBloc _paymentBloc;
 
   /// Initialize all dependencies
   static Future<void> init() async {
@@ -57,6 +71,24 @@ class Injection {
 
     // Initialize Deed Blocs
     _deedBloc = DeedBloc(_deedRepository);
+
+    // Initialize Penalty Data Sources
+    _penaltyRemoteDataSource = PenaltyRemoteDataSource(_supabase);
+
+    // Initialize Penalty Repositories
+    _penaltyRepository = PenaltyRepositoryImpl(_penaltyRemoteDataSource);
+
+    // Initialize Penalty Blocs
+    _penaltyBloc = PenaltyBloc(_penaltyRepository);
+
+    // Initialize Payment Data Sources
+    _paymentRemoteDataSource = PaymentRemoteDataSource(_supabase);
+
+    // Initialize Payment Repositories
+    _paymentRepository = PaymentRepositoryImpl(_paymentRemoteDataSource);
+
+    // Initialize Payment Blocs
+    _paymentBloc = PaymentBloc(_paymentRepository);
   }
 
   /// Get Supabase client instance
@@ -83,10 +115,30 @@ class Injection {
   /// Get Deed Bloc instance
   static DeedBloc get deedBloc => _deedBloc;
 
+  /// Get Penalty Remote Data Source instance
+  static PenaltyRemoteDataSource get penaltyRemoteDataSource => _penaltyRemoteDataSource;
+
+  /// Get Penalty Repository instance
+  static PenaltyRepository get penaltyRepository => _penaltyRepository;
+
+  /// Get Penalty Bloc instance
+  static PenaltyBloc get penaltyBloc => _penaltyBloc;
+
+  /// Get Payment Remote Data Source instance
+  static PaymentRemoteDataSource get paymentRemoteDataSource => _paymentRemoteDataSource;
+
+  /// Get Payment Repository instance
+  static PaymentRepository get paymentRepository => _paymentRepository;
+
+  /// Get Payment Bloc instance
+  static PaymentBloc get paymentBloc => _paymentBloc;
+
   /// Reset/dispose all dependencies (useful for testing)
   static Future<void> reset() async {
     await _authBloc.close();
     await _deedBloc.close();
+    await _penaltyBloc.close();
+    await _paymentBloc.close();
     // Add any other cleanup needed
   }
 }

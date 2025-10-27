@@ -13,6 +13,9 @@ import 'package:sabiquun_app/features/home/pages/home_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/today_deeds_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/my_reports_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/report_detail_page.dart';
+import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_history_page.dart';
+import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
+import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -119,13 +122,33 @@ class AppRouter {
         },
       ),
 
-      // Add more routes as features are implemented
-      // GoRoute(
-      //   path: '/payments',
-      //   name: 'payments',
-      //   builder: (context, state) => const PaymentsPage(),
-      // ),
-      // etc...
+      // Penalty Routes
+      GoRoute(
+        path: '/penalty-history',
+        name: 'penalty-history',
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return PenaltyHistoryPage(userId: userId);
+        },
+      ),
+
+      // Payment Routes
+      GoRoute(
+        path: '/submit-payment',
+        name: 'submit-payment',
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return SubmitPaymentPage(userId: userId);
+        },
+      ),
+      GoRoute(
+        path: '/payment-history',
+        name: 'payment-history',
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return PaymentHistoryPage(userId: userId);
+        },
+      ),
     ],
 
     // Error page

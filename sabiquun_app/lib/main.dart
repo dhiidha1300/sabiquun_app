@@ -7,6 +7,8 @@ import 'package:sabiquun_app/core/theme/app_theme.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
+import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
+import 'package:sabiquun_app/features/payments/presentation/bloc/payment_bloc.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -47,6 +49,8 @@ class SabiquunApp extends StatelessWidget {
       providers: [
         BlocProvider.value(value: Injection.authBloc),
         BlocProvider.value(value: Injection.deedBloc),
+        BlocProvider.value(value: Injection.penaltyBloc),
+        BlocProvider.value(value: Injection.paymentBloc),
       ],
       child: Builder(
         builder: (context) {

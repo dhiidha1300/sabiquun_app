@@ -167,12 +167,7 @@ class HomePage extends StatelessWidget {
             onTap: () => context.push('/today-deeds'),
           ),
         ),
-        _FeatureCard(
-          icon: Icons.payment,
-          title: 'Payments',
-          color: AppColors.info,
-          onTap: () {},
-        ),
+
         _FeatureCard(
           icon: Icons.medical_services,
           title: 'Excuses',
