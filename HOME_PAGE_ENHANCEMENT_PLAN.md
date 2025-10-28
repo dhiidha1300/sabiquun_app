@@ -1266,23 +1266,18 @@ Before implementation begins, please clarify:
 
 ### 1. Priority Level
 **Question:** Should I implement all P0 (Must Have) items first, or would you like to adjust priorities?
+**Answer:** I prefer Full implementation P0 + P1 + P2 (within this conversation)
 
-**Options:**
-- A) Start with P0 only (2-3 days)
-- B) Do P0 + P1 (4-6 days)
-- C) Full implementation P0 + P1 + P2 (8-13 days)
 
 ### 2. Custom Assets
 **Question:** Do you have custom icons/illustrations, or should I use Material Icons and placeholder graphics?
+**Answer:**  I don't have custom icons yet therefore use the material icons and placeholder graphics. 
 
-**Options:**
-- A) Use Material Icons throughout (no custom design needed)
-- B) You'll provide custom icons/illustrations later (use placeholders now)
-- C) Wait for custom assets before implementing
 
 ### 3. Grace Period Timer
 **Question:** Should the timer show countdown for current day's submission or next day's deadline?
 
+**Answer:**  The timer should show the the next day's deadline. eg. if the user submits report in 28 oct 2025
 **Clarification:**
 - User submits deeds today → Grace period until 12 PM tomorrow
 - Should timer show: "Submit by 12 PM today" or "15 hours remaining"?
