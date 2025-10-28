@@ -168,6 +168,53 @@ class HomePage extends StatelessWidget {
           ),
         ),
 
+        // ============================================================
+        // TEMPORARY: Quick test navigation for Penalty & Payment systems
+        // TODO: Remove these and integrate properly with enhanced home screen
+        // ============================================================
+        Builder(
+          builder: (context) => _FeatureCard(
+            icon: Icons.account_balance_wallet,
+            title: 'Penalty History',
+            color: Colors.deepOrange,
+            onTap: () {
+              final state = context.read<AuthBloc>().state;
+              if (state is Authenticated) {
+                context.push('/penalty-history', extra: state.user.id);
+              }
+            },
+          ),
+        ),
+        Builder(
+          builder: (context) => _FeatureCard(
+            icon: Icons.payment,
+            title: 'Submit Payment',
+            color: Colors.green,
+            onTap: () {
+              final state = context.read<AuthBloc>().state;
+              if (state is Authenticated) {
+                context.push('/submit-payment', extra: state.user.id);
+              }
+            },
+          ),
+        ),
+        Builder(
+          builder: (context) => _FeatureCard(
+            icon: Icons.history,
+            title: 'Payment History',
+            color: Colors.blue,
+            onTap: () {
+              final state = context.read<AuthBloc>().state;
+              if (state is Authenticated) {
+                context.push('/payment-history', extra: state.user.id);
+              }
+            },
+          ),
+        ),
+        // ============================================================
+        // END TEMPORARY - Remove after home screen enhancement
+        // ============================================================
+
         _FeatureCard(
           icon: Icons.medical_services,
           title: 'Excuses',
