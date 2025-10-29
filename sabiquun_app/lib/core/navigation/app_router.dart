@@ -16,6 +16,10 @@ import 'package:sabiquun_app/features/deeds/presentation/pages/report_detail_pag
 import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_history_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
+import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
+import 'package:sabiquun_app/features/admin/pages/user_management_placeholder_page.dart';
+import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
+import 'package:sabiquun_app/features/home/pages/enhanced_home_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -148,6 +152,34 @@ class AppRouter {
           final userId = state.extra as String;
           return PaymentHistoryPage(userId: userId);
         },
+      ),
+
+      // Excuse Routes (Placeholder)
+      GoRoute(
+        path: '/excuses',
+        name: 'excuses',
+        builder: (context, state) => const ExcusesPlaceholderPage(),
+      ),
+
+      // Admin Routes (Placeholder)
+      GoRoute(
+        path: '/user-management',
+        name: 'user-management',
+        builder: (context, state) => const UserManagementPlaceholderPage(),
+      ),
+
+      // Analytics Routes (Placeholder)
+      GoRoute(
+        path: '/analytics',
+        name: 'analytics',
+        builder: (context, state) => const AnalyticsPlaceholderPage(),
+      ),
+
+      // Enhanced Home (Optional - can switch to this later)
+      GoRoute(
+        path: '/enhanced-home',
+        name: 'enhanced-home',
+        builder: (context, state) => const EnhancedHomePage(),
       ),
     ],
 
