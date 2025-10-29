@@ -132,4 +132,13 @@ class PenaltyRepositoryImpl implements PenaltyRepository {
       throw Exception('Failed to remove penalty: $e');
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> calculateDailyPenalties() async {
+    try {
+      return await _remoteDataSource.calculateDailyPenaltiesWithLogging();
+    } catch (e) {
+      throw Exception('Failed to calculate daily penalties: $e');
+    }
+  }
 }

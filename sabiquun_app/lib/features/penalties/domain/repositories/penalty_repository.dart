@@ -49,4 +49,8 @@ abstract class PenaltyRepository {
     required String reason,
     required String removedBy,
   });
+
+  /// Calculate daily penalties for all eligible users
+  /// This should be called by a scheduled task at 12:00 PM daily
+  Future<Map<String, dynamic>> calculateDailyPenalties();
 }

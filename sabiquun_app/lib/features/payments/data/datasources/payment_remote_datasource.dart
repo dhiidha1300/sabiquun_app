@@ -33,12 +33,21 @@ class PaymentRemoteDataSource {
     String? referenceNumber,
   }) async {
     try {
+      // Get the method_name from payment_methods table using the ID
+      final methodResponse = await _supabaseClient
+          .from('payment_methods')
+          .select('method_name')
+          .eq('id', paymentMethodId)
+          .single();
+
+      final methodName = methodResponse['method_name'] as String;
+
       final response = await _supabaseClient
           .from('payments')
           .insert({
             'user_id': userId,
             'amount': amount,
-            'payment_method_id': paymentMethodId,
+            'payment_method': methodName,
             'reference_number': referenceNumber,
             'status': 'pending',
           })
@@ -61,8 +70,7 @@ class PaymentRemoteDataSource {
           .from('payments')
           .select('''
             *,
-            payment_methods!inner(display_name),
-            users!payments_reviewed_by_fkey(name)
+            reviewed_by_user:users!reviewed_by(name)
           ''')
           .eq('user_id', userId);
 
@@ -77,14 +85,12 @@ class PaymentRemoteDataSource {
       return (response as List).map((json) {
         // Flatten the joined data
         final flatJson = Map<String, dynamic>.from(json);
-        if (json['payment_methods'] != null) {
-          flatJson['payment_method_name'] = json['payment_methods']['display_name'];
+        // payment_method is already a VARCHAR in the table, use it directly
+        flatJson['payment_method_name'] = json['payment_method'];
+        if (json['reviewed_by_user'] != null) {
+          flatJson['reviewer_name'] = json['reviewed_by_user']['name'];
         }
-        if (json['users'] != null) {
-          flatJson['reviewer_name'] = json['users']['name'];
-        }
-        flatJson.remove('payment_methods');
-        flatJson.remove('users');
+        flatJson.remove('reviewed_by_user');
 
         return PaymentModel.fromJson(flatJson);
       }).toList();
@@ -100,22 +106,19 @@ class PaymentRemoteDataSource {
           .from('payments')
           .select('''
             *,
-            payment_methods!inner(display_name),
-            users!payments_reviewed_by_fkey(name)
+            reviewed_by_user:users!reviewed_by(name)
           ''')
           .eq('id', paymentId)
           .single();
 
       // Flatten the joined data
       final flatJson = Map<String, dynamic>.from(response);
-      if (response['payment_methods'] != null) {
-        flatJson['payment_method_name'] = response['payment_methods']['display_name'];
+      // payment_method is already a VARCHAR in the table, use it directly
+      flatJson['payment_method_name'] = response['payment_method'];
+      if (response['reviewed_by_user'] != null) {
+        flatJson['reviewer_name'] = response['reviewed_by_user']['name'];
       }
-      if (response['users'] != null) {
-        flatJson['reviewer_name'] = response['users']['name'];
-      }
-      flatJson.remove('payment_methods');
-      flatJson.remove('users');
+      flatJson.remove('reviewed_by_user');
 
       return PaymentModel.fromJson(flatJson);
     } catch (e) {

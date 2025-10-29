@@ -237,11 +237,13 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
         BlocBuilder<PaymentBloc, PaymentState>(
           builder: (context, state) {
             if (state is PaymentMethodsLoaded) {
+              final isDisabled = _totalBalance == null || _totalBalance == 0;
               return DropdownButtonFormField<String>(
                 value: _selectedPaymentMethodId,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
                   hintText: 'Select payment method',
+                  helperText: isDisabled ? 'No outstanding balance' : null,
                 ),
                 items: state.methods
                     .map((method) => DropdownMenuItem(
@@ -249,17 +251,35 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
                           child: Text(method.displayName),
                         ))
                     .toList(),
-                onChanged: (value) {
+                onChanged: isDisabled ? null : (value) {
                   setState(() {
                     _selectedPaymentMethodId = value;
                   });
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (!isDisabled && (value == null || value.isEmpty)) {
                     return 'Please select a payment method';
                   }
                   return null;
                 },
+              );
+            } else if (state is PaymentError) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Failed to load payment methods',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      context.read<PaymentBloc>().add(const LoadPaymentMethodsRequested());
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
               );
             }
             return const CircularProgressIndicator();

@@ -37,8 +37,8 @@ class PenaltyRemoteDataSource {
       // Get system thresholds from settings
       final settingsResponse = await _supabaseClient
           .from('settings')
-          .select('key, value')
-          .inFilter('key', [
+          .select('setting_key, setting_value')
+          .inFilter('setting_key', [
         'auto_deactivation_threshold',
         'first_warning_threshold',
         'final_warning_threshold',
@@ -49,8 +49,8 @@ class PenaltyRemoteDataSource {
       double? finalWarningThreshold;
 
       for (final setting in settingsResponse as List) {
-        final key = setting['key'] as String;
-        final value = double.tryParse(setting['value'].toString()) ?? 0;
+        final key = setting['setting_key'] as String;
+        final value = double.tryParse(setting['setting_value'].toString()) ?? 0;
 
         if (key == 'auto_deactivation_threshold') {
           deactivationThreshold = value;
@@ -269,6 +269,39 @@ class PenaltyRemoteDataSource {
       );
     } catch (e) {
       throw Exception('Failed to remove penalty: $e');
+    }
+  }
+
+  /// Calculate daily penalties (call the database function)
+  /// This should be called daily at 12:00 PM via a scheduled task
+  /// Returns a map with execution results
+  Future<Map<String, dynamic>> calculateDailyPenalties() async {
+    try {
+      final response = await _supabaseClient.rpc('calculate_daily_penalties');
+
+      if (response == null) {
+        throw Exception('No response from penalty calculation function');
+      }
+
+      return Map<String, dynamic>.from(response);
+    } catch (e) {
+      throw Exception('Failed to calculate daily penalties: $e');
+    }
+  }
+
+  /// Calculate daily penalties with logging
+  /// This version saves execution results to penalty_calculation_log table
+  Future<Map<String, dynamic>> calculateDailyPenaltiesWithLogging() async {
+    try {
+      final response = await _supabaseClient.rpc('calculate_daily_penalties_with_logging');
+
+      if (response == null) {
+        throw Exception('No response from penalty calculation function');
+      }
+
+      return Map<String, dynamic>.from(response);
+    } catch (e) {
+      throw Exception('Failed to calculate daily penalties: $e');
     }
   }
 

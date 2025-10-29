@@ -79,12 +79,11 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
               slivers: [
                 // Balance Card
                 SliverToBoxAdapter(
-                  child: FutureBuilder(
-                    future: _getBalance(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
+                  child: BlocBuilder<PenaltyBloc, PenaltyState>(
+                    builder: (context, state) {
+                      if (state is PenaltyBalanceLoaded) {
                         return PenaltyBalanceCard(
-                          balance: snapshot.data!,
+                          balance: state.balance,
                           onPayNow: () {
                             Navigator.pushNamed(context, '/payments');
                           },
@@ -200,18 +199,6 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
         },
       ),
     );
-  }
-
-  Future<dynamic> _getBalance() async {
-    final bloc = context.read<PenaltyBloc>();
-    bloc.add(LoadPenaltyBalanceRequested(widget.userId));
-
-    // Wait for balance to load
-    await for (final state in bloc.stream) {
-      if (state is PenaltyBalanceLoaded) {
-        return state.balance;
-      }
-    }
   }
 
   void _showFilterDialog() {
