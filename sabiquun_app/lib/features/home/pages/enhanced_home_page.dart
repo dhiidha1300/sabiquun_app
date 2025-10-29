@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
@@ -155,7 +156,7 @@ class _EnhancedHomePageState extends State<EnhancedHomePage> {
   Widget _buildWelcomeHeader(UserEntity user) {
     final greeting = TimeHelper.getGreeting();
     final currentDate = TimeHelper.getCurrentDateFormatted();
-    final membershipBadge = MembershipHelper.getBadge(user.createdAt);
+    final membershipBadge = MembershipHelper.getBadge(user.createdAt ?? DateTime.now());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,9 +181,9 @@ class _EnhancedHomePageState extends State<EnhancedHomePage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: membershipBadge.color.withOpacity(0.1),
+                color: membershipBadge.color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: membershipBadge.color.withOpacity(0.3)),
+                border: Border.all(color: membershipBadge.color.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -218,14 +219,14 @@ class _EnhancedHomePageState extends State<EnhancedHomePage> {
   }
 
   Widget _buildOnboardingSection(UserEntity user) {
-    final membershipType = MembershipHelper.getMembershipType(user.createdAt);
+    final membershipType = MembershipHelper.getMembershipType(user.createdAt ?? DateTime.now());
     final isNewMember = membershipType == MembershipType.newMember;
 
     if (!isNewMember) {
       return const SizedBox.shrink();
     }
 
-    final daysRemaining = MembershipHelper.getDaysRemainingInTraining(user.createdAt);
+    final daysRemaining = MembershipHelper.getDaysRemainingInTraining(user.createdAt ?? DateTime.now());
 
     return Column(
       children: [
