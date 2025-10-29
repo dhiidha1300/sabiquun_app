@@ -1276,25 +1276,24 @@ Before implementation begins, please clarify:
 
 ### 3. Grace Period Timer
 **Question:** Should the timer show countdown for current day's submission or next day's deadline?
-
-**Answer:**  The timer should show the the next day's deadline. eg. if the user submits report in 28 oct 2025
+**Answer:**  The timer should show the the next day's deadline. eg. if the user submits report of 28 oct 2025 in 28 oct 2025 9:00 pm, then the timer should show 15 hours remaining. 
 **Clarification:**
 - User submits deeds today → Grace period until 12 PM tomorrow
-- Should timer show: "Submit by 12 PM today" or "15 hours remaining"?
+- Should timer show: "15 hours remaining"?
 
 ### 4. Islamic Calendar
 **Question:** Do you want Hijri calendar integration, or just Gregorian date?
-
+**Answer:** For now I would like gregorian calendar only.
 **Options:**
-- A) Gregorian only (simpler)
-- B) Both Gregorian + Hijri (need package like `hijri`)
-- C) User preference toggle in settings
+- A) Both Gregorian + Hijri (need package like `hijri`) - this ill implemented in phase 2
+- B) User preference toggle in settings - this ill implemented in phase 3
 
 ### 5. Leaderboard Rank
 **Question:** Is the leaderboard feature already implemented, or should I prepare for future integration?
+**Answer:** no the leaderboard feature is not yet implemented therefore prepare it for future integration.
 
 **Context:**
-- Quick stats bar wants to show "Rank #12 of 150"
+- Quick stats bar wants to show "Rank #10 of 150"
 - Need to know if data source exists
 
 **Options:**
@@ -1304,7 +1303,7 @@ Before implementation begins, please clarify:
 
 ### 6. Analytics Data
 **Question:** Should the home page show preview charts/graphs, or just summary numbers?
-
+**Answer:** show small preview chart (last 7 days)
 **Options:**
 - A) Summary numbers only (simpler)
 - B) Small preview chart (last 7 days)
@@ -1312,7 +1311,7 @@ Before implementation begins, please clarify:
 
 ### 7. Route Implementation
 **Question:** Should I create placeholder pages for missing routes (Excuses, User Management, Analytics) or just connect existing ones?
-
+**Answer:** yes Create simple placeholder pages ("Coming Soon")
 **Current Status:**
 - ✅ Payments: `/submit-payment` exists
 - ✅ Payment Review: `/payment-history` exists
@@ -1327,14 +1326,14 @@ Before implementation begins, please clarify:
 
 ### 8. Notification System
 **Question:** Is the notification system implemented? (For profile menu preview)
-
+**Answer:** no the notification system is not yet implemented, therefor you can implement simple placeholder.
 **Context:**
 - Enhanced profile menu wants to show "🔔 Notifications (3 new)"
 - Need to know if notification data source exists
 
 ### 9. Onboarding Persistence
 **Question:** How should onboarding state be stored?
-
+**Answer:** use your best judgement about the best practices in the industry. 
 **Options:**
 - A) Local storage (SharedPreferences)
 - B) Database (Supabase user settings)
@@ -1342,7 +1341,7 @@ Before implementation begins, please clarify:
 
 ### 10. Real-Time Updates
 **Question:** Should home page data update in real-time via Supabase subscriptions?
-
+**Answer:** Pull-to-refresh only (simpler) 
 **Options:**
 - A) Real-time updates (more complex, better UX)
 - B) Pull-to-refresh only (simpler)
