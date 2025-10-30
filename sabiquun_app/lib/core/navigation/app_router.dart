@@ -9,13 +9,17 @@ import 'package:sabiquun_app/features/auth/presentation/pages/login_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/pending_approval_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/signup_page.dart';
-import 'package:sabiquun_app/features/home/pages/home_page.dart';
+import 'package:sabiquun_app/features/home/pages/redesigned_home_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/today_deeds_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/my_reports_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/report_detail_page.dart';
 import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_history_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
+import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
+import 'package:sabiquun_app/features/admin/pages/user_management_placeholder_page.dart';
+import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
+import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -99,7 +103,7 @@ class AppRouter {
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) => const RedesignedHomePage(),
       ),
 
       // Deed/Report Routes
@@ -149,6 +153,35 @@ class AppRouter {
           return PaymentHistoryPage(userId: userId);
         },
       ),
+
+      // Profile Route
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
+
+      // Excuse Routes (Placeholder)
+      GoRoute(
+        path: '/excuses',
+        name: 'excuses',
+        builder: (context, state) => const ExcusesPlaceholderPage(),
+      ),
+
+      // Admin Routes (Placeholder)
+      GoRoute(
+        path: '/user-management',
+        name: 'user-management',
+        builder: (context, state) => const UserManagementPlaceholderPage(),
+      ),
+
+      // Analytics Routes (Placeholder)
+      GoRoute(
+        path: '/analytics',
+        name: 'analytics',
+        builder: (context, state) => const AnalyticsPlaceholderPage(),
+      ),
+
     ],
 
     // Error page
