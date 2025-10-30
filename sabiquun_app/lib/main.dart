@@ -51,6 +51,7 @@ class SabiquunApp extends StatelessWidget {
         BlocProvider.value(value: Injection.deedBloc),
         BlocProvider.value(value: Injection.penaltyBloc),
         BlocProvider.value(value: Injection.paymentBloc),
+        BlocProvider.value(value: Injection.adminBloc),
       ],
       child: Builder(
         builder: (context) {

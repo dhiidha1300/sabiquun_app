@@ -16,6 +16,10 @@ import 'package:sabiquun_app/features/payments/data/datasources/payment_remote_d
 import 'package:sabiquun_app/features/payments/data/repositories/payment_repository_impl.dart';
 import 'package:sabiquun_app/features/payments/domain/repositories/payment_repository.dart';
 import 'package:sabiquun_app/features/payments/presentation/bloc/payment_bloc.dart';
+import 'package:sabiquun_app/features/admin/data/datasources/admin_remote_datasource.dart';
+import 'package:sabiquun_app/features/admin/data/repositories/admin_repository_impl.dart';
+import 'package:sabiquun_app/features/admin/domain/repositories/admin_repository.dart';
+import 'package:sabiquun_app/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
 
 /// Dependency injection container
@@ -36,6 +40,9 @@ class Injection {
   static late PaymentRemoteDataSource _paymentRemoteDataSource;
   static late PaymentRepository _paymentRepository;
   static late PaymentBloc _paymentBloc;
+  static late AdminRemoteDataSource _adminRemoteDataSource;
+  static late AdminRepository _adminRepository;
+  static late AdminBloc _adminBloc;
 
   /// Initialize all dependencies
   static Future<void> init() async {
@@ -89,6 +96,15 @@ class Injection {
 
     // Initialize Payment Blocs
     _paymentBloc = PaymentBloc(_paymentRepository);
+
+    // Initialize Admin Data Sources
+    _adminRemoteDataSource = AdminRemoteDataSource(_supabase);
+
+    // Initialize Admin Repositories
+    _adminRepository = AdminRepositoryImpl(_adminRemoteDataSource);
+
+    // Initialize Admin Blocs
+    _adminBloc = AdminBloc(_adminRepository);
   }
 
   /// Get Supabase client instance
@@ -133,12 +149,22 @@ class Injection {
   /// Get Payment Bloc instance
   static PaymentBloc get paymentBloc => _paymentBloc;
 
+  /// Get Admin Remote Data Source instance
+  static AdminRemoteDataSource get adminRemoteDataSource => _adminRemoteDataSource;
+
+  /// Get Admin Repository instance
+  static AdminRepository get adminRepository => _adminRepository;
+
+  /// Get Admin Bloc instance
+  static AdminBloc get adminBloc => _adminBloc;
+
   /// Reset/dispose all dependencies (useful for testing)
   static Future<void> reset() async {
     await _authBloc.close();
     await _deedBloc.close();
     await _penaltyBloc.close();
     await _paymentBloc.close();
+    await _adminBloc.close();
     // Add any other cleanup needed
   }
 }

@@ -17,7 +17,8 @@ import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_histo
 import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
 import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
-import 'package:sabiquun_app/features/admin/pages/user_management_placeholder_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/user_management_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/user_edit_page.dart';
 import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 
@@ -168,11 +169,19 @@ class AppRouter {
         builder: (context, state) => const ExcusesPlaceholderPage(),
       ),
 
-      // Admin Routes (Placeholder)
+      // Admin Routes
       GoRoute(
-        path: '/user-management',
-        name: 'user-management',
-        builder: (context, state) => const UserManagementPlaceholderPage(),
+        path: '/admin/user-management',
+        name: 'admin-user-management',
+        builder: (context, state) => const UserManagementPage(),
+      ),
+      GoRoute(
+        path: '/admin/user-edit/:userId',
+        name: 'admin-user-edit',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId']!;
+          return UserEditPage(userId: userId);
+        },
       ),
 
       // Analytics Routes (Placeholder)

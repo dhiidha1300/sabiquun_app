@@ -235,54 +235,64 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
         ),
         const SizedBox(height: 8),
         BlocBuilder<PaymentBloc, PaymentState>(
-          builder: (context, state) {
-            if (state is PaymentMethodsLoaded) {
-              final isDisabled = _totalBalance == null || _totalBalance == 0;
-              return DropdownButtonFormField<String>(
-                value: _selectedPaymentMethodId,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: 'Select payment method',
-                  helperText: isDisabled ? 'No outstanding balance' : null,
-                ),
-                items: state.methods
-                    .map((method) => DropdownMenuItem(
-                          value: method.id,
-                          child: Text(method.displayName),
-                        ))
-                    .toList(),
-                onChanged: isDisabled ? null : (value) {
-                  setState(() {
-                    _selectedPaymentMethodId = value;
-                  });
-                },
-                validator: (value) {
-                  if (!isDisabled && (value == null || value.isEmpty)) {
-                    return 'Please select a payment method';
-                  }
-                  return null;
-                },
-              );
-            } else if (state is PaymentError) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Failed to load payment methods',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton.icon(
-                    onPressed: () {
-                      context.read<PaymentBloc>().add(const LoadPaymentMethodsRequested());
+          builder: (context, paymentState) {
+            return BlocBuilder<PenaltyBloc, PenaltyState>(
+              builder: (context, penaltyState) {
+                if (paymentState is PaymentMethodsLoaded) {
+                  // Check if penalties are loaded to determine if dropdown should be enabled
+                  final isPenaltiesLoaded = penaltyState is UnpaidPenaltiesLoaded;
+                  final isDisabled = !isPenaltiesLoaded ||
+                                   (_totalBalance != null && _totalBalance! <= 0);
+
+                  return DropdownButtonFormField<String>(
+                    initialValue: _selectedPaymentMethodId,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      hintText: 'Select payment method',
+                      helperText: isDisabled
+                        ? (isPenaltiesLoaded ? 'No outstanding balance' : 'Loading balance...')
+                        : null,
+                    ),
+                    items: paymentState.methods
+                        .map((method) => DropdownMenuItem(
+                              value: method.id,
+                              child: Text(method.displayName),
+                            ))
+                        .toList(),
+                    onChanged: isDisabled ? null : (value) {
+                      setState(() {
+                        _selectedPaymentMethodId = value;
+                      });
                     },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
-                ],
-              );
-            }
-            return const CircularProgressIndicator();
+                    validator: (value) {
+                      if (!isDisabled && (value == null || value.isEmpty)) {
+                        return 'Please select a payment method';
+                      }
+                      return null;
+                    },
+                  );
+                } else if (paymentState is PaymentError) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Failed to load payment methods',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () {
+                          context.read<PaymentBloc>().add(const LoadPaymentMethodsRequested());
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Retry'),
+                      ),
+                    ],
+                  );
+                }
+                return const CircularProgressIndicator();
+              },
+            );
           },
         ),
         const SizedBox(height: 16),
@@ -293,31 +303,40 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
-        RadioListTile<bool>(
-          title: Text('Full Payment (${_totalBalance?.toStringAsFixed(0) ?? '0'} Shillings)'),
-          value: true,
-          groupValue: _isFullPayment,
-          onChanged: (value) {
-            setState(() {
-              _isFullPayment = value!;
-              if (_isFullPayment && _totalBalance != null) {
-                _amountController.text = _totalBalance!.toStringAsFixed(0);
-              }
-            });
-          },
-        ),
-        RadioListTile<bool>(
-          title: const Text('Partial Payment'),
-          value: false,
-          groupValue: _isFullPayment,
-          onChanged: (value) {
-            setState(() {
-              _isFullPayment = value!;
-              if (!_isFullPayment) {
-                _amountController.clear();
-              }
-            });
-          },
+        Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(
+                  _isFullPayment ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                  color: _isFullPayment ? Theme.of(context).primaryColor : Colors.grey,
+                ),
+                title: Text('Full Payment (${_totalBalance?.toStringAsFixed(0) ?? '0'} Shillings)'),
+                onTap: () {
+                  setState(() {
+                    _isFullPayment = true;
+                    if (_totalBalance != null) {
+                      _amountController.text = _totalBalance!.toStringAsFixed(0);
+                    }
+                  });
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: Icon(
+                  !_isFullPayment ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                  color: !_isFullPayment ? Theme.of(context).primaryColor : Colors.grey,
+                ),
+                title: const Text('Partial Payment'),
+                onTap: () {
+                  setState(() {
+                    _isFullPayment = false;
+                    _amountController.clear();
+                  });
+                },
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 16),
 
