@@ -6,6 +6,7 @@ import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.d
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_state.dart';
+import 'package:sabiquun_app/features/home/widgets/main_scaffold.dart';
 
 class MyReportsPage extends StatefulWidget {
   const MyReportsPage({super.key});
@@ -35,19 +36,22 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Reports'),
-        backgroundColor: const Color(0xFF2E7D32),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-          ),
-        ],
-      ),
-      body: BlocConsumer<DeedBloc, DeedState>(
+    return MainScaffold(
+      currentIndex: 1,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('My Reports'),
+          backgroundColor: const Color(0xFF2E7D32),
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false, // Remove back button
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: _showFilterDialog,
+            ),
+          ],
+        ),
+        body: BlocConsumer<DeedBloc, DeedState>(
         listener: (context, state) {
           if (state is DeedError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -83,14 +87,18 @@ class _MyReportsPageState extends State<MyReportsPage> {
           return _buildEmptyState();
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await context.push('/today-deeds');
-          // Reload reports after returning from today's deeds page
-          _loadReports();
-        },
-        backgroundColor: const Color(0xFF2E7D32),
-        child: const Icon(Icons.add, color: Colors.white),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 70), // Lift above bottom nav
+          child: FloatingActionButton(
+            onPressed: () async {
+              await context.push('/today-deeds');
+              // Reload reports after returning from today's deeds page
+              _loadReports();
+            },
+            backgroundColor: const Color(0xFF2E7D32),
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+        ),
       ),
     );
   }

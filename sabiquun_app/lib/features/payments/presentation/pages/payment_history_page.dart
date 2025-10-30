@@ -6,6 +6,7 @@ import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../../domain/entities/payment_entity.dart';
 import '../../../../core/constants/payment_status.dart';
+import 'package:sabiquun_app/features/home/widgets/main_scaffold.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
   final String userId;
@@ -37,17 +38,20 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Payment History'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-          ),
-        ],
-      ),
-      body: BlocConsumer<PaymentBloc, PaymentState>(
+    return MainScaffold(
+      currentIndex: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Payment History'),
+          automaticallyImplyLeading: false, // Remove back button
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: _showFilterDialog,
+            ),
+          ],
+        ),
+        body: BlocConsumer<PaymentBloc, PaymentState>(
         listener: (context, state) {
           if (state is PaymentError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -110,6 +114,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
             ),
           );
         },
+        ),
       ),
     );
   }

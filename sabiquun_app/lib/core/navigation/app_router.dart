@@ -9,7 +9,7 @@ import 'package:sabiquun_app/features/auth/presentation/pages/login_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/pending_approval_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:sabiquun_app/features/auth/presentation/pages/signup_page.dart';
-import 'package:sabiquun_app/features/home/pages/home_page.dart';
+import 'package:sabiquun_app/features/home/pages/redesigned_home_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/today_deeds_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/my_reports_page.dart';
 import 'package:sabiquun_app/features/deeds/presentation/pages/report_detail_page.dart';
@@ -19,7 +19,7 @@ import 'package:sabiquun_app/features/payments/presentation/pages/payment_histor
 import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
 import 'package:sabiquun_app/features/admin/pages/user_management_placeholder_page.dart';
 import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
-import 'package:sabiquun_app/features/home/pages/enhanced_home_page.dart';
+import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -103,7 +103,7 @@ class AppRouter {
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) => const RedesignedHomePage(),
       ),
 
       // Deed/Report Routes
@@ -154,6 +154,13 @@ class AppRouter {
         },
       ),
 
+      // Profile Route
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
+
       // Excuse Routes (Placeholder)
       GoRoute(
         path: '/excuses',
@@ -175,12 +182,6 @@ class AppRouter {
         builder: (context, state) => const AnalyticsPlaceholderPage(),
       ),
 
-      // Enhanced Home (Optional - can switch to this later)
-      GoRoute(
-        path: '/enhanced-home',
-        name: 'enhanced-home',
-        builder: (context, state) => const EnhancedHomePage(),
-      ),
     ],
 
     // Error page
