@@ -7,6 +7,7 @@ import '../../domain/entities/analytics_entity.dart';
 import '../../domain/repositories/admin_repository.dart';
 import '../../../deeds/domain/entities/deed_template_entity.dart';
 import '../datasources/admin_remote_datasource.dart';
+import '../models/system_settings_model.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final AdminRemoteDataSource _remoteDataSource;
@@ -176,25 +177,42 @@ class AdminRepositoryImpl implements AdminRepository {
     }
   }
 
-  // ==================== SYSTEM SETTINGS (Stub) ====================
+  // ==================== SYSTEM SETTINGS ====================
 
   @override
-  Future<SystemSettingsEntity> getSystemSettings() {
-    // TODO: Implement later
-    throw UnimplementedError('System settings not yet implemented');
+  Future<SystemSettingsEntity> getSystemSettings() async {
+    try {
+      final model = await _remoteDataSource.getSystemSettings();
+      return model.toEntity();
+    } catch (e) {
+      throw Exception('Repository: Failed to get system settings - $e');
+    }
   }
 
   @override
   Future<void> updateSystemSettings({
     required SystemSettingsEntity settings,
     required String updatedBy,
-  }) {
-    throw UnimplementedError('System settings not yet implemented');
+  }) async {
+    try {
+      // Convert entity to model
+      final model = _entityToModel(settings);
+      await _remoteDataSource.updateSystemSettings(
+        settings: model,
+        updatedBy: updatedBy,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to update system settings - $e');
+    }
   }
 
   @override
-  Future<String?> getSettingValue(String settingKey) {
-    throw UnimplementedError('System settings not yet implemented');
+  Future<String?> getSettingValue(String settingKey) async {
+    try {
+      return await _remoteDataSource.getSettingValue(settingKey);
+    } catch (e) {
+      throw Exception('Repository: Failed to get setting value - $e');
+    }
   }
 
   @override
@@ -202,8 +220,42 @@ class AdminRepositoryImpl implements AdminRepository {
     required String settingKey,
     required String settingValue,
     required String updatedBy,
-  }) {
-    throw UnimplementedError('System settings not yet implemented');
+  }) async {
+    try {
+      await _remoteDataSource.updateSetting(
+        key: settingKey,
+        value: settingValue,
+        updatedBy: updatedBy,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to update setting - $e');
+    }
+  }
+
+  // Helper to convert entity to model
+  SystemSettingsModel _entityToModel(SystemSettingsEntity entity) {
+    return SystemSettingsModel(
+      dailyDeedTarget: entity.dailyDeedTarget,
+      penaltyPerDeed: entity.penaltyPerDeed,
+      gracePeriodHours: entity.gracePeriodHours,
+      trainingPeriodDays: entity.trainingPeriodDays,
+      autoDeactivationThreshold: entity.autoDeactivationThreshold,
+      warningThresholds: entity.warningThresholds,
+      organizationName: entity.organizationName,
+      receiptFooterText: entity.receiptFooterText,
+      emailApiKey: entity.emailApiKey,
+      emailDomain: entity.emailDomain,
+      emailSenderEmail: entity.emailSenderEmail,
+      emailSenderName: entity.emailSenderName,
+      fcmServerKey: entity.fcmServerKey,
+      appVersion: entity.appVersion,
+      minimumRequiredVersion: entity.minimumRequiredVersion,
+      forceUpdate: entity.forceUpdate,
+      updateTitle: entity.updateTitle,
+      updateMessage: entity.updateMessage,
+      iosMinVersion: entity.iosMinVersion,
+      androidMinVersion: entity.androidMinVersion,
+    );
   }
 
   // ==================== DEED TEMPLATES (Stub) ====================
@@ -360,14 +412,22 @@ class AdminRepositoryImpl implements AdminRepository {
     throw UnimplementedError('Rest days bulk import not yet implemented');
   }
 
-  // ==================== ANALYTICS (Stub) ====================
+  // ==================== ANALYTICS ====================
 
   @override
   Future<AnalyticsEntity> getAnalytics({
     DateTime? startDate,
     DateTime? endDate,
-  }) {
-    throw UnimplementedError('Analytics not yet implemented');
+  }) async {
+    try {
+      final model = await _remoteDataSource.getAnalytics(
+        startDate: startDate,
+        endDate: endDate,
+      );
+      return model.toEntity();
+    } catch (e) {
+      throw Exception('Repository: Failed to get analytics - $e');
+    }
   }
 
   @override
@@ -376,6 +436,7 @@ class AdminRepositoryImpl implements AdminRepository {
     DateTime? endDate,
     String format = 'pdf',
   }) {
+    // TODO: Implement analytics export when needed
     throw UnimplementedError('Analytics export not yet implemented');
   }
 }

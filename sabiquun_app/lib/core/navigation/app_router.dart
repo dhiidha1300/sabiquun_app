@@ -19,6 +19,8 @@ import 'package:sabiquun_app/features/payments/presentation/pages/payment_histor
 import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_edit_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/analytics_dashboard_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/system_settings_page.dart';
 import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 
@@ -182,6 +184,16 @@ class AppRouter {
           final userId = state.pathParameters['userId']!;
           return UserEditPage(userId: userId);
         },
+      ),
+      GoRoute(
+        path: '/admin/analytics',
+        name: 'admin-analytics',
+        builder: (context, state) => const AnalyticsDashboardPage(),
+      ),
+      GoRoute(
+        path: '/admin/system-settings',
+        name: 'admin-system-settings',
+        builder: (context, state) => const SystemSettingsPage(),
       ),
 
       // Analytics Routes (Placeholder)

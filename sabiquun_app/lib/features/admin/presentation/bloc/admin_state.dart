@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/user_management_entity.dart';
+import '../../domain/entities/analytics_entity.dart';
+import '../../domain/entities/system_settings_entity.dart';
 
 abstract class AdminState extends Equatable {
   const AdminState();
@@ -128,4 +130,33 @@ class AdminError extends AdminState {
 
   @override
   List<Object?> get props => [message];
+}
+
+// ==================== ANALYTICS STATES ====================
+
+/// Analytics loaded successfully
+class AnalyticsLoaded extends AdminState {
+  final AnalyticsEntity analytics;
+
+  const AnalyticsLoaded(this.analytics);
+
+  @override
+  List<Object?> get props => [analytics];
+}
+
+// ==================== SYSTEM SETTINGS STATES ====================
+
+/// System settings loaded successfully
+class SystemSettingsLoaded extends AdminState {
+  final SystemSettingsEntity settings;
+
+  const SystemSettingsLoaded(this.settings);
+
+  @override
+  List<Object?> get props => [settings];
+}
+
+/// System settings updated successfully
+class SystemSettingsUpdated extends AdminState {
+  const SystemSettingsUpdated();
 }

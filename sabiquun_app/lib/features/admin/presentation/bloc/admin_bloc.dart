@@ -16,6 +16,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<SuspendUserRequested>(_onSuspendUser);
     on<ActivateUserRequested>(_onActivateUser);
     on<DeleteUserRequested>(_onDeleteUser);
+    on<LoadAnalyticsRequested>(_onLoadAnalytics);
+    on<LoadSystemSettingsRequested>(_onLoadSystemSettings);
+    on<UpdateSystemSettingsRequested>(_onUpdateSystemSettings);
   }
 
   Future<void> _onLoadUsers(
@@ -180,6 +183,55 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       emit(UserDeleted(event.userId));
     } catch (e) {
       emit(AdminError('Failed to delete user: ${e.toString()}'));
+    }
+  }
+
+  // ==================== ANALYTICS ====================
+
+  Future<void> _onLoadAnalytics(
+    LoadAnalyticsRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final analytics = await _repository.getAnalytics(
+        startDate: event.startDate,
+        endDate: event.endDate,
+      );
+      emit(AnalyticsLoaded(analytics));
+    } catch (e) {
+      emit(AdminError('Failed to load analytics: ${e.toString()}'));
+    }
+  }
+
+  // ==================== SYSTEM SETTINGS ====================
+
+  Future<void> _onLoadSystemSettings(
+    LoadSystemSettingsRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final settings = await _repository.getSystemSettings();
+      emit(SystemSettingsLoaded(settings));
+    } catch (e) {
+      emit(AdminError('Failed to load system settings: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onUpdateSystemSettings(
+    UpdateSystemSettingsRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.updateSystemSettings(
+        settings: event.settings,
+        updatedBy: event.updatedBy,
+      );
+      emit(const SystemSettingsUpdated());
+    } catch (e) {
+      emit(AdminError('Failed to update system settings: ${e.toString()}'));
     }
   }
 }

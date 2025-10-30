@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_management_model.dart';
+import '../models/analytics_model.dart';
+import '../models/system_settings_model.dart';
 
 class AdminRemoteDataSource {
   final SupabaseClient _supabase;
@@ -499,6 +501,231 @@ class AdminRemoteDataSource {
     } catch (e) {
       // Don't throw - audit log failure shouldn't break the operation
       // Log error silently
+    }
+  }
+
+  // ==================== ANALYTICS ====================
+
+  /// Get comprehensive system analytics
+  Future<AnalyticsModel> getAnalytics({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      // Use current date if no dates provided
+      final now = DateTime.now();
+      final start = startDate ?? DateTime(now.year, now.month, 1);
+      final end = endDate ?? now;
+
+      // Execute all analytics queries in parallel
+      final results = await Future.wait([
+        _getUserMetrics(),
+        _getDeedMetrics(start, end),
+        _getFinancialMetrics(start, end),
+        _getEngagementMetrics(),
+        _getExcuseMetrics(),
+      ]);
+
+      return AnalyticsModel(
+        userMetrics: results[0] as UserMetricsModel,
+        deedMetrics: results[1] as DeedMetricsModel,
+        financialMetrics: results[2] as FinancialMetricsModel,
+        engagementMetrics: results[3] as EngagementMetricsModel,
+        excuseMetrics: results[4] as ExcuseMetricsModel,
+      );
+    } catch (e) {
+      throw Exception('Failed to get analytics: $e');
+    }
+  }
+
+  Future<UserMetricsModel> _getUserMetrics() async {
+    final response = await _supabase.rpc('get_user_metrics');
+
+    return UserMetricsModel(
+      pendingUsers: response['pending_users'] ?? 0,
+      activeUsers: response['active_users'] ?? 0,
+      suspendedUsers: response['suspended_users'] ?? 0,
+      deactivatedUsers: response['deactivated_users'] ?? 0,
+      newMembers: response['new_members'] ?? 0,
+      exclusiveMembers: response['exclusive_members'] ?? 0,
+      legacyMembers: response['legacy_members'] ?? 0,
+      usersAtRisk: response['users_at_risk'] ?? 0,
+      newRegistrationsThisWeek: response['new_registrations_this_week'] ?? 0,
+    );
+  }
+
+  Future<DeedMetricsModel> _getDeedMetrics(DateTime start, DateTime end) async {
+    final response = await _supabase.rpc('get_deed_metrics', params: {
+      'start_date': start.toIso8601String(),
+      'end_date': end.toIso8601String(),
+    });
+
+    return DeedMetricsModel(
+      totalDeedsToday: response['total_deeds_today'] ?? 0,
+      totalDeedsWeek: response['total_deeds_week'] ?? 0,
+      totalDeedsMonth: response['total_deeds_month'] ?? 0,
+      totalDeedsAllTime: response['total_deeds_all_time'] ?? 0,
+      averagePerUserToday: (response['average_per_user_today'] ?? 0.0).toDouble(),
+      averagePerUserWeek: (response['average_per_user_week'] ?? 0.0).toDouble(),
+      averagePerUserMonth: (response['average_per_user_month'] ?? 0.0).toDouble(),
+      complianceRateToday: (response['compliance_rate_today'] ?? 0.0).toDouble(),
+      complianceRateWeek: (response['compliance_rate_week'] ?? 0.0).toDouble(),
+      complianceRateMonth: (response['compliance_rate_month'] ?? 0.0).toDouble(),
+      usersCompletedToday: response['users_completed_today'] ?? 0,
+      totalActiveUsers: response['total_active_users'] ?? 0,
+      faraidComplianceRate: (response['faraid_compliance_rate'] ?? 0.0).toDouble(),
+      sunnahComplianceRate: (response['sunnah_compliance_rate'] ?? 0.0).toDouble(),
+      topPerformers: (response['top_performers'] as List? ?? [])
+          .map((p) => TopPerformerModel.fromJson(p))
+          .toList(),
+      usersNeedingAttention: (response['users_needing_attention'] as List? ?? [])
+          .map((u) => UserNeedingAttentionModel.fromJson(u))
+          .toList(),
+      deedComplianceByType: Map<String, double>.from(
+          response['deed_compliance_by_type'] ?? {}),
+    );
+  }
+
+  Future<FinancialMetricsModel> _getFinancialMetrics(
+      DateTime start, DateTime end) async {
+    final response = await _supabase.rpc('get_financial_metrics', params: {
+      'start_date': start.toIso8601String(),
+      'end_date': end.toIso8601String(),
+    });
+
+    return FinancialMetricsModel(
+      penaltiesIncurredThisMonth:
+          (response['penalties_incurred_this_month'] ?? 0.0).toDouble(),
+      penaltiesIncurredAllTime:
+          (response['penalties_incurred_all_time'] ?? 0.0).toDouble(),
+      paymentsReceivedThisMonth:
+          (response['payments_received_this_month'] ?? 0.0).toDouble(),
+      paymentsReceivedAllTime:
+          (response['payments_received_all_time'] ?? 0.0).toDouble(),
+      outstandingBalance: (response['outstanding_balance'] ?? 0.0).toDouble(),
+      pendingPaymentsCount: response['pending_payments_count'] ?? 0,
+      pendingPaymentsAmount:
+          (response['pending_payments_amount'] ?? 0.0).toDouble(),
+    );
+  }
+
+  Future<EngagementMetricsModel> _getEngagementMetrics() async {
+    final response = await _supabase.rpc('get_engagement_metrics');
+
+    return EngagementMetricsModel(
+      dailyActiveUsers: response['daily_active_users'] ?? 0,
+      totalActiveUsers: response['total_active_users'] ?? 0,
+      reportSubmissionRate:
+          (response['report_submission_rate'] ?? 0.0).toDouble(),
+      averageSubmissionTime: response['average_submission_time'] ?? '00:00',
+      notificationOpenRate:
+          (response['notification_open_rate'] ?? 0.0).toDouble(),
+      averageResponseTimeMinutes: response['average_response_time_minutes'] ?? 0,
+    );
+  }
+
+  Future<ExcuseMetricsModel> _getExcuseMetrics() async {
+    final response = await _supabase.rpc('get_excuse_metrics');
+
+    return ExcuseMetricsModel(
+      pendingExcuses: response['pending_excuses'] ?? 0,
+      approvalRate: (response['approval_rate'] ?? 0.0).toDouble(),
+      excusesByReason:
+          Map<String, int>.from(response['excuses_by_reason'] ?? {}),
+    );
+  }
+
+  // ==================== SYSTEM SETTINGS ====================
+
+  /// Get all system settings
+  Future<SystemSettingsModel> getSystemSettings() async {
+    try {
+      final response = await _supabase.from('settings').select('setting_key, setting_value');
+
+      // Convert list of key-value pairs to map
+      final Map<String, dynamic> settingsMap = {};
+      for (var setting in response as List) {
+        settingsMap[setting['setting_key']] = setting['setting_value'];
+      }
+
+      return SystemSettingsModel.fromSettingsMap(settingsMap);
+    } catch (e) {
+      throw Exception('Failed to get system settings: $e');
+    }
+  }
+
+  /// Update system settings
+  Future<void> updateSystemSettings({
+    required SystemSettingsModel settings,
+    required String updatedBy,
+  }) async {
+    try {
+      final settingsMap = settings.toSettingsMap();
+
+      // Update each setting individually
+      for (var entry in settingsMap.entries) {
+        await _supabase.from('settings').upsert({
+          'setting_key': entry.key,
+          'setting_value': entry.value.toString(),
+          'updated_at': DateTime.now().toIso8601String(),
+          'updated_by': updatedBy,
+        });
+      }
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'system_settings_updated',
+        performedBy: updatedBy,
+        entityType: 'system_settings',
+        entityId: 'global',
+        reason: 'System settings updated',
+        notes: 'Updated ${settingsMap.length} settings',
+      );
+    } catch (e) {
+      throw Exception('Failed to update system settings: $e');
+    }
+  }
+
+  /// Get a single setting value by key
+  Future<String?> getSettingValue(String key) async {
+    try {
+      final response = await _supabase
+          .from('settings')
+          .select('setting_value')
+          .eq('setting_key', key)
+          .maybeSingle();
+
+      return response?['setting_value'] as String?;
+    } catch (e) {
+      throw Exception('Failed to get setting value: $e');
+    }
+  }
+
+  /// Update a single setting
+  Future<void> updateSetting({
+    required String key,
+    required String value,
+    required String updatedBy,
+  }) async {
+    try {
+      await _supabase.from('settings').upsert({
+        'setting_key': key,
+        'setting_value': value,
+        'updated_at': DateTime.now().toIso8601String(),
+        'updated_by': updatedBy,
+      });
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'setting_updated',
+        performedBy: updatedBy,
+        entityType: 'setting',
+        entityId: key,
+        reason: 'Setting updated',
+        newValues: {'setting_value': value},
+      );
+    } catch (e) {
+      throw Exception('Failed to update setting: $e');
     }
   }
 }

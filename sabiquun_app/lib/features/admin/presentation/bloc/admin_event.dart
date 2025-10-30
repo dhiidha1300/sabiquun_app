@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../domain/entities/system_settings_entity.dart';
 
 abstract class AdminEvent extends Equatable {
   const AdminEvent();
@@ -170,4 +171,41 @@ class DeleteUserRequested extends AdminEvent {
 
   @override
   List<Object?> get props => [userId, deletedBy, reason];
+}
+
+// ==================== ANALYTICS EVENTS ====================
+
+/// Load analytics data
+class LoadAnalyticsRequested extends AdminEvent {
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  const LoadAnalyticsRequested({
+    this.startDate,
+    this.endDate,
+  });
+
+  @override
+  List<Object?> get props => [startDate, endDate];
+}
+
+// ==================== SYSTEM SETTINGS EVENTS ====================
+
+/// Load system settings
+class LoadSystemSettingsRequested extends AdminEvent {
+  const LoadSystemSettingsRequested();
+}
+
+/// Update system settings
+class UpdateSystemSettingsRequested extends AdminEvent {
+  final SystemSettingsEntity settings;
+  final String updatedBy;
+
+  const UpdateSystemSettingsRequested({
+    required this.settings,
+    required this.updatedBy,
+  });
+
+  @override
+  List<Object?> get props => [settings, updatedBy];
 }
