@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/payment_method_entity.dart';
 
 part 'payment_method_model.freezed.dart';
-part 'payment_method_model.g.dart';
 
 @freezed
 class PaymentMethodModel with _$PaymentMethodModel {
@@ -11,15 +10,24 @@ class PaymentMethodModel with _$PaymentMethodModel {
   const factory PaymentMethodModel({
     required String id,
     required String name,
-    @JsonKey(name: 'display_name') required String displayName,
-    @JsonKey(name: 'is_active') required bool isActive,
-    @JsonKey(name: 'sort_order') required int sortOrder,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
-    @JsonKey(name: 'updated_at') required DateTime updatedAt,
+    required String displayName,
+    required bool isActive,
+    required int sortOrder,
+    required DateTime createdAt,
+    required DateTime updatedAt,
   }) = _PaymentMethodModel;
 
-  factory PaymentMethodModel.fromJson(Map<String, dynamic> json) =>
-      _$PaymentMethodModelFromJson(json);
+  factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
+    return PaymentMethodModel(
+      id: json['id'] as String,
+      name: json['method_name'] as String,
+      displayName: json['display_name'] as String,
+      isActive: json['is_active'] as bool,
+      sortOrder: json['sort_order'] as int,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+    );
+  }
 
   PaymentMethodEntity toEntity() {
     return PaymentMethodEntity(

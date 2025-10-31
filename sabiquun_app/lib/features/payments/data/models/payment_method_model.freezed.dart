@@ -15,27 +15,15 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-PaymentMethodModel _$PaymentMethodModelFromJson(Map<String, dynamic> json) {
-  return _PaymentMethodModel.fromJson(json);
-}
-
 /// @nodoc
 mixin _$PaymentMethodModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  @JsonKey(name: 'display_name')
   String get displayName => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_active')
   bool get isActive => throw _privateConstructorUsedError;
-  @JsonKey(name: 'sort_order')
   int get sortOrder => throw _privateConstructorUsedError;
-  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
-
-  /// Serializes this PaymentMethodModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of PaymentMethodModel
   /// with the given fields replaced by the non-null parameter values.
@@ -54,11 +42,11 @@ abstract class $PaymentMethodModelCopyWith<$Res> {
   $Res call({
     String id,
     String name,
-    @JsonKey(name: 'display_name') String displayName,
-    @JsonKey(name: 'is_active') bool isActive,
-    @JsonKey(name: 'sort_order') int sortOrder,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
+    String displayName,
+    bool isActive,
+    int sortOrder,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -133,11 +121,11 @@ abstract class _$$PaymentMethodModelImplCopyWith<$Res>
   $Res call({
     String id,
     String name,
-    @JsonKey(name: 'display_name') String displayName,
-    @JsonKey(name: 'is_active') bool isActive,
-    @JsonKey(name: 'sort_order') int sortOrder,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
+    String displayName,
+    bool isActive,
+    int sortOrder,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -199,39 +187,31 @@ class __$$PaymentMethodModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$PaymentMethodModelImpl extends _PaymentMethodModel {
   const _$PaymentMethodModelImpl({
     required this.id,
     required this.name,
-    @JsonKey(name: 'display_name') required this.displayName,
-    @JsonKey(name: 'is_active') required this.isActive,
-    @JsonKey(name: 'sort_order') required this.sortOrder,
-    @JsonKey(name: 'created_at') required this.createdAt,
-    @JsonKey(name: 'updated_at') required this.updatedAt,
+    required this.displayName,
+    required this.isActive,
+    required this.sortOrder,
+    required this.createdAt,
+    required this.updatedAt,
   }) : super._();
-
-  factory _$PaymentMethodModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PaymentMethodModelImplFromJson(json);
 
   @override
   final String id;
   @override
   final String name;
   @override
-  @JsonKey(name: 'display_name')
   final String displayName;
   @override
-  @JsonKey(name: 'is_active')
   final bool isActive;
   @override
-  @JsonKey(name: 'sort_order')
   final int sortOrder;
   @override
-  @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
-  @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
   @override
@@ -258,7 +238,6 @@ class _$PaymentMethodModelImpl extends _PaymentMethodModel {
                 other.updatedAt == updatedAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
@@ -281,46 +260,33 @@ class _$PaymentMethodModelImpl extends _PaymentMethodModel {
         this,
         _$identity,
       );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PaymentMethodModelImplToJson(this);
-  }
 }
 
 abstract class _PaymentMethodModel extends PaymentMethodModel {
   const factory _PaymentMethodModel({
     required final String id,
     required final String name,
-    @JsonKey(name: 'display_name') required final String displayName,
-    @JsonKey(name: 'is_active') required final bool isActive,
-    @JsonKey(name: 'sort_order') required final int sortOrder,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
+    required final String displayName,
+    required final bool isActive,
+    required final int sortOrder,
+    required final DateTime createdAt,
+    required final DateTime updatedAt,
   }) = _$PaymentMethodModelImpl;
   const _PaymentMethodModel._() : super._();
-
-  factory _PaymentMethodModel.fromJson(Map<String, dynamic> json) =
-      _$PaymentMethodModelImpl.fromJson;
 
   @override
   String get id;
   @override
   String get name;
   @override
-  @JsonKey(name: 'display_name')
   String get displayName;
   @override
-  @JsonKey(name: 'is_active')
   bool get isActive;
   @override
-  @JsonKey(name: 'sort_order')
   int get sortOrder;
   @override
-  @JsonKey(name: 'created_at')
   DateTime get createdAt;
   @override
-  @JsonKey(name: 'updated_at')
   DateTime get updatedAt;
 
   /// Create a copy of PaymentMethodModel

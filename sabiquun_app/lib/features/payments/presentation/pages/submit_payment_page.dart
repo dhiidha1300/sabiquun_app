@@ -115,10 +115,17 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
     return BlocBuilder<PenaltyBloc, PenaltyState>(
       builder: (context, state) {
         if (state is UnpaidPenaltiesLoaded) {
-          _totalBalance = state.totalBalance;
-          if (_isFullPayment) {
-            _amountController.text = state.totalBalance.toStringAsFixed(0);
-          }
+          // Update state after the build phase completes
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _totalBalance = state.totalBalance;
+              });
+              if (_isFullPayment && _amountController.text != state.totalBalance.toStringAsFixed(0)) {
+                _amountController.text = state.totalBalance.toStringAsFixed(0);
+              }
+            }
+          });
 
           return Card(
             color: Colors.blue.shade50,
@@ -239,19 +246,72 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
             return BlocBuilder<PenaltyBloc, PenaltyState>(
               builder: (context, penaltyState) {
                 if (paymentState is PaymentMethodsLoaded) {
-                  // Check if penalties are loaded to determine if dropdown should be enabled
-                  final isPenaltiesLoaded = penaltyState is UnpaidPenaltiesLoaded;
-                  final isDisabled = !isPenaltiesLoaded ||
-                                   (_totalBalance != null && _totalBalance! <= 0);
+                  // Check if there are no payment methods available
+                  if (paymentState.methods.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            border: Border.all(color: Colors.orange.shade200),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'No Payment Methods Available',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange.shade900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Please contact an administrator to set up payment methods.',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.orange.shade800,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  // Check if penalties are loaded and there's a balance to determine if dropdown should be enabled
+                  final bool isEnabled;
+                  final String? helperText;
+
+                  if (penaltyState is UnpaidPenaltiesLoaded) {
+                    isEnabled = penaltyState.totalBalance > 0;
+                    helperText = isEnabled ? null : 'No outstanding balance';
+                  } else if (penaltyState is PenaltyLoading) {
+                    isEnabled = false;
+                    helperText = 'Loading balance...';
+                  } else {
+                    isEnabled = false;
+                    helperText = 'Waiting for balance data...';
+                  }
 
                   return DropdownButtonFormField<String>(
-                    initialValue: _selectedPaymentMethodId,
+                    value: _selectedPaymentMethodId,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       hintText: 'Select payment method',
-                      helperText: isDisabled
-                        ? (isPenaltiesLoaded ? 'No outstanding balance' : 'Loading balance...')
-                        : null,
+                      helperText: helperText,
                     ),
                     items: paymentState.methods
                         .map((method) => DropdownMenuItem(
@@ -259,13 +319,13 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
                               child: Text(method.displayName),
                             ))
                         .toList(),
-                    onChanged: isDisabled ? null : (value) {
+                    onChanged: isEnabled ? (value) {
                       setState(() {
                         _selectedPaymentMethodId = value;
                       });
-                    },
+                    } : null,
                     validator: (value) {
-                      if (!isDisabled && (value == null || value.isEmpty)) {
+                      if (isEnabled && (value == null || value.isEmpty)) {
                         return 'Please select a payment method';
                       }
                       return null;
@@ -397,6 +457,7 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
                         userId: widget.userId,
                         amount: amount,
                         paymentMethodId: _selectedPaymentMethodId!,
+                        paymentType: _isFullPayment ? 'full' : 'partial',
                         referenceNumber: _referenceController.text.isEmpty
                             ? null
                             : _referenceController.text,

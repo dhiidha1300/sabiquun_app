@@ -15,38 +15,22 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-PaymentModel _$PaymentModelFromJson(Map<String, dynamic> json) {
-  return _PaymentModel.fromJson(json);
-}
-
 /// @nodoc
 mixin _$PaymentModel {
   String get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
   double get amount => throw _privateConstructorUsedError;
-  @JsonKey(name: 'payment_method_id')
   String get paymentMethodId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'reference_number')
   String? get referenceNumber => throw _privateConstructorUsedError;
+  String? get paymentType => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
-  @JsonKey(name: 'reviewed_by')
   String? get reviewedBy => throw _privateConstructorUsedError;
-  @JsonKey(name: 'reviewed_at')
   DateTime? get reviewedAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'rejection_reason')
   String? get rejectionReason => throw _privateConstructorUsedError;
-  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'updated_at')
-  DateTime get updatedAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'payment_method_name')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
   String? get paymentMethodName => throw _privateConstructorUsedError;
-  @JsonKey(name: 'reviewer_name')
   String? get reviewerName => throw _privateConstructorUsedError;
-
-  /// Serializes this PaymentModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of PaymentModel
   /// with the given fields replaced by the non-null parameter values.
@@ -64,18 +48,19 @@ abstract class $PaymentModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    @JsonKey(name: 'user_id') String userId,
+    String userId,
     double amount,
-    @JsonKey(name: 'payment_method_id') String paymentMethodId,
-    @JsonKey(name: 'reference_number') String? referenceNumber,
+    String paymentMethodId,
+    String? referenceNumber,
+    String? paymentType,
     String status,
-    @JsonKey(name: 'reviewed_by') String? reviewedBy,
-    @JsonKey(name: 'reviewed_at') DateTime? reviewedAt,
-    @JsonKey(name: 'rejection_reason') String? rejectionReason,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
-    @JsonKey(name: 'payment_method_name') String? paymentMethodName,
-    @JsonKey(name: 'reviewer_name') String? reviewerName,
+    String? reviewedBy,
+    DateTime? reviewedAt,
+    String? rejectionReason,
+    DateTime createdAt,
+    DateTime? updatedAt,
+    String? paymentMethodName,
+    String? reviewerName,
   });
 }
 
@@ -99,12 +84,13 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
     Object? amount = null,
     Object? paymentMethodId = null,
     Object? referenceNumber = freezed,
+    Object? paymentType = freezed,
     Object? status = null,
     Object? reviewedBy = freezed,
     Object? reviewedAt = freezed,
     Object? rejectionReason = freezed,
     Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? updatedAt = freezed,
     Object? paymentMethodName = freezed,
     Object? reviewerName = freezed,
   }) {
@@ -130,6 +116,10 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
                 ? _value.referenceNumber
                 : referenceNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
+            paymentType: freezed == paymentType
+                ? _value.paymentType
+                : paymentType // ignore: cast_nullable_to_non_nullable
+                      as String?,
             status: null == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
@@ -150,10 +140,10 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            updatedAt: null == updatedAt
+            updatedAt: freezed == updatedAt
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
             paymentMethodName: freezed == paymentMethodName
                 ? _value.paymentMethodName
                 : paymentMethodName // ignore: cast_nullable_to_non_nullable
@@ -179,18 +169,19 @@ abstract class _$$PaymentModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    @JsonKey(name: 'user_id') String userId,
+    String userId,
     double amount,
-    @JsonKey(name: 'payment_method_id') String paymentMethodId,
-    @JsonKey(name: 'reference_number') String? referenceNumber,
+    String paymentMethodId,
+    String? referenceNumber,
+    String? paymentType,
     String status,
-    @JsonKey(name: 'reviewed_by') String? reviewedBy,
-    @JsonKey(name: 'reviewed_at') DateTime? reviewedAt,
-    @JsonKey(name: 'rejection_reason') String? rejectionReason,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    @JsonKey(name: 'updated_at') DateTime updatedAt,
-    @JsonKey(name: 'payment_method_name') String? paymentMethodName,
-    @JsonKey(name: 'reviewer_name') String? reviewerName,
+    String? reviewedBy,
+    DateTime? reviewedAt,
+    String? rejectionReason,
+    DateTime createdAt,
+    DateTime? updatedAt,
+    String? paymentMethodName,
+    String? reviewerName,
   });
 }
 
@@ -213,12 +204,13 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
     Object? amount = null,
     Object? paymentMethodId = null,
     Object? referenceNumber = freezed,
+    Object? paymentType = freezed,
     Object? status = null,
     Object? reviewedBy = freezed,
     Object? reviewedAt = freezed,
     Object? rejectionReason = freezed,
     Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? updatedAt = freezed,
     Object? paymentMethodName = freezed,
     Object? reviewerName = freezed,
   }) {
@@ -244,6 +236,10 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
             ? _value.referenceNumber
             : referenceNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
+        paymentType: freezed == paymentType
+            ? _value.paymentType
+            : paymentType // ignore: cast_nullable_to_non_nullable
+                  as String?,
         status: null == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
@@ -264,10 +260,10 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        updatedAt: null == updatedAt
+        updatedAt: freezed == updatedAt
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
         paymentMethodName: freezed == paymentMethodName
             ? _value.paymentMethodName
             : paymentMethodName // ignore: cast_nullable_to_non_nullable
@@ -282,67 +278,57 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$PaymentModelImpl extends _PaymentModel {
   const _$PaymentModelImpl({
     required this.id,
-    @JsonKey(name: 'user_id') required this.userId,
+    required this.userId,
     required this.amount,
-    @JsonKey(name: 'payment_method_id') required this.paymentMethodId,
-    @JsonKey(name: 'reference_number') this.referenceNumber,
+    required this.paymentMethodId,
+    this.referenceNumber,
+    this.paymentType,
     required this.status,
-    @JsonKey(name: 'reviewed_by') this.reviewedBy,
-    @JsonKey(name: 'reviewed_at') this.reviewedAt,
-    @JsonKey(name: 'rejection_reason') this.rejectionReason,
-    @JsonKey(name: 'created_at') required this.createdAt,
-    @JsonKey(name: 'updated_at') required this.updatedAt,
-    @JsonKey(name: 'payment_method_name') this.paymentMethodName,
-    @JsonKey(name: 'reviewer_name') this.reviewerName,
+    this.reviewedBy,
+    this.reviewedAt,
+    this.rejectionReason,
+    required this.createdAt,
+    this.updatedAt,
+    this.paymentMethodName,
+    this.reviewerName,
   }) : super._();
-
-  factory _$PaymentModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PaymentModelImplFromJson(json);
 
   @override
   final String id;
   @override
-  @JsonKey(name: 'user_id')
   final String userId;
   @override
   final double amount;
   @override
-  @JsonKey(name: 'payment_method_id')
   final String paymentMethodId;
   @override
-  @JsonKey(name: 'reference_number')
   final String? referenceNumber;
+  @override
+  final String? paymentType;
   @override
   final String status;
   @override
-  @JsonKey(name: 'reviewed_by')
   final String? reviewedBy;
   @override
-  @JsonKey(name: 'reviewed_at')
   final DateTime? reviewedAt;
   @override
-  @JsonKey(name: 'rejection_reason')
   final String? rejectionReason;
   @override
-  @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
-  @JsonKey(name: 'updated_at')
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
   @override
-  @JsonKey(name: 'payment_method_name')
   final String? paymentMethodName;
   @override
-  @JsonKey(name: 'reviewer_name')
   final String? reviewerName;
 
   @override
   String toString() {
-    return 'PaymentModel(id: $id, userId: $userId, amount: $amount, paymentMethodId: $paymentMethodId, referenceNumber: $referenceNumber, status: $status, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, rejectionReason: $rejectionReason, createdAt: $createdAt, updatedAt: $updatedAt, paymentMethodName: $paymentMethodName, reviewerName: $reviewerName)';
+    return 'PaymentModel(id: $id, userId: $userId, amount: $amount, paymentMethodId: $paymentMethodId, referenceNumber: $referenceNumber, paymentType: $paymentType, status: $status, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, rejectionReason: $rejectionReason, createdAt: $createdAt, updatedAt: $updatedAt, paymentMethodName: $paymentMethodName, reviewerName: $reviewerName)';
   }
 
   @override
@@ -357,6 +343,8 @@ class _$PaymentModelImpl extends _PaymentModel {
                 other.paymentMethodId == paymentMethodId) &&
             (identical(other.referenceNumber, referenceNumber) ||
                 other.referenceNumber == referenceNumber) &&
+            (identical(other.paymentType, paymentType) ||
+                other.paymentType == paymentType) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.reviewedBy, reviewedBy) ||
                 other.reviewedBy == reviewedBy) &&
@@ -374,7 +362,6 @@ class _$PaymentModelImpl extends _PaymentModel {
                 other.reviewerName == reviewerName));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
@@ -383,6 +370,7 @@ class _$PaymentModelImpl extends _PaymentModel {
     amount,
     paymentMethodId,
     referenceNumber,
+    paymentType,
     status,
     reviewedBy,
     reviewedAt,
@@ -400,69 +388,54 @@ class _$PaymentModelImpl extends _PaymentModel {
   @pragma('vm:prefer-inline')
   _$$PaymentModelImplCopyWith<_$PaymentModelImpl> get copyWith =>
       __$$PaymentModelImplCopyWithImpl<_$PaymentModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PaymentModelImplToJson(this);
-  }
 }
 
 abstract class _PaymentModel extends PaymentModel {
   const factory _PaymentModel({
     required final String id,
-    @JsonKey(name: 'user_id') required final String userId,
+    required final String userId,
     required final double amount,
-    @JsonKey(name: 'payment_method_id') required final String paymentMethodId,
-    @JsonKey(name: 'reference_number') final String? referenceNumber,
+    required final String paymentMethodId,
+    final String? referenceNumber,
+    final String? paymentType,
     required final String status,
-    @JsonKey(name: 'reviewed_by') final String? reviewedBy,
-    @JsonKey(name: 'reviewed_at') final DateTime? reviewedAt,
-    @JsonKey(name: 'rejection_reason') final String? rejectionReason,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
-    @JsonKey(name: 'payment_method_name') final String? paymentMethodName,
-    @JsonKey(name: 'reviewer_name') final String? reviewerName,
+    final String? reviewedBy,
+    final DateTime? reviewedAt,
+    final String? rejectionReason,
+    required final DateTime createdAt,
+    final DateTime? updatedAt,
+    final String? paymentMethodName,
+    final String? reviewerName,
   }) = _$PaymentModelImpl;
   const _PaymentModel._() : super._();
-
-  factory _PaymentModel.fromJson(Map<String, dynamic> json) =
-      _$PaymentModelImpl.fromJson;
 
   @override
   String get id;
   @override
-  @JsonKey(name: 'user_id')
   String get userId;
   @override
   double get amount;
   @override
-  @JsonKey(name: 'payment_method_id')
   String get paymentMethodId;
   @override
-  @JsonKey(name: 'reference_number')
   String? get referenceNumber;
+  @override
+  String? get paymentType;
   @override
   String get status;
   @override
-  @JsonKey(name: 'reviewed_by')
   String? get reviewedBy;
   @override
-  @JsonKey(name: 'reviewed_at')
   DateTime? get reviewedAt;
   @override
-  @JsonKey(name: 'rejection_reason')
   String? get rejectionReason;
   @override
-  @JsonKey(name: 'created_at')
   DateTime get createdAt;
   @override
-  @JsonKey(name: 'updated_at')
-  DateTime get updatedAt;
+  DateTime? get updatedAt;
   @override
-  @JsonKey(name: 'payment_method_name')
   String? get paymentMethodName;
   @override
-  @JsonKey(name: 'reviewer_name')
   String? get reviewerName;
 
   /// Create a copy of PaymentModel

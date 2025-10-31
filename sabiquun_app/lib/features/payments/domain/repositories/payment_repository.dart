@@ -11,6 +11,7 @@ abstract class PaymentRepository {
     required String userId,
     required double amount,
     required String paymentMethodId,
+    required String paymentType,
     String? referenceNumber,
   });
 
@@ -25,6 +26,9 @@ abstract class PaymentRepository {
 
   /// Get all pending payments (Admin/Cashier)
   Future<List<PaymentEntity>> getPendingPayments();
+
+  /// Get recent approved payments (Cashier/Admin)
+  Future<List<PaymentEntity>> getRecentApprovedPayments({int limit = 5});
 
   /// Approve a payment and apply it to penalties using FIFO
   Future<void> approvePayment({

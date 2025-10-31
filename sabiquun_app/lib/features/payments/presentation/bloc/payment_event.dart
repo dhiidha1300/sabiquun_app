@@ -17,17 +17,19 @@ class SubmitPaymentRequested extends PaymentEvent {
   final String userId;
   final double amount;
   final String paymentMethodId;
+  final String paymentType; // 'full' or 'partial'
   final String? referenceNumber;
 
   const SubmitPaymentRequested({
     required this.userId,
     required this.amount,
     required this.paymentMethodId,
+    required this.paymentType,
     this.referenceNumber,
   });
 
   @override
-  List<Object?> get props => [userId, amount, paymentMethodId, referenceNumber];
+  List<Object?> get props => [userId, amount, paymentMethodId, paymentType, referenceNumber];
 }
 
 /// Load payment history
@@ -42,6 +44,16 @@ class LoadPaymentHistoryRequested extends PaymentEvent {
 
   @override
   List<Object?> get props => [userId, statusFilter];
+}
+
+/// Load recent approved payments (Cashier/Admin)
+class LoadRecentApprovedPaymentsRequested extends PaymentEvent {
+  final int limit;
+
+  const LoadRecentApprovedPaymentsRequested({this.limit = 5});
+
+  @override
+  List<Object?> get props => [limit];
 }
 
 /// Load pending payments (Admin/Cashier)

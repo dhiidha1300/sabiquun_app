@@ -10,6 +10,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     on<LoadPaymentMethodsRequested>(_onLoadPaymentMethodsRequested);
     on<SubmitPaymentRequested>(_onSubmitPaymentRequested);
     on<LoadPaymentHistoryRequested>(_onLoadPaymentHistoryRequested);
+    on<LoadRecentApprovedPaymentsRequested>(_onLoadRecentApprovedPaymentsRequested);
     on<LoadPendingPaymentsRequested>(_onLoadPendingPaymentsRequested);
     on<ApprovePaymentRequested>(_onApprovePaymentRequested);
     on<RejectPaymentRequested>(_onRejectPaymentRequested);
@@ -41,6 +42,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         userId: event.userId,
         amount: event.amount,
         paymentMethodId: event.paymentMethodId,
+        paymentType: event.paymentType,
         referenceNumber: event.referenceNumber,
       );
       emit(PaymentSubmitted(payment));
@@ -65,6 +67,21 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       ));
     } catch (e) {
       emit(PaymentError('Failed to load payment history: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onLoadRecentApprovedPaymentsRequested(
+    LoadRecentApprovedPaymentsRequested event,
+    Emitter<PaymentState> emit,
+  ) async {
+    emit(const PaymentLoading());
+    try {
+      final payments = await _paymentRepository.getRecentApprovedPayments(
+        limit: event.limit,
+      );
+      emit(RecentApprovedPaymentsLoaded(payments));
+    } catch (e) {
+      emit(PaymentError('Failed to load recent approved payments: ${e.toString()}'));
     }
   }
 

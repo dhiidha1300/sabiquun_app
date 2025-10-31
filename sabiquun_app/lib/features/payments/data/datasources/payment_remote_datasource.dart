@@ -11,16 +11,43 @@ class PaymentRemoteDataSource {
   /// Get all active payment methods
   Future<List<PaymentMethodModel>> getPaymentMethods() async {
     try {
+      print('Fetching payment methods from database...');
+
+      // First, let's check if ANY payment methods exist
+      final allResponse = await _supabaseClient
+          .from('payment_methods')
+          .select();
+      print('ALL payment methods in database: $allResponse');
+      print('Total count (all): ${(allResponse as List).length}');
+
       final response = await _supabaseClient
           .from('payment_methods')
           .select()
           .eq('is_active', true)
           .order('sort_order', ascending: true);
 
-      return (response as List)
-          .map((json) => PaymentMethodModel.fromJson(json))
+      print('Active payment methods response: $response');
+      print('Response type: ${response.runtimeType}');
+      print('Response length: ${(response as List).length}');
+
+      final methods = (response as List)
+          .map((json) {
+            print('Processing payment method JSON: $json');
+            try {
+              final method = PaymentMethodModel.fromJson(json);
+              print('Successfully parsed: ${method.name}');
+              return method;
+            } catch (e) {
+              print('Error parsing payment method: $e');
+              rethrow;
+            }
+          })
           .toList();
+
+      print('Total payment methods loaded: ${methods.length}');
+      return methods;
     } catch (e) {
+      print('Error fetching payment methods: $e');
       throw Exception('Failed to fetch payment methods: $e');
     }
   }
@@ -30,9 +57,12 @@ class PaymentRemoteDataSource {
     required String userId,
     required double amount,
     required String paymentMethodId,
+    required String paymentType,
     String? referenceNumber,
   }) async {
     try {
+      print('Submitting payment: userId=$userId, amount=$amount, methodId=$paymentMethodId, type=$paymentType');
+
       // Get the method_name from payment_methods table using the ID
       final methodResponse = await _supabaseClient
           .from('payment_methods')
@@ -41,6 +71,7 @@ class PaymentRemoteDataSource {
           .single();
 
       final methodName = methodResponse['method_name'] as String;
+      print('Payment method name: $methodName');
 
       final response = await _supabaseClient
           .from('payments')
@@ -48,14 +79,27 @@ class PaymentRemoteDataSource {
             'user_id': userId,
             'amount': amount,
             'payment_method': methodName,
+            'payment_type': paymentType,
             'reference_number': referenceNumber,
             'status': 'pending',
           })
           .select()
           .single();
 
-      return PaymentModel.fromJson(response);
+      print('Payment insert response: $response');
+
+      try {
+        final payment = PaymentModel.fromJson(response);
+        print('Successfully parsed payment model');
+        return payment;
+      } catch (parseError) {
+        print('Error parsing payment model: $parseError');
+        print('Response keys: ${response.keys}');
+        print('Response values: ${response.values}');
+        rethrow;
+      }
     } catch (e) {
+      print('Error in submitPayment: $e');
       throw Exception('Failed to submit payment: $e');
     }
   }
@@ -151,6 +195,40 @@ class PaymentRemoteDataSource {
       }).toList();
     } catch (e) {
       throw Exception('Failed to fetch pending payments: $e');
+    }
+  }
+
+  /// Get recent approved payments (Cashier/Admin)
+  Future<List<PaymentModel>> getRecentApprovedPayments({int limit = 5}) async {
+    try {
+      final response = await _supabaseClient
+          .from('payments')
+          .select('''
+            *,
+            users!payments_user_id_fkey(name),
+            reviewed_by_user:users!reviewed_by(name)
+          ''')
+          .eq('status', 'approved')
+          .order('reviewed_at', ascending: false) // Most recent first
+          .limit(limit);
+
+      return (response as List).map((json) {
+        final flatJson = Map<String, dynamic>.from(json);
+        // payment_method is already a VARCHAR in the table, use it directly
+        flatJson['payment_method_name'] = json['payment_method'];
+        if (json['users'] != null) {
+          flatJson['user_name'] = json['users']['name'];
+        }
+        if (json['reviewed_by_user'] != null) {
+          flatJson['reviewer_name'] = json['reviewed_by_user']['name'];
+        }
+        flatJson.remove('users');
+        flatJson.remove('reviewed_by_user');
+
+        return PaymentModel.fromJson(flatJson);
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch recent approved payments: $e');
     }
   }
 
@@ -389,7 +467,7 @@ class PaymentRemoteDataSource {
       final response = await _supabaseClient
           .from('payment_methods')
           .insert({
-            'name': name,
+            'method_name': name,
             'display_name': displayName,
             'sort_order': sortOrder,
             'is_active': true,

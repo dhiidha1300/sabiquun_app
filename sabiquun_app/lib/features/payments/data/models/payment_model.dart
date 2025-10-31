@@ -3,7 +3,6 @@ import '../../domain/entities/payment_entity.dart';
 import '../../../../core/constants/payment_status.dart';
 
 part 'payment_model.freezed.dart';
-part 'payment_model.g.dart';
 
 @freezed
 class PaymentModel with _$PaymentModel {
@@ -11,22 +10,43 @@ class PaymentModel with _$PaymentModel {
 
   const factory PaymentModel({
     required String id,
-    @JsonKey(name: 'user_id') required String userId,
+    required String userId,
     required double amount,
-    @JsonKey(name: 'payment_method_id') required String paymentMethodId,
-    @JsonKey(name: 'reference_number') String? referenceNumber,
+    required String paymentMethodId,
+    String? referenceNumber,
+    String? paymentType,
     required String status,
-    @JsonKey(name: 'reviewed_by') String? reviewedBy,
-    @JsonKey(name: 'reviewed_at') DateTime? reviewedAt,
-    @JsonKey(name: 'rejection_reason') String? rejectionReason,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
-    @JsonKey(name: 'updated_at') required DateTime updatedAt,
-    @JsonKey(name: 'payment_method_name') String? paymentMethodName,
-    @JsonKey(name: 'reviewer_name') String? reviewerName,
+    String? reviewedBy,
+    DateTime? reviewedAt,
+    String? rejectionReason,
+    required DateTime createdAt,
+    DateTime? updatedAt,
+    String? paymentMethodName,
+    String? reviewerName,
   }) = _PaymentModel;
 
-  factory PaymentModel.fromJson(Map<String, dynamic> json) =>
-      _$PaymentModelFromJson(json);
+  factory PaymentModel.fromJson(Map<String, dynamic> json) {
+    return PaymentModel(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      paymentMethodId: json['payment_method'] as String,
+      referenceNumber: json['reference_number'] as String?,
+      paymentType: json['payment_type'] as String?,
+      status: json['status'] as String,
+      reviewedBy: json['reviewed_by'] as String?,
+      reviewedAt: json['reviewed_at'] != null
+          ? DateTime.parse(json['reviewed_at'] as String)
+          : null,
+      rejectionReason: json['rejection_reason'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
+      paymentMethodName: json['payment_method_name'] as String?,
+      reviewerName: json['reviewer_name'] as String?,
+    );
+  }
 
   PaymentEntity toEntity() {
     return PaymentEntity(

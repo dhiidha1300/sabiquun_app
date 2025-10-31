@@ -64,6 +64,16 @@ class PendingPaymentsLoaded extends PaymentState {
   List<Object?> get props => [payments];
 }
 
+/// Recent approved payments loaded (Cashier/Admin)
+class RecentApprovedPaymentsLoaded extends PaymentState {
+  final List<PaymentEntity> payments;
+
+  const RecentApprovedPaymentsLoaded(this.payments);
+
+  @override
+  List<Object?> get props => [payments];
+}
+
 /// Payment approved successfully
 class PaymentApproved extends PaymentState {
   final String paymentId;

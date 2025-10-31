@@ -12,7 +12,7 @@ class PaymentEntity extends Equatable {
   final DateTime? reviewedAt;
   final String? rejectionReason;
   final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
 
   // Joined data (optional)
   final String? paymentMethodName;
@@ -29,7 +29,7 @@ class PaymentEntity extends Equatable {
     this.reviewedAt,
     this.rejectionReason,
     required this.createdAt,
-    required this.updatedAt,
+    this.updatedAt,
     this.paymentMethodName,
     this.reviewerName,
   });

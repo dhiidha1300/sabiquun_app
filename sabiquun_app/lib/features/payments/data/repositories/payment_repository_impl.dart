@@ -24,6 +24,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     required String userId,
     required double amount,
     required String paymentMethodId,
+    required String paymentType,
     String? referenceNumber,
   }) async {
     try {
@@ -31,6 +32,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
         userId: userId,
         amount: amount,
         paymentMethodId: paymentMethodId,
+        paymentType: paymentType,
         referenceNumber: referenceNumber,
       );
       return model.toEntity();
@@ -72,6 +74,16 @@ class PaymentRepositoryImpl implements PaymentRepository {
       return models.map((model) => model.toEntity()).toList();
     } catch (e) {
       throw Exception('Failed to get pending payments: $e');
+    }
+  }
+
+  @override
+  Future<List<PaymentEntity>> getRecentApprovedPayments({int limit = 5}) async {
+    try {
+      final models = await _remoteDataSource.getRecentApprovedPayments(limit: limit);
+      return models.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Failed to get recent approved payments: $e');
     }
   }
 
