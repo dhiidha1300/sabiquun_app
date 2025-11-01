@@ -209,3 +209,113 @@ class UpdateSystemSettingsRequested extends AdminEvent {
   @override
   List<Object?> get props => [settings, updatedBy];
 }
+
+// ==================== DEED TEMPLATE EVENTS ====================
+
+/// Load all deed templates with optional filters
+class LoadDeedTemplatesRequested extends AdminEvent {
+  final bool? isActive;
+  final String? category; // 'faraid' or 'sunnah'
+
+  const LoadDeedTemplatesRequested({
+    this.isActive,
+    this.category,
+  });
+
+  @override
+  List<Object?> get props => [isActive, category];
+}
+
+/// Create a new deed template
+class CreateDeedTemplateRequested extends AdminEvent {
+  final String deedName;
+  final String deedKey;
+  final String category;
+  final String valueType;
+  final int sortOrder;
+  final bool isActive;
+  final String createdBy;
+
+  const CreateDeedTemplateRequested({
+    required this.deedName,
+    required this.deedKey,
+    required this.category,
+    required this.valueType,
+    required this.sortOrder,
+    required this.isActive,
+    required this.createdBy,
+  });
+
+  @override
+  List<Object?> get props => [
+        deedName,
+        deedKey,
+        category,
+        valueType,
+        sortOrder,
+        isActive,
+        createdBy,
+      ];
+}
+
+/// Update an existing deed template
+class UpdateDeedTemplateRequested extends AdminEvent {
+  final String templateId;
+  final String? deedName;
+  final String? category;
+  final String? valueType;
+  final int? sortOrder;
+  final bool? isActive;
+  final String updatedBy;
+
+  const UpdateDeedTemplateRequested({
+    required this.templateId,
+    this.deedName,
+    this.category,
+    this.valueType,
+    this.sortOrder,
+    this.isActive,
+    required this.updatedBy,
+  });
+
+  @override
+  List<Object?> get props => [
+        templateId,
+        deedName,
+        category,
+        valueType,
+        sortOrder,
+        isActive,
+        updatedBy,
+      ];
+}
+
+/// Deactivate a deed template
+class DeactivateDeedTemplateRequested extends AdminEvent {
+  final String templateId;
+  final String deactivatedBy;
+  final String reason;
+
+  const DeactivateDeedTemplateRequested({
+    required this.templateId,
+    required this.deactivatedBy,
+    required this.reason,
+  });
+
+  @override
+  List<Object?> get props => [templateId, deactivatedBy, reason];
+}
+
+/// Reorder deed templates
+class ReorderDeedTemplatesRequested extends AdminEvent {
+  final List<String> templateIds;
+  final String updatedBy;
+
+  const ReorderDeedTemplatesRequested({
+    required this.templateIds,
+    required this.updatedBy,
+  });
+
+  @override
+  List<Object?> get props => [templateIds, updatedBy];
+}

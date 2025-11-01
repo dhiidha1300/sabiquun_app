@@ -19,6 +19,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<LoadAnalyticsRequested>(_onLoadAnalytics);
     on<LoadSystemSettingsRequested>(_onLoadSystemSettings);
     on<UpdateSystemSettingsRequested>(_onUpdateSystemSettings);
+    on<LoadDeedTemplatesRequested>(_onLoadDeedTemplates);
+    on<CreateDeedTemplateRequested>(_onCreateDeedTemplate);
+    on<UpdateDeedTemplateRequested>(_onUpdateDeedTemplate);
+    on<DeactivateDeedTemplateRequested>(_onDeactivateDeedTemplate);
+    on<ReorderDeedTemplatesRequested>(_onReorderDeedTemplates);
   }
 
   Future<void> _onLoadUsers(
@@ -232,6 +237,111 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       emit(const SystemSettingsUpdated());
     } catch (e) {
       emit(AdminError('Failed to update system settings: ${e.toString()}'));
+    }
+  }
+
+  // ==================== DEED TEMPLATES ====================
+
+  Future<void> _onLoadDeedTemplates(
+    LoadDeedTemplatesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final templates = await _repository.getDeedTemplates(
+        isActive: event.isActive,
+        category: event.category,
+      );
+      emit(DeedTemplatesLoaded(templates));
+    } catch (e) {
+      emit(AdminError('Failed to load deed templates: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onCreateDeedTemplate(
+    CreateDeedTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final template = await _repository.createDeedTemplate(
+        deedName: event.deedName,
+        deedKey: event.deedKey,
+        category: event.category,
+        valueType: event.valueType,
+        sortOrder: event.sortOrder,
+        isActive: event.isActive,
+        createdBy: event.createdBy,
+      );
+      emit(DeedTemplateCreated(template));
+
+      // Reload templates after creation
+      add(const LoadDeedTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to create deed template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onUpdateDeedTemplate(
+    UpdateDeedTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.updateDeedTemplate(
+        templateId: event.templateId,
+        deedName: event.deedName,
+        category: event.category,
+        valueType: event.valueType,
+        sortOrder: event.sortOrder,
+        isActive: event.isActive,
+        updatedBy: event.updatedBy,
+      );
+      emit(DeedTemplateUpdated(event.templateId));
+
+      // Reload templates after update
+      add(const LoadDeedTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to update deed template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onDeactivateDeedTemplate(
+    DeactivateDeedTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.deactivateDeedTemplate(
+        templateId: event.templateId,
+        deactivatedBy: event.deactivatedBy,
+        reason: event.reason,
+      );
+      emit(DeedTemplateDeactivated(event.templateId));
+
+      // Reload templates after deactivation
+      add(const LoadDeedTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to deactivate deed template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onReorderDeedTemplates(
+    ReorderDeedTemplatesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.reorderDeedTemplates(
+        templateIds: event.templateIds,
+        updatedBy: event.updatedBy,
+      );
+      emit(const DeedTemplatesReordered());
+
+      // Reload templates after reordering to show new order
+      add(const LoadDeedTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to reorder deed templates: ${e.toString()}'));
     }
   }
 }

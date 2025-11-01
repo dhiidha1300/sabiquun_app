@@ -21,6 +21,7 @@ import 'package:sabiquun_app/features/admin/presentation/pages/user_management_p
 import 'package:sabiquun_app/features/admin/presentation/pages/user_edit_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/analytics_dashboard_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/system_settings_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/deed_management_page.dart';
 import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 
@@ -194,6 +195,11 @@ class AppRouter {
         path: '/admin/system-settings',
         name: 'admin-system-settings',
         builder: (context, state) => const SystemSettingsPage(),
+      ),
+      GoRoute(
+        path: '/admin/deed-management',
+        name: 'admin-deed-management',
+        builder: (context, state) => const DeedManagementPage(),
       ),
 
       // Analytics Routes (Placeholder)

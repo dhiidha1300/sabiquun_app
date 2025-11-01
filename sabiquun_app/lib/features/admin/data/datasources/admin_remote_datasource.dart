@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_management_model.dart';
 import '../models/analytics_model.dart';
 import '../models/system_settings_model.dart';
+import '../models/deed_template_model.dart';
 
 class AdminRemoteDataSource {
   final SupabaseClient _supabase;
@@ -726,6 +727,240 @@ class AdminRemoteDataSource {
       );
     } catch (e) {
       throw Exception('Failed to update setting: $e');
+    }
+  }
+
+  // ==================== DEED TEMPLATE MANAGEMENT ====================
+
+  /// Get all deed templates with optional filters
+  Future<List<DeedTemplateModel>> getDeedTemplates({
+    bool? isActive,
+    String? category,
+  }) async {
+    try {
+      var query = _supabase.from('deed_templates').select('*');
+
+      // Apply filters
+      if (isActive != null) {
+        query = query.eq('is_active', isActive);
+      }
+
+      if (category != null && category.isNotEmpty) {
+        query = query.eq('category', category);
+      }
+
+      // Order by sort_order
+      final response = await query.order('sort_order', ascending: true);
+
+      return (response as List)
+          .map((json) => DeedTemplateModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to get deed templates: $e');
+    }
+  }
+
+  /// Create a new deed template
+  Future<DeedTemplateModel> createDeedTemplate({
+    required String deedName,
+    required String deedKey,
+    required String category,
+    required String valueType,
+    required int sortOrder,
+    required bool isActive,
+    required String createdBy,
+  }) async {
+    try {
+      final response = await _supabase.from('deed_templates').insert({
+        'deed_name': deedName,
+        'deed_key': deedKey,
+        'category': category,
+        'value_type': valueType,
+        'sort_order': sortOrder,
+        'is_active': isActive,
+        'is_system_default': false, // Custom deeds are never system defaults
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).select().single();
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'deed_template_created',
+        performedBy: createdBy,
+        entityType: 'deed_template',
+        entityId: response['id'] as String,
+        reason: 'New deed template created',
+        newValues: {
+          'deed_name': deedName,
+          'category': category,
+          'value_type': valueType,
+        },
+      );
+
+      return DeedTemplateModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to create deed template: $e');
+    }
+  }
+
+  /// Update deed template
+  Future<void> updateDeedTemplate({
+    required String templateId,
+    String? deedName,
+    String? category,
+    String? valueType,
+    int? sortOrder,
+    bool? isActive,
+    required String updatedBy,
+  }) async {
+    try {
+      // Get old values for audit log
+      final oldData = await _supabase
+          .from('deed_templates')
+          .select()
+          .eq('id', templateId)
+          .single();
+
+      final updates = <String, dynamic>{
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      if (deedName != null) updates['deed_name'] = deedName;
+      if (category != null) updates['category'] = category;
+      if (valueType != null) updates['value_type'] = valueType;
+      if (sortOrder != null) updates['sort_order'] = sortOrder;
+      if (isActive != null) updates['is_active'] = isActive;
+
+      await _supabase
+          .from('deed_templates')
+          .update(updates)
+          .eq('id', templateId);
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'deed_template_updated',
+        performedBy: updatedBy,
+        entityType: 'deed_template',
+        entityId: templateId,
+        reason: 'Deed template updated',
+        oldValues: oldData as Map<String, dynamic>?,
+        newValues: updates,
+      );
+    } catch (e) {
+      throw Exception('Failed to update deed template: $e');
+    }
+  }
+
+  /// Deactivate deed template
+  Future<void> deactivateDeedTemplate({
+    required String templateId,
+    required String deactivatedBy,
+    required String reason,
+  }) async {
+    try {
+      // Check if it's a system default
+      final template = await _supabase
+          .from('deed_templates')
+          .select('is_system_default')
+          .eq('id', templateId)
+          .single();
+
+      if (template['is_system_default'] == true) {
+        throw Exception('Cannot deactivate system default deed templates');
+      }
+
+      await _supabase
+          .from('deed_templates')
+          .update({
+            'is_active': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', templateId);
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'deed_template_deactivated',
+        performedBy: deactivatedBy,
+        entityType: 'deed_template',
+        entityId: templateId,
+        reason: reason,
+        newValues: {'is_active': false},
+      );
+    } catch (e) {
+      throw Exception('Failed to deactivate deed template: $e');
+    }
+  }
+
+  /// Reorder deed templates by updating sort_order
+  Future<void> reorderDeedTemplates({
+    required List<String> templateIds,
+    required String updatedBy,
+  }) async {
+    try {
+      // Update each template's sort_order based on its position in the list
+      for (int i = 0; i < templateIds.length; i++) {
+        await _supabase
+            .from('deed_templates')
+            .update({
+              'sort_order': i + 1,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', templateIds[i]);
+      }
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'deed_templates_reordered',
+        performedBy: updatedBy,
+        entityType: 'deed_template',
+        entityId: 'bulk',
+        reason: 'Deed templates reordered',
+        newValues: {'template_count': templateIds.length},
+      );
+    } catch (e) {
+      throw Exception('Failed to reorder deed templates: $e');
+    }
+  }
+
+  /// Delete deed template (only for non-system-default templates)
+  Future<void> deleteDeedTemplate({
+    required String templateId,
+    required String deletedBy,
+    required String reason,
+  }) async {
+    try {
+      // Check if it's a system default
+      final template = await _supabase
+          .from('deed_templates')
+          .select('is_system_default, deed_name')
+          .eq('id', templateId)
+          .single();
+
+      if (template['is_system_default'] == true) {
+        throw Exception('Cannot delete system default deed templates');
+      }
+
+      // Soft delete by deactivating instead of hard delete
+      // This preserves historical data in reports
+      await _supabase
+          .from('deed_templates')
+          .update({
+            'is_active': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', templateId);
+
+      // Log audit trail
+      await _createAuditLog(
+        actionType: 'deed_template_deleted',
+        performedBy: deletedBy,
+        entityType: 'deed_template',
+        entityId: templateId,
+        reason: reason,
+        oldValues: {'deed_name': template['deed_name']},
+      );
+    } catch (e) {
+      throw Exception('Failed to delete deed template: $e');
     }
   }
 }

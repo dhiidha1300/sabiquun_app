@@ -258,14 +258,22 @@ class AdminRepositoryImpl implements AdminRepository {
     );
   }
 
-  // ==================== DEED TEMPLATES (Stub) ====================
+  // ==================== DEED TEMPLATES ====================
 
   @override
   Future<List<DeedTemplateEntity>> getDeedTemplates({
     bool? isActive,
     String? category,
-  }) {
-    throw UnimplementedError('Deed templates not yet implemented');
+  }) async {
+    try {
+      final models = await _remoteDataSource.getDeedTemplates(
+        isActive: isActive,
+        category: category,
+      );
+      return models.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Repository: Failed to get deed templates - $e');
+    }
   }
 
   @override
@@ -277,8 +285,21 @@ class AdminRepositoryImpl implements AdminRepository {
     required int sortOrder,
     required bool isActive,
     required String createdBy,
-  }) {
-    throw UnimplementedError('Deed templates not yet implemented');
+  }) async {
+    try {
+      final model = await _remoteDataSource.createDeedTemplate(
+        deedName: deedName,
+        deedKey: deedKey,
+        category: category,
+        valueType: valueType,
+        sortOrder: sortOrder,
+        isActive: isActive,
+        createdBy: createdBy,
+      );
+      return model.toEntity();
+    } catch (e) {
+      throw Exception('Repository: Failed to create deed template - $e');
+    }
   }
 
   @override
@@ -290,8 +311,20 @@ class AdminRepositoryImpl implements AdminRepository {
     int? sortOrder,
     bool? isActive,
     required String updatedBy,
-  }) {
-    throw UnimplementedError('Deed templates not yet implemented');
+  }) async {
+    try {
+      await _remoteDataSource.updateDeedTemplate(
+        templateId: templateId,
+        deedName: deedName,
+        category: category,
+        valueType: valueType,
+        sortOrder: sortOrder,
+        isActive: isActive,
+        updatedBy: updatedBy,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to update deed template - $e');
+    }
   }
 
   @override
@@ -299,16 +332,31 @@ class AdminRepositoryImpl implements AdminRepository {
     required String templateId,
     required String deactivatedBy,
     required String reason,
-  }) {
-    throw UnimplementedError('Deed templates not yet implemented');
+  }) async {
+    try {
+      await _remoteDataSource.deactivateDeedTemplate(
+        templateId: templateId,
+        deactivatedBy: deactivatedBy,
+        reason: reason,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to deactivate deed template - $e');
+    }
   }
 
   @override
   Future<void> reorderDeedTemplates({
     required List<String> templateIds,
     required String updatedBy,
-  }) {
-    throw UnimplementedError('Deed templates not yet implemented');
+  }) async {
+    try {
+      await _remoteDataSource.reorderDeedTemplates(
+        templateIds: templateIds,
+        updatedBy: updatedBy,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to reorder deed templates - $e');
+    }
   }
 
   // ==================== AUDIT LOGS (Stub) ====================

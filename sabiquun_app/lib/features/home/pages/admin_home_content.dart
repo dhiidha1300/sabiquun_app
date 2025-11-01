@@ -42,7 +42,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _onRefresh,
@@ -83,32 +83,36 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
 
   Widget _buildHeader() {
     return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary,
-            AppColors.primary.withValues(alpha: 0.8),
-          ],
+        color: AppColors.surface,
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            width: 1,
+          ),
         ),
       ),
-      padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          // Avatar
+          // Avatar with modern shadow effect
           GestureDetector(
             onTap: () => context.push('/profile'),
             child: Container(
-              width: 60,
-              height: 60,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: AppColors.primaryGradient,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -118,17 +122,18 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 child: Text(
                   widget.user.initials,
                   style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
 
-          // User info
+          // User info with elegant styling
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,41 +141,78 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 Text(
                   widget.user.fullName,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade700,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'Admin',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.accent.withValues(alpha: 0.15),
+                        AppColors.accentDark.withValues(alpha: 0.12),
+                      ],
                     ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.accent.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.shield_outlined,
+                        size: 14,
+                        color: AppColors.accentDark,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Admin',
+                        style: TextStyle(
+                          color: AppColors.accentDark,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
 
-          // Notification bell
-          Stack(
-            children: [
-              IconButton(
-                onPressed: () {
-                  // TODO: Navigate to notifications
-                },
-                icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 28),
+          // Modern notification bell with badge
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.1),
+                  AppColors.secondary.withValues(alpha: 0.08),
+                ],
               ),
-            ],
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.15),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              onPressed: () {
+                // TODO: Navigate to notifications
+              },
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: AppColors.primary,
+                size: 24,
+              ),
+            ),
           ),
         ],
       ),
@@ -181,14 +223,28 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Actions',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 24,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Quick Actions',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         _buildQuickActionsGrid(),
       ],
     );
@@ -218,11 +274,25 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             hasUrgentItem: pendingUsers > 0,
           ),
           _QuickAction(
+            icon: Icons.assignment_turned_in,
+            title: 'Deed Management',
+            subtitle: 'Manage deeds',
+            color: Colors.teal,
+            route: '/admin/deed-management',
+          ),
+          _QuickAction(
             icon: Icons.settings,
             title: 'System Settings',
             subtitle: 'Configure app',
             color: Colors.purple,
             route: '/admin/system-settings',
+          ),
+          _QuickAction(
+            icon: Icons.analytics,
+            title: 'Analytics',
+            subtitle: 'View reports',
+            color: Colors.indigo,
+            route: '/admin/analytics',
           ),
           _QuickAction(
             icon: Icons.event_busy,
@@ -249,7 +319,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 1.1,
+            childAspectRatio: 2.2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
@@ -321,19 +391,19 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             children: [
               // User Metrics Section
               _buildSectionTitle('User Overview', Icons.people),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               _buildUserMetrics(analytics.userMetrics),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               // Deed Metrics Section
               _buildSectionTitle('Deed Performance', Icons.assignment_turned_in),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               _buildDeedMetrics(analytics.deedMetrics),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               // Financial Metrics Section
               _buildSectionTitle('Financial Overview', Icons.account_balance_wallet),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               _buildFinancialMetrics(analytics.financialMetrics),
             ],
           );
@@ -345,15 +415,44 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
   }
 
   Widget _buildSectionTitle(String title, IconData icon) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 22, color: AppColors.primary),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(icon, size: 20, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 3,
+          width: 50,
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
+            borderRadius: BorderRadius.circular(2),
           ),
         ),
       ],
@@ -373,18 +472,18 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 color: Colors.orange,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: AnalyticsMetricCard(
                 title: 'Active',
                 value: userMetrics.activeUsers.toString(),
                 icon: Icons.check_circle,
-                color: Colors.green,
+                color: AppColors.primary,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Row(
           children: [
             Expanded(
@@ -396,7 +495,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 color: Colors.deepOrange,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: AnalyticsMetricCard(
                 title: 'New This Week',
@@ -425,14 +524,14 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 color: Colors.blue,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: AnalyticsMetricCard(
                 title: 'Compliance',
                 value: '${(deedMetrics.complianceRateToday * 100).toStringAsFixed(1)}%',
                 subtitle: 'Today',
                 icon: Icons.check_circle_outline,
-                color: Colors.green,
+                color: AppColors.primary,
               ),
             ),
           ],
@@ -454,7 +553,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 color: Colors.red,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: AnalyticsMetricCard(
                 title: 'Pending',
@@ -466,7 +565,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Row(
           children: [
             Expanded(
@@ -478,14 +577,14 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                 color: Colors.deepOrange,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: AnalyticsMetricCard(
                 title: 'This Month',
                 value: _formatCurrency(financialMetrics.paymentsReceivedThisMonth),
                 subtitle: 'Payments',
                 icon: Icons.trending_down,
-                color: Colors.green,
+                color: AppColors.primary,
               ),
             ),
           ],

@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 
 /// Application color palette
 class AppColors {
-  // Primary Colors
-  static const Color primary = Color(0xFF2E7D32); // Islamic green
-  static const Color primaryDark = Color(0xFF1B5E20);
-  static const Color primaryLight = Color(0xFF4CAF50);
+  // Primary Colors - Modern Green Theme
+  static const Color primary = Color(0xFF1DB954); // Vibrant Green
+  static const Color primaryDark = Color(0xFF169B45); // Darker Green
+  static const Color primaryLight = Color(0xFF1ED760); // Bright Green (Secondary)
 
-  // Accent Colors
-  static const Color accent = Color(0xFFFF9800); // Orange
-  static const Color accentDark = Color(0xFFE65100);
-  static const Color accentLight = Color(0xFFFFB74D);
+  // Secondary Colors
+  static const Color secondary = Color(0xFF1ED760); // Bright Green
+  static const Color secondaryDark = Color(0xFF19B54D);
+  static const Color secondaryLight = Color(0xFF4EE17E);
+
+  // Accent Colors - Gold
+  static const Color accent = Color(0xFFFFD700); // Gold
+  static const Color accentDark = Color(0xFFD4AF37); // Darker Gold
+  static const Color accentLight = Color(0xFFFFE55C); // Light Gold
 
   // Background Colors
-  static const Color background = Color(0xFFF5F5F5);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFFAFAFA);
+  static const Color background = Color(0xFFF5F5F5); // Light Grey
+  static const Color surface = Color(0xFFF1F8F4); // Mint Cream
+  static const Color surfaceVariant = Color(0xFFFFFFFF); // White
 
   // Text Colors
   static const Color textPrimary = Color(0xFF212121);
@@ -58,13 +63,26 @@ class AppColors {
 
   // Gradient Colors
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, primaryLight],
+    colors: [primary, secondary],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient secondaryGradient = LinearGradient(
+    colors: [secondary, secondaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient accentGradient = LinearGradient(
-    colors: [accent, accentLight],
+    colors: [accentDark, accent],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Surface Gradients for Cards
+  static const LinearGradient surfaceGradient = LinearGradient(
+    colors: [surface, surfaceVariant],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

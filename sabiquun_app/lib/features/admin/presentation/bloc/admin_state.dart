@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/user_management_entity.dart';
 import '../../domain/entities/analytics_entity.dart';
 import '../../domain/entities/system_settings_entity.dart';
+import '../../../deeds/domain/entities/deed_template_entity.dart';
 
 abstract class AdminState extends Equatable {
   const AdminState();
@@ -159,4 +160,51 @@ class SystemSettingsLoaded extends AdminState {
 /// System settings updated successfully
 class SystemSettingsUpdated extends AdminState {
   const SystemSettingsUpdated();
+}
+
+// ==================== DEED TEMPLATE STATES ====================
+
+/// Deed templates loaded successfully
+class DeedTemplatesLoaded extends AdminState {
+  final List<DeedTemplateEntity> templates;
+
+  const DeedTemplatesLoaded(this.templates);
+
+  @override
+  List<Object?> get props => [templates];
+}
+
+/// Deed template created successfully
+class DeedTemplateCreated extends AdminState {
+  final DeedTemplateEntity template;
+
+  const DeedTemplateCreated(this.template);
+
+  @override
+  List<Object?> get props => [template];
+}
+
+/// Deed template updated successfully
+class DeedTemplateUpdated extends AdminState {
+  final String templateId;
+
+  const DeedTemplateUpdated(this.templateId);
+
+  @override
+  List<Object?> get props => [templateId];
+}
+
+/// Deed template deactivated successfully
+class DeedTemplateDeactivated extends AdminState {
+  final String templateId;
+
+  const DeedTemplateDeactivated(this.templateId);
+
+  @override
+  List<Object?> get props => [templateId];
+}
+
+/// Deed templates reordered successfully
+class DeedTemplatesReordered extends AdminState {
+  const DeedTemplatesReordered();
 }
