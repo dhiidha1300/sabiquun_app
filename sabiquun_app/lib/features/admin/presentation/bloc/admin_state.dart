@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import '../../domain/entities/user_management_entity.dart';
 import '../../domain/entities/analytics_entity.dart';
 import '../../domain/entities/system_settings_entity.dart';
+import '../../domain/entities/audit_log_entity.dart';
 import '../../../deeds/domain/entities/deed_template_entity.dart';
 
 abstract class AdminState extends Equatable {
@@ -207,4 +208,98 @@ class DeedTemplateDeactivated extends AdminState {
 /// Deed templates reordered successfully
 class DeedTemplatesReordered extends AdminState {
   const DeedTemplatesReordered();
+}
+
+// ==================== AUDIT LOG STATES ====================
+
+/// Audit logs loaded successfully
+class AuditLogsLoaded extends AdminState {
+  final List<AuditLogEntity> logs;
+
+  const AuditLogsLoaded(this.logs);
+
+  @override
+  List<Object?> get props => [logs];
+}
+
+/// Audit logs exported successfully
+class AuditLogsExported extends AdminState {
+  final String csvContent;
+  final int logCount;
+
+  const AuditLogsExported({
+    required this.csvContent,
+    required this.logCount,
+  });
+
+  @override
+  List<Object?> get props => [csvContent, logCount];
+}
+
+// ============================================================================
+// Excuse Management States
+// ============================================================================
+
+/// Excuses loaded successfully
+class ExcusesLoaded extends AdminState {
+  final List<dynamic> excuses; // List<ExcuseEntity>
+  final String? appliedFilter;
+
+  const ExcusesLoaded({
+    required this.excuses,
+    this.appliedFilter,
+  });
+
+  @override
+  List<Object?> get props => [excuses, appliedFilter];
+}
+
+/// Single excuse detail loaded
+class ExcuseDetailLoaded extends AdminState {
+  final dynamic excuse; // ExcuseEntity
+
+  const ExcuseDetailLoaded(this.excuse);
+
+  @override
+  List<Object?> get props => [excuse];
+}
+
+/// Excuse approved successfully
+class ExcuseApproved extends AdminState {
+  final String excuseId;
+
+  const ExcuseApproved(this.excuseId);
+
+  @override
+  List<Object?> get props => [excuseId];
+}
+
+/// Excuse rejected successfully
+class ExcuseRejected extends AdminState {
+  final String excuseId;
+
+  const ExcuseRejected(this.excuseId);
+
+  @override
+  List<Object?> get props => [excuseId];
+}
+
+/// Bulk excuses approved successfully
+class BulkExcusesApproved extends AdminState {
+  final int count;
+
+  const BulkExcusesApproved(this.count);
+
+  @override
+  List<Object?> get props => [count];
+}
+
+/// Bulk excuses rejected successfully
+class BulkExcusesRejected extends AdminState {
+  final int count;
+
+  const BulkExcusesRejected(this.count);
+
+  @override
+  List<Object?> get props => [count];
 }

@@ -226,6 +226,54 @@ class LoadDeedTemplatesRequested extends AdminEvent {
   List<Object?> get props => [isActive, category];
 }
 
+// ==================== AUDIT LOG EVENTS ====================
+
+/// Load audit logs with optional filters
+class LoadAuditLogsRequested extends AdminEvent {
+  final String? action;
+  final String? performedBy;
+  final String? entityType;
+  final String? entityId;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final int? limit;
+
+  const LoadAuditLogsRequested({
+    this.action,
+    this.performedBy,
+    this.entityType,
+    this.entityId,
+    this.startDate,
+    this.endDate,
+    this.limit,
+  });
+
+  @override
+  List<Object?> get props => [
+        action,
+        performedBy,
+        entityType,
+        entityId,
+        startDate,
+        endDate,
+        limit,
+      ];
+}
+
+/// Export audit logs to CSV
+class ExportAuditLogsRequested extends AdminEvent {
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  const ExportAuditLogsRequested({
+    this.startDate,
+    this.endDate,
+  });
+
+  @override
+  List<Object?> get props => [startDate, endDate];
+}
+
 /// Create a new deed template
 class CreateDeedTemplateRequested extends AdminEvent {
   final String deedName;
@@ -318,4 +366,98 @@ class ReorderDeedTemplatesRequested extends AdminEvent {
 
   @override
   List<Object?> get props => [templateIds, updatedBy];
+}
+
+// ============================================================================
+// Excuse Management Events
+// ============================================================================
+
+/// Load excuses with optional filters
+class LoadExcusesRequested extends AdminEvent {
+  final String? status; // 'pending', 'approved', 'rejected'
+  final String? userId;
+  final String? excuseType; // 'sickness', 'travel', 'raining'
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  const LoadExcusesRequested({
+    this.status,
+    this.userId,
+    this.excuseType,
+    this.startDate,
+    this.endDate,
+  });
+
+  @override
+  List<Object?> get props => [status, userId, excuseType, startDate, endDate];
+}
+
+/// Load single excuse by ID
+class LoadExcuseByIdRequested extends AdminEvent {
+  final String excuseId;
+
+  const LoadExcuseByIdRequested(this.excuseId);
+
+  @override
+  List<Object?> get props => [excuseId];
+}
+
+/// Approve excuse
+class ApproveExcuseRequested extends AdminEvent {
+  final String excuseId;
+  final String approvedBy;
+
+  const ApproveExcuseRequested({
+    required this.excuseId,
+    required this.approvedBy,
+  });
+
+  @override
+  List<Object?> get props => [excuseId, approvedBy];
+}
+
+/// Reject excuse
+class RejectExcuseRequested extends AdminEvent {
+  final String excuseId;
+  final String rejectedBy;
+  final String reason;
+
+  const RejectExcuseRequested({
+    required this.excuseId,
+    required this.rejectedBy,
+    required this.reason,
+  });
+
+  @override
+  List<Object?> get props => [excuseId, rejectedBy, reason];
+}
+
+/// Bulk approve excuses
+class BulkApproveExcusesRequested extends AdminEvent {
+  final List<String> excuseIds;
+  final String approvedBy;
+
+  const BulkApproveExcusesRequested({
+    required this.excuseIds,
+    required this.approvedBy,
+  });
+
+  @override
+  List<Object?> get props => [excuseIds, approvedBy];
+}
+
+/// Bulk reject excuses
+class BulkRejectExcusesRequested extends AdminEvent {
+  final List<String> excuseIds;
+  final String rejectedBy;
+  final String reason;
+
+  const BulkRejectExcusesRequested({
+    required this.excuseIds,
+    required this.rejectedBy,
+    required this.reason,
+  });
+
+  @override
+  List<Object?> get props => [excuseIds, rejectedBy, reason];
 }

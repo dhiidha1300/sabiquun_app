@@ -359,7 +359,7 @@ class AdminRepositoryImpl implements AdminRepository {
     }
   }
 
-  // ==================== AUDIT LOGS (Stub) ====================
+  // ==================== AUDIT LOGS ====================
 
   @override
   Future<List<AuditLogEntity>> getAuditLogs({
@@ -370,8 +370,21 @@ class AdminRepositoryImpl implements AdminRepository {
     DateTime? startDate,
     DateTime? endDate,
     int? limit,
-  }) {
-    throw UnimplementedError('Audit logs not yet implemented');
+  }) async {
+    try {
+      final models = await _remoteDataSource.getAuditLogs(
+        action: action,
+        performedBy: performedBy,
+        entityType: entityType,
+        entityId: entityId,
+        startDate: startDate,
+        endDate: endDate,
+        limit: limit,
+      );
+      return models.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Repository: Failed to get audit logs - $e');
+    }
   }
 
   @override
@@ -379,8 +392,16 @@ class AdminRepositoryImpl implements AdminRepository {
     DateTime? startDate,
     DateTime? endDate,
     String format = 'csv',
-  }) {
-    throw UnimplementedError('Audit logs export not yet implemented');
+  }) async {
+    try {
+      // Currently only CSV format is supported
+      return await _remoteDataSource.exportAuditLogs(
+        startDate: startDate,
+        endDate: endDate,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to export audit logs - $e');
+    }
   }
 
   // ==================== NOTIFICATION TEMPLATES (Stub) ====================
@@ -486,5 +507,104 @@ class AdminRepositoryImpl implements AdminRepository {
   }) {
     // TODO: Implement analytics export when needed
     throw UnimplementedError('Analytics export not yet implemented');
+  }
+
+  // ==================== EXCUSE MANAGEMENT ====================
+
+  @override
+  Future<List<dynamic>> getExcuses({
+    String? status,
+    String? userId,
+    String? excuseType,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      final excusesData = await _remoteDataSource.getExcuses(
+        status: status,
+        userId: userId,
+        excuseType: excuseType,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      // Convert to entities (using dynamic to avoid import issues before build_runner)
+      return excusesData;
+    } catch (e) {
+      throw Exception('Repository: Failed to get excuses - $e');
+    }
+  }
+
+  @override
+  Future<dynamic> getExcuseById(String excuseId) async {
+    try {
+      final excuseData = await _remoteDataSource.getExcuseById(excuseId);
+      return excuseData;
+    } catch (e) {
+      throw Exception('Repository: Failed to get excuse - $e');
+    }
+  }
+
+  @override
+  Future<void> approveExcuse({
+    required String excuseId,
+    required String approvedBy,
+  }) async {
+    try {
+      await _remoteDataSource.approveExcuse(
+        excuseId: excuseId,
+        approvedBy: approvedBy,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to approve excuse - $e');
+    }
+  }
+
+  @override
+  Future<void> rejectExcuse({
+    required String excuseId,
+    required String rejectedBy,
+    required String reason,
+  }) async {
+    try {
+      await _remoteDataSource.rejectExcuse(
+        excuseId: excuseId,
+        rejectedBy: rejectedBy,
+        reason: reason,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to reject excuse - $e');
+    }
+  }
+
+  @override
+  Future<int> bulkApproveExcuses({
+    required List<String> excuseIds,
+    required String approvedBy,
+  }) async {
+    try {
+      return await _remoteDataSource.bulkApproveExcuses(
+        excuseIds: excuseIds,
+        approvedBy: approvedBy,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to bulk approve excuses - $e');
+    }
+  }
+
+  @override
+  Future<int> bulkRejectExcuses({
+    required List<String> excuseIds,
+    required String rejectedBy,
+    required String reason,
+  }) async {
+    try {
+      return await _remoteDataSource.bulkRejectExcuses(
+        excuseIds: excuseIds,
+        rejectedBy: rejectedBy,
+        reason: reason,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to bulk reject excuses - $e');
+    }
   }
 }

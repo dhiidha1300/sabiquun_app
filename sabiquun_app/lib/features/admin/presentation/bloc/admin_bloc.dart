@@ -24,6 +24,14 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<UpdateDeedTemplateRequested>(_onUpdateDeedTemplate);
     on<DeactivateDeedTemplateRequested>(_onDeactivateDeedTemplate);
     on<ReorderDeedTemplatesRequested>(_onReorderDeedTemplates);
+    on<LoadAuditLogsRequested>(_onLoadAuditLogs);
+    on<ExportAuditLogsRequested>(_onExportAuditLogs);
+    on<LoadExcusesRequested>(_onLoadExcuses);
+    on<LoadExcuseByIdRequested>(_onLoadExcuseById);
+    on<ApproveExcuseRequested>(_onApproveExcuse);
+    on<RejectExcuseRequested>(_onRejectExcuse);
+    on<BulkApproveExcusesRequested>(_onBulkApproveExcuses);
+    on<BulkRejectExcusesRequested>(_onBulkRejectExcuses);
   }
 
   Future<void> _onLoadUsers(
@@ -342,6 +350,169 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       add(const LoadDeedTemplatesRequested());
     } catch (e) {
       emit(AdminError('Failed to reorder deed templates: ${e.toString()}'));
+    }
+  }
+
+  // ==================== AUDIT LOGS ====================
+
+  Future<void> _onLoadAuditLogs(
+    LoadAuditLogsRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final logs = await _repository.getAuditLogs(
+        action: event.action,
+        performedBy: event.performedBy,
+        entityType: event.entityType,
+        entityId: event.entityId,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        limit: event.limit,
+      );
+      emit(AuditLogsLoaded(logs));
+    } catch (e) {
+      emit(AdminError('Failed to load audit logs: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onExportAuditLogs(
+    ExportAuditLogsRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final csvContent = await _repository.exportAuditLogs(
+        startDate: event.startDate,
+        endDate: event.endDate,
+      );
+
+      // Count lines (subtract 1 for header)
+      final logCount = csvContent.split('\n').length - 1;
+
+      emit(AuditLogsExported(
+        csvContent: csvContent,
+        logCount: logCount,
+      ));
+    } catch (e) {
+      emit(AdminError('Failed to export audit logs: ${e.toString()}'));
+    }
+  }
+
+  // ============================================================================
+  // Excuse Management Handlers
+  // ============================================================================
+
+  Future<void> _onLoadExcuses(
+    LoadExcusesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final excuses = await _repository.getExcuses(
+        status: event.status,
+        userId: event.userId,
+        excuseType: event.excuseType,
+        startDate: event.startDate,
+        endDate: event.endDate,
+      );
+
+      String? filterDesc;
+      if (event.status != null) {
+        filterDesc = event.status == 'pending' ? 'Pending' :
+                     event.status == 'approved' ? 'Approved' : 'Rejected';
+      }
+
+      emit(ExcusesLoaded(excuses: excuses, appliedFilter: filterDesc));
+    } catch (e) {
+      emit(AdminError('Failed to load excuses: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onLoadExcuseById(
+    LoadExcuseByIdRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final excuse = await _repository.getExcuseById(event.excuseId);
+      emit(ExcuseDetailLoaded(excuse));
+    } catch (e) {
+      emit(AdminError('Failed to load excuse: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onApproveExcuse(
+    ApproveExcuseRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.approveExcuse(
+        excuseId: event.excuseId,
+        approvedBy: event.approvedBy,
+      );
+      emit(ExcuseApproved(event.excuseId));
+      // Reload excuses list
+      add(const LoadExcusesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to approve excuse: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onRejectExcuse(
+    RejectExcuseRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.rejectExcuse(
+        excuseId: event.excuseId,
+        rejectedBy: event.rejectedBy,
+        reason: event.reason,
+      );
+      emit(ExcuseRejected(event.excuseId));
+      // Reload excuses list
+      add(const LoadExcusesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to reject excuse: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onBulkApproveExcuses(
+    BulkApproveExcusesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final count = await _repository.bulkApproveExcuses(
+        excuseIds: event.excuseIds,
+        approvedBy: event.approvedBy,
+      );
+      emit(BulkExcusesApproved(count));
+      // Reload excuses list
+      add(const LoadExcusesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to bulk approve excuses: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onBulkRejectExcuses(
+    BulkRejectExcusesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final count = await _repository.bulkRejectExcuses(
+        excuseIds: event.excuseIds,
+        rejectedBy: event.rejectedBy,
+        reason: event.reason,
+      );
+      emit(BulkExcusesRejected(count));
+      // Reload excuses list
+      add(const LoadExcusesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to bulk reject excuses: ${e.toString()}'));
     }
   }
 }

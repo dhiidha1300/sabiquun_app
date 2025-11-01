@@ -3,6 +3,7 @@ import '../models/user_management_model.dart';
 import '../models/analytics_model.dart';
 import '../models/system_settings_model.dart';
 import '../models/deed_template_model.dart';
+import '../models/audit_log_model.dart';
 
 class AdminRemoteDataSource {
   final SupabaseClient _supabase;
@@ -961,6 +962,396 @@ class AdminRemoteDataSource {
       );
     } catch (e) {
       throw Exception('Failed to delete deed template: $e');
+    }
+  }
+
+  // ==================== AUDIT LOGS ====================
+
+  /// Get audit logs with filters
+  Future<List<AuditLogModel>> getAuditLogs({
+    String? action,
+    String? performedBy,
+    String? entityType,
+    String? entityId,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? limit,
+  }) async {
+    try {
+      // Build query with join to get performer's name
+      var query = _supabase
+          .from('audit_logs')
+          .select('''
+            id,
+            action_type,
+            performed_by,
+            entity_type,
+            entity_id,
+            old_value,
+            new_value,
+            reason,
+            created_at,
+            users!audit_logs_performed_by_fkey(name)
+          ''');
+
+      // Apply filters
+      if (action != null && action.isNotEmpty) {
+        query = query.eq('action_type', action);
+      }
+
+      if (performedBy != null && performedBy.isNotEmpty) {
+        query = query.eq('performed_by', performedBy);
+      }
+
+      if (entityType != null && entityType.isNotEmpty) {
+        query = query.eq('entity_type', entityType);
+      }
+
+      if (entityId != null && entityId.isNotEmpty) {
+        query = query.eq('entity_id', entityId);
+      }
+
+      if (startDate != null) {
+        query = query.gte('created_at', startDate.toIso8601String());
+      }
+
+      if (endDate != null) {
+        query = query.lte('created_at', endDate.toIso8601String());
+      }
+
+      // Apply limit before ordering (if specified)
+      var finalQuery = limit != null && limit > 0
+          ? query.limit(limit)
+          : query;
+
+      // Order by created_at descending (newest first)
+      final response = await finalQuery.order('created_at', ascending: false);
+
+      return (response as List).map((json) {
+        final data = json as Map<String, dynamic>;
+        // Extract performer name from joined users table
+        final performerData = data['users'] as Map<String, dynamic>?;
+        final performedByName = performerData?['name'] as String? ?? 'Unknown User';
+
+        // Create a flattened map for the model
+        final flattenedData = {
+          ...data,
+          'performed_by_name': performedByName,
+        };
+
+        return AuditLogModel.fromJson(flattenedData);
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to get audit logs: $e');
+    }
+  }
+
+  /// Export audit logs to CSV format
+  Future<String> exportAuditLogs({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      // Get all logs within date range (no limit)
+      final logs = await getAuditLogs(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      // Build CSV content
+      final csvLines = <String>[];
+
+      // Header row
+      csvLines.add(
+        'Timestamp,Action,Performed By,Entity Type,Entity ID,Reason,Has Changes',
+      );
+
+      // Data rows
+      for (final log in logs) {
+        final entity = log.toEntity();
+        csvLines.add([
+          _escapeCsv(entity.timestamp.toIso8601String()),
+          _escapeCsv(entity.formattedAction),
+          _escapeCsv(entity.performedByName),
+          _escapeCsv(entity.entityType),
+          _escapeCsv(entity.entityId),
+          _escapeCsv(entity.reason ?? ''),
+          entity.hasChanges ? 'Yes' : 'No',
+        ].join(','));
+      }
+
+      return csvLines.join('\n');
+    } catch (e) {
+      throw Exception('Failed to export audit logs: $e');
+    }
+  }
+
+  /// Escape CSV field (wrap in quotes if contains comma, quote, or newline)
+  String _escapeCsv(String value) {
+    if (value.contains(',') || value.contains('"') || value.contains('\n')) {
+      return '"${value.replaceAll('"', '""')}"';
+    }
+    return value;
+  }
+
+  /// Get unique list of action types for filtering
+  Future<List<String>> getAuditLogActionTypes() async {
+    try {
+      final response = await _supabase
+          .from('audit_logs')
+          .select('action_type')
+          .order('action_type');
+
+      final actionTypes = <String>{};
+      for (final row in response as List) {
+        final actionType = row['action_type'] as String?;
+        if (actionType != null) {
+          actionTypes.add(actionType);
+        }
+      }
+
+      return actionTypes.toList()..sort();
+    } catch (e) {
+      throw Exception('Failed to get action types: $e');
+    }
+  }
+
+  /// Get unique list of entity types for filtering
+  Future<List<String>> getAuditLogEntityTypes() async {
+    try {
+      final response = await _supabase
+          .from('audit_logs')
+          .select('entity_type')
+          .order('entity_type');
+
+      final entityTypes = <String>{};
+      for (final row in response as List) {
+        final entityType = row['entity_type'] as String?;
+        if (entityType != null) {
+          entityTypes.add(entityType);
+        }
+      }
+
+      return entityTypes.toList()..sort();
+    } catch (e) {
+      throw Exception('Failed to get entity types: $e');
+    }
+  }
+
+  // ==================== EXCUSE MANAGEMENT ====================
+
+  /// Get excuses with optional filters
+  Future<List<Map<String, dynamic>>> getExcuses({
+    String? status,
+    String? userId,
+    String? excuseType,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    try {
+      var query = _supabase
+          .from('excuses')
+          .select('''
+            *,
+            users!excuses_user_id_fkey(name),
+            reviewer:users!excuses_reviewed_by_fkey(name)
+          ''');
+
+      // Apply filters
+      if (status != null && status.isNotEmpty) {
+        query = query.eq('status', status);
+      }
+
+      if (userId != null && userId.isNotEmpty) {
+        query = query.eq('user_id', userId);
+      }
+
+      if (excuseType != null && excuseType.isNotEmpty) {
+        query = query.eq('excuse_type', excuseType);
+      }
+
+      if (startDate != null) {
+        query = query.gte('report_date', startDate.toIso8601String());
+      }
+
+      if (endDate != null) {
+        query = query.lte('report_date', endDate.toIso8601String());
+      }
+
+      // Order by submitted_at descending
+      final response = await query.order('submitted_at', ascending: false);
+
+      return (response as List).map<Map<String, dynamic>>((excuse) {
+        // Flatten joined user data
+        final userRecord = excuse['users'];
+        final reviewerRecord = excuse['reviewer'];
+
+        return {
+          ...excuse as Map<String, dynamic>,
+          'user_name': userRecord != null ? userRecord['name'] : 'Unknown User',
+          'reviewer_name': reviewerRecord != null ? reviewerRecord['name'] : null,
+        }..remove('users')..remove('reviewer');
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to get excuses: $e');
+    }
+  }
+
+  /// Get single excuse by ID with user details
+  Future<Map<String, dynamic>> getExcuseById(String excuseId) async {
+    try {
+      final response = await _supabase
+          .from('excuses')
+          .select('''
+            *,
+            users!excuses_user_id_fkey(name, email, phone),
+            reviewer:users!excuses_reviewed_by_fkey(name)
+          ''')
+          .eq('id', excuseId)
+          .single();
+
+      // Flatten joined user data
+      final userRecord = response['users'];
+      final reviewerRecord = response['reviewer'];
+
+      return {
+        ...response,
+        'user_name': userRecord != null ? userRecord['name'] : 'Unknown User',
+        'user_email': userRecord != null ? userRecord['email'] : null,
+        'user_phone': userRecord != null ? userRecord['phone'] : null,
+        'reviewer_name': reviewerRecord != null ? reviewerRecord['name'] : null,
+      }..remove('users')..remove('reviewer');
+    } catch (e) {
+      throw Exception('Failed to get excuse: $e');
+    }
+  }
+
+  /// Approve excuse
+  Future<void> approveExcuse({
+    required String excuseId,
+    required String approvedBy,
+  }) async {
+    try {
+      // Get excuse details for audit log
+      final excuse = await getExcuseById(excuseId);
+
+      // Update excuse status
+      await _supabase
+          .from('excuses')
+          .update({
+            'status': 'approved',
+            'reviewed_by': approvedBy,
+            'reviewed_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', excuseId);
+
+      // Create audit log
+      await _createAuditLog(
+        actionType: 'excuse_approved',
+        performedBy: approvedBy,
+        entityType: 'excuse',
+        entityId: excuseId,
+        affectedUserId: excuse['user_id'],
+        oldValues: {'status': excuse['status']},
+        newValues: {'status': 'approved'},
+        notes: 'Excuse for ${excuse['report_date']} approved',
+      );
+    } catch (e) {
+      throw Exception('Failed to approve excuse: $e');
+    }
+  }
+
+  /// Reject excuse
+  Future<void> rejectExcuse({
+    required String excuseId,
+    required String rejectedBy,
+    required String reason,
+  }) async {
+    try {
+      // Get excuse details for audit log
+      final excuse = await getExcuseById(excuseId);
+
+      // Update excuse status
+      await _supabase
+          .from('excuses')
+          .update({
+            'status': 'rejected',
+            'reviewed_by': rejectedBy,
+            'reviewed_at': DateTime.now().toIso8601String(),
+            'rejection_reason': reason,
+          })
+          .eq('id', excuseId);
+
+      // Create audit log
+      await _createAuditLog(
+        actionType: 'excuse_rejected',
+        performedBy: rejectedBy,
+        entityType: 'excuse',
+        entityId: excuseId,
+        affectedUserId: excuse['user_id'],
+        oldValues: {'status': excuse['status']},
+        newValues: {'status': 'rejected', 'rejection_reason': reason},
+        reason: reason,
+        notes: 'Excuse for ${excuse['report_date']} rejected',
+      );
+    } catch (e) {
+      throw Exception('Failed to reject excuse: $e');
+    }
+  }
+
+  /// Bulk approve excuses
+  Future<int> bulkApproveExcuses({
+    required List<String> excuseIds,
+    required String approvedBy,
+  }) async {
+    try {
+      int successCount = 0;
+
+      for (final excuseId in excuseIds) {
+        try {
+          await approveExcuse(
+            excuseId: excuseId,
+            approvedBy: approvedBy,
+          );
+          successCount++;
+        } catch (e) {
+          // Log individual failure but continue
+          print('Failed to approve excuse $excuseId: $e');
+        }
+      }
+
+      return successCount;
+    } catch (e) {
+      throw Exception('Failed to bulk approve excuses: $e');
+    }
+  }
+
+  /// Bulk reject excuses
+  Future<int> bulkRejectExcuses({
+    required List<String> excuseIds,
+    required String rejectedBy,
+    required String reason,
+  }) async {
+    try {
+      int successCount = 0;
+
+      for (final excuseId in excuseIds) {
+        try {
+          await rejectExcuse(
+            excuseId: excuseId,
+            rejectedBy: rejectedBy,
+            reason: reason,
+          );
+          successCount++;
+        } catch (e) {
+          // Log individual failure but continue
+          print('Failed to reject excuse $excuseId: $e');
+        }
+      }
+
+      return successCount;
+    } catch (e) {
+      throw Exception('Failed to bulk reject excuses: $e');
     }
   }
 }
