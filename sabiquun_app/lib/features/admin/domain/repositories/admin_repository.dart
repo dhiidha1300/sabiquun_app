@@ -234,4 +234,44 @@ abstract class AdminRepository {
     DateTime? endDate,
     String format = 'pdf', // 'pdf' or 'excel'
   });
+
+  // ==================== EXCUSE MANAGEMENT ====================
+
+  /// Get excuses with optional filters
+  Future<List<dynamic>> getExcuses({
+    String? status,
+    String? userId,
+    String? excuseType,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
+
+  /// Get single excuse by ID
+  Future<dynamic> getExcuseById(String excuseId);
+
+  /// Approve excuse
+  Future<void> approveExcuse({
+    required String excuseId,
+    required String approvedBy,
+  });
+
+  /// Reject excuse
+  Future<void> rejectExcuse({
+    required String excuseId,
+    required String rejectedBy,
+    required String reason,
+  });
+
+  /// Bulk approve excuses
+  Future<int> bulkApproveExcuses({
+    required List<String> excuseIds,
+    required String approvedBy,
+  });
+
+  /// Bulk reject excuses
+  Future<int> bulkRejectExcuses({
+    required List<String> excuseIds,
+    required String rejectedBy,
+    required String reason,
+  });
 }

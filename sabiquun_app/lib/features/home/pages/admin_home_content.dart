@@ -288,6 +288,13 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             route: '/admin/system-settings',
           ),
           _QuickAction(
+            icon: Icons.history,
+            title: 'Audit Logs',
+            subtitle: 'System activity',
+            color: Colors.blueGrey,
+            route: '/admin/audit-logs',
+          ),
+          _QuickAction(
             icon: Icons.analytics,
             title: 'Analytics',
             subtitle: 'View reports',
@@ -299,7 +306,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             title: 'Excuses',
             subtitle: 'Review requests',
             color: Colors.orange,
-            route: '/excuse-management',
+            route: '/admin/excuses',
             badgeCount: pendingExcuses,
             hasUrgentItem: pendingExcuses > 5,
           ),
