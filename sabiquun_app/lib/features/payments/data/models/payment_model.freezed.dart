@@ -31,6 +31,8 @@ mixin _$PaymentModel {
   DateTime? get updatedAt => throw _privateConstructorUsedError;
   String? get paymentMethodName => throw _privateConstructorUsedError;
   String? get reviewerName => throw _privateConstructorUsedError;
+  String? get userName => throw _privateConstructorUsedError;
+  String? get userEmail => throw _privateConstructorUsedError;
 
   /// Create a copy of PaymentModel
   /// with the given fields replaced by the non-null parameter values.
@@ -61,6 +63,8 @@ abstract class $PaymentModelCopyWith<$Res> {
     DateTime? updatedAt,
     String? paymentMethodName,
     String? reviewerName,
+    String? userName,
+    String? userEmail,
   });
 }
 
@@ -93,6 +97,8 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
     Object? updatedAt = freezed,
     Object? paymentMethodName = freezed,
     Object? reviewerName = freezed,
+    Object? userName = freezed,
+    Object? userEmail = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -152,6 +158,14 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
                 ? _value.reviewerName
                 : reviewerName // ignore: cast_nullable_to_non_nullable
                       as String?,
+            userName: freezed == userName
+                ? _value.userName
+                : userName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            userEmail: freezed == userEmail
+                ? _value.userEmail
+                : userEmail // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -182,6 +196,8 @@ abstract class _$$PaymentModelImplCopyWith<$Res>
     DateTime? updatedAt,
     String? paymentMethodName,
     String? reviewerName,
+    String? userName,
+    String? userEmail,
   });
 }
 
@@ -213,6 +229,8 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
     Object? updatedAt = freezed,
     Object? paymentMethodName = freezed,
     Object? reviewerName = freezed,
+    Object? userName = freezed,
+    Object? userEmail = freezed,
   }) {
     return _then(
       _$PaymentModelImpl(
@@ -272,6 +290,14 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
             ? _value.reviewerName
             : reviewerName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        userName: freezed == userName
+            ? _value.userName
+            : userName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        userEmail: freezed == userEmail
+            ? _value.userEmail
+            : userEmail // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -295,6 +321,8 @@ class _$PaymentModelImpl extends _PaymentModel {
     this.updatedAt,
     this.paymentMethodName,
     this.reviewerName,
+    this.userName,
+    this.userEmail,
   }) : super._();
 
   @override
@@ -325,10 +353,14 @@ class _$PaymentModelImpl extends _PaymentModel {
   final String? paymentMethodName;
   @override
   final String? reviewerName;
+  @override
+  final String? userName;
+  @override
+  final String? userEmail;
 
   @override
   String toString() {
-    return 'PaymentModel(id: $id, userId: $userId, amount: $amount, paymentMethodId: $paymentMethodId, referenceNumber: $referenceNumber, paymentType: $paymentType, status: $status, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, rejectionReason: $rejectionReason, createdAt: $createdAt, updatedAt: $updatedAt, paymentMethodName: $paymentMethodName, reviewerName: $reviewerName)';
+    return 'PaymentModel(id: $id, userId: $userId, amount: $amount, paymentMethodId: $paymentMethodId, referenceNumber: $referenceNumber, paymentType: $paymentType, status: $status, reviewedBy: $reviewedBy, reviewedAt: $reviewedAt, rejectionReason: $rejectionReason, createdAt: $createdAt, updatedAt: $updatedAt, paymentMethodName: $paymentMethodName, reviewerName: $reviewerName, userName: $userName, userEmail: $userEmail)';
   }
 
   @override
@@ -359,7 +391,11 @@ class _$PaymentModelImpl extends _PaymentModel {
             (identical(other.paymentMethodName, paymentMethodName) ||
                 other.paymentMethodName == paymentMethodName) &&
             (identical(other.reviewerName, reviewerName) ||
-                other.reviewerName == reviewerName));
+                other.reviewerName == reviewerName) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName) &&
+            (identical(other.userEmail, userEmail) ||
+                other.userEmail == userEmail));
   }
 
   @override
@@ -379,6 +415,8 @@ class _$PaymentModelImpl extends _PaymentModel {
     updatedAt,
     paymentMethodName,
     reviewerName,
+    userName,
+    userEmail,
   );
 
   /// Create a copy of PaymentModel
@@ -406,6 +444,8 @@ abstract class _PaymentModel extends PaymentModel {
     final DateTime? updatedAt,
     final String? paymentMethodName,
     final String? reviewerName,
+    final String? userName,
+    final String? userEmail,
   }) = _$PaymentModelImpl;
   const _PaymentModel._() : super._();
 
@@ -437,6 +477,10 @@ abstract class _PaymentModel extends PaymentModel {
   String? get paymentMethodName;
   @override
   String? get reviewerName;
+  @override
+  String? get userName;
+  @override
+  String? get userEmail;
 
   /// Create a copy of PaymentModel
   /// with the given fields replaced by the non-null parameter values.

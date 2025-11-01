@@ -9,6 +9,15 @@ class PenaltyRepositoryImpl implements PenaltyRepository {
   PenaltyRepositoryImpl(this._remoteDataSource);
 
   @override
+  Future<double> getTotalOutstandingBalance() async {
+    try {
+      return await _remoteDataSource.getTotalOutstandingBalance();
+    } catch (e) {
+      throw Exception('Failed to get total outstanding balance: $e');
+    }
+  }
+
+  @override
   Future<PenaltyBalanceEntity> getUserBalance(String userId) async {
     try {
       final model = await _remoteDataSource.getUserBalance(userId);

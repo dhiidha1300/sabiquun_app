@@ -19,6 +19,16 @@ class PenaltyLoading extends PenaltyState {
   const PenaltyLoading();
 }
 
+/// Total outstanding balance loaded (all users)
+class TotalOutstandingBalanceLoaded extends PenaltyState {
+  final double totalBalance;
+
+  const TotalOutstandingBalanceLoaded(this.totalBalance);
+
+  @override
+  List<Object?> get props => [totalBalance];
+}
+
 /// Penalty balance loaded successfully
 class PenaltyBalanceLoaded extends PenaltyState {
   final PenaltyBalanceEntity balance;

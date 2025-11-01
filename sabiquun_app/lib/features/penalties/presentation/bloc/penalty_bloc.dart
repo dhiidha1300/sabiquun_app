@@ -7,6 +7,7 @@ class PenaltyBloc extends Bloc<PenaltyEvent, PenaltyState> {
   final PenaltyRepository _penaltyRepository;
 
   PenaltyBloc(this._penaltyRepository) : super(const PenaltyInitial()) {
+    on<LoadTotalOutstandingBalanceRequested>(_onLoadTotalOutstandingBalanceRequested);
     on<LoadPenaltyBalanceRequested>(_onLoadPenaltyBalanceRequested);
     on<LoadPenaltiesRequested>(_onLoadPenaltiesRequested);
     on<LoadUnpaidPenaltiesRequested>(_onLoadUnpaidPenaltiesRequested);
@@ -16,6 +17,18 @@ class PenaltyBloc extends Bloc<PenaltyEvent, PenaltyState> {
     on<UpdatePenaltyAmountRequested>(_onUpdatePenaltyAmountRequested);
     on<RemovePenaltyRequested>(_onRemovePenaltyRequested);
     on<ResetPenaltyStateRequested>(_onResetPenaltyStateRequested);
+  }
+
+  Future<void> _onLoadTotalOutstandingBalanceRequested(
+    LoadTotalOutstandingBalanceRequested event,
+    Emitter<PenaltyState> emit,
+  ) async {
+    try {
+      final totalBalance = await _penaltyRepository.getTotalOutstandingBalance();
+      emit(TotalOutstandingBalanceLoaded(totalBalance));
+    } catch (e) {
+      emit(PenaltyError('Failed to load total outstanding balance: ${e.toString()}'));
+    }
   }
 
   Future<void> _onLoadPenaltyBalanceRequested(

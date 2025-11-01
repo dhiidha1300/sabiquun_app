@@ -17,6 +17,8 @@ class PaymentEntity extends Equatable {
   // Joined data (optional)
   final String? paymentMethodName;
   final String? reviewerName;
+  final String? userName;
+  final String? userEmail;
 
   const PaymentEntity({
     required this.id,
@@ -32,6 +34,8 @@ class PaymentEntity extends Equatable {
     this.updatedAt,
     this.paymentMethodName,
     this.reviewerName,
+    this.userName,
+    this.userEmail,
   });
 
   /// Get formatted amount string
@@ -55,5 +59,7 @@ class PaymentEntity extends Equatable {
         updatedAt,
         paymentMethodName,
         reviewerName,
+        userName,
+        userEmail,
       ];
 }

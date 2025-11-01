@@ -23,6 +23,8 @@ class PaymentModel with _$PaymentModel {
     DateTime? updatedAt,
     String? paymentMethodName,
     String? reviewerName,
+    String? userName,
+    String? userEmail,
   }) = _PaymentModel;
 
   factory PaymentModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,8 @@ class PaymentModel with _$PaymentModel {
           : null,
       paymentMethodName: json['payment_method_name'] as String?,
       reviewerName: json['reviewer_name'] as String?,
+      userName: json['user_name'] as String?,
+      userEmail: json['user_email'] as String?,
     );
   }
 
@@ -63,6 +67,8 @@ class PaymentModel with _$PaymentModel {
       updatedAt: updatedAt,
       paymentMethodName: paymentMethodName,
       reviewerName: reviewerName,
+      userName: userName,
+      userEmail: userEmail,
     );
   }
 }

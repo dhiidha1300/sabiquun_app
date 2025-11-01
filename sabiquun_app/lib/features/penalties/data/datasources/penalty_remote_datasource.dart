@@ -7,6 +7,28 @@ class PenaltyRemoteDataSource {
 
   PenaltyRemoteDataSource(this._supabaseClient);
 
+  /// Get total outstanding balance across all users (for cashier/admin dashboard)
+  Future<double> getTotalOutstandingBalance() async {
+    try {
+      // Get sum of all unpaid and partially paid penalties
+      final response = await _supabaseClient
+          .from('penalties')
+          .select('amount, paid_amount')
+          .inFilter('status', ['unpaid', 'partially_paid']);
+
+      double totalOutstanding = 0;
+      for (final penalty in response as List) {
+        final amount = (penalty['amount'] as num).toDouble();
+        final paidAmount = (penalty['paid_amount'] as num).toDouble();
+        totalOutstanding += (amount - paidAmount);
+      }
+
+      return totalOutstanding;
+    } catch (e) {
+      throw Exception('Failed to fetch total outstanding balance: $e');
+    }
+  }
+
   /// Get user's current penalty balance with statistics
   Future<PenaltyBalanceModel> getUserBalance(String userId) async {
     try {

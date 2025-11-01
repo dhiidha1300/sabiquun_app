@@ -11,6 +11,9 @@ import 'package:sabiquun_app/features/home/widgets/collapsible_deed_tracker.dart
 import 'package:sabiquun_app/features/payments/presentation/bloc/payment_bloc.dart';
 import 'package:sabiquun_app/features/payments/presentation/bloc/payment_event.dart';
 import 'package:sabiquun_app/features/payments/presentation/bloc/payment_state.dart';
+import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
+import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_event.dart';
+import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_state.dart';
 
 /// Cashier Home Content - Payment Management Dashboard
 class CashierHomeContent extends StatefulWidget {
@@ -25,11 +28,26 @@ class CashierHomeContent extends StatefulWidget {
   State<CashierHomeContent> createState() => _CashierHomeContentState();
 }
 
-class _CashierHomeContentState extends State<CashierHomeContent> {
+class _CashierHomeContentState extends State<CashierHomeContent> with WidgetsBindingObserver, RouteAware {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Refresh data when app comes back to foreground
+      _loadData();
+    }
   }
 
   void _loadData() {
@@ -38,6 +56,9 @@ class _CashierHomeContentState extends State<CashierHomeContent> {
 
     // Load recent approved payments
     context.read<PaymentBloc>().add(const LoadRecentApprovedPaymentsRequested(limit: 5));
+
+    // Load total outstanding balance for all users
+    context.read<PenaltyBloc>().add(const LoadTotalOutstandingBalanceRequested());
   }
 
   Future<void> _onRefresh() async {
@@ -47,44 +68,52 @@ class _CashierHomeContentState extends State<CashierHomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      drawer: _buildModernDrawer(),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _onRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                // Header with user profile
-                _buildHeader(),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        // Reload data when user navigates back to this page
+        if (!didPop) {
+          _loadData();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        drawer: _buildModernDrawer(),
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  // Header with user profile
+                  _buildHeader(),
 
-                // Main content
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Quick Actions Grid
-                      _buildQuickActionsSection(),
-                      const SizedBox(height: 20),
+                  // Main content
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Quick Actions Grid
+                        _buildQuickActionsSection(),
+                        const SizedBox(height: 20),
 
-                      // Personal Deed Tracker (Collapsible)
-                      const CollapsibleDeedTracker(),
-                      const SizedBox(height: 20),
+                        // Personal Deed Tracker (Collapsible)
+                        const CollapsibleDeedTracker(),
+                        const SizedBox(height: 20),
 
-                      // Payment Overview Card
-                      _buildPaymentOverviewCard(),
-                      const SizedBox(height: 20),
+                        // Payment Overview Card
+                        _buildPaymentOverviewCard(),
+                        const SizedBox(height: 20),
 
-                      // Recent Approved Payments Section
-                      _buildRecentPaymentsSection(),
-                      const SizedBox(height: 100), // Space for bottom nav
-                    ],
+                        // Recent Approved Payments Section
+                        _buildRecentPaymentsSection(),
+                        const SizedBox(height: 100), // Space for bottom nav
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -455,27 +484,41 @@ class _CashierHomeContentState extends State<CashierHomeContent> {
               Divider(color: Colors.green.shade300, thickness: 1),
               const SizedBox(height: 16),
 
-              // Placeholder for total penalty (requires API)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total Outstanding (All Users)',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF558B2F),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    'N/A',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
+              // Total outstanding balance (all users)
+              BlocBuilder<PenaltyBloc, PenaltyState>(
+                builder: (context, penaltyState) {
+                  String totalOutstandingText = 'Loading...';
+
+                  if (penaltyState is TotalOutstandingBalanceLoaded) {
+                    totalOutstandingText = '${NumberFormat('#,###').format(penaltyState.totalBalance)} Sh';
+                  } else if (penaltyState is PenaltyError) {
+                    totalOutstandingText = 'Error';
+                  }
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Total Outstanding (All Users)',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF558B2F),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        totalOutstandingText,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: penaltyState is TotalOutstandingBalanceLoaded
+                              ? const Color(0xFF2E7D32)
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -617,10 +660,10 @@ class _CashierHomeContentState extends State<CashierHomeContent> {
                     color: Colors.grey[600],
                   ),
                 ),
-                if (payment.paymentMethod != null) ...[
+                if (payment.paymentMethodName != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    payment.paymentMethod,
+                    payment.paymentMethodName!,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[500],

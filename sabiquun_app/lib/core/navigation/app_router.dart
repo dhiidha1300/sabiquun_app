@@ -16,6 +16,7 @@ import 'package:sabiquun_app/features/deeds/presentation/pages/report_detail_pag
 import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_history_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
+import 'package:sabiquun_app/features/payments/presentation/pages/payment_review_page.dart';
 import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_edit_page.dart';
@@ -156,6 +157,11 @@ class AppRouter {
           final userId = state.extra as String;
           return PaymentHistoryPage(userId: userId);
         },
+      ),
+      GoRoute(
+        path: '/payment-review',
+        name: 'payment-review',
+        builder: (context, state) => const PaymentReviewPage(),
       ),
 
       // Profile Route

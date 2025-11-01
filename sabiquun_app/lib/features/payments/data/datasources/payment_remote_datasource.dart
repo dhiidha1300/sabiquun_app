@@ -177,23 +177,25 @@ class PaymentRemoteDataSource {
           .from('payments')
           .select('''
             *,
-            users!payments_user_id_fkey(name),
-            payment_methods!inner(display_name)
+            users!payments_user_id_fkey(name, email)
           ''')
           .eq('status', 'pending')
           .order('created_at', ascending: true); // Oldest first
 
       return (response as List).map((json) {
         final flatJson = Map<String, dynamic>.from(json);
-        if (json['payment_methods'] != null) {
-          flatJson['payment_method_name'] = json['payment_methods']['display_name'];
+        // payment_method is already a VARCHAR in the table, use it directly
+        flatJson['payment_method_name'] = json['payment_method'];
+        if (json['users'] != null) {
+          flatJson['user_name'] = json['users']['name'];
+          flatJson['user_email'] = json['users']['email'];
         }
-        flatJson.remove('payment_methods');
         flatJson.remove('users');
 
         return PaymentModel.fromJson(flatJson);
       }).toList();
     } catch (e) {
+      print('Error fetching pending payments: $e');
       throw Exception('Failed to fetch pending payments: $e');
     }
   }
@@ -294,7 +296,6 @@ class PaymentRemoteDataSource {
         await _supabaseClient.from('penalties').update({
           'paid_amount': newPaidAmount,
           'status': newStatus,
-          'updated_at': DateTime.now().toIso8601String(),
         }).eq('id', penaltyId);
 
         remainingAmount -= amountToApply;
@@ -305,7 +306,6 @@ class PaymentRemoteDataSource {
         'status': 'approved',
         'reviewed_by': reviewedBy,
         'reviewed_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', paymentId);
 
       // Log audit trail
@@ -335,7 +335,6 @@ class PaymentRemoteDataSource {
         'reviewed_by': reviewedBy,
         'reviewed_at': DateTime.now().toIso8601String(),
         'rejection_reason': reason,
-        'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', paymentId);
 
       // Log audit trail
@@ -438,7 +437,6 @@ class PaymentRemoteDataSource {
         await _supabaseClient.from('penalties').update({
           'paid_amount': newPaidAmount,
           'status': newStatus,
-          'updated_at': DateTime.now().toIso8601String(),
         }).eq('id', penaltyId);
 
         remainingAmount -= amountToApply;
@@ -492,7 +490,6 @@ class PaymentRemoteDataSource {
         'display_name': displayName,
         'is_active': isActive,
         'sort_order': sortOrder,
-        'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', methodId);
     } catch (e) {
       throw Exception('Failed to update payment method: $e');

@@ -7,6 +7,11 @@ abstract class PenaltyEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Load total outstanding balance across all users (Admin/Cashier dashboard)
+class LoadTotalOutstandingBalanceRequested extends PenaltyEvent {
+  const LoadTotalOutstandingBalanceRequested();
+}
+
 /// Load user's current penalty balance
 class LoadPenaltyBalanceRequested extends PenaltyEvent {
   final String userId;

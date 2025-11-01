@@ -2,6 +2,9 @@ import '../entities/penalty_entity.dart';
 import '../entities/penalty_balance_entity.dart';
 
 abstract class PenaltyRepository {
+  /// Get total outstanding balance across all users (for cashier/admin dashboard)
+  Future<double> getTotalOutstandingBalance();
+
   /// Get user's current penalty balance
   Future<PenaltyBalanceEntity> getUserBalance(String userId);
 
