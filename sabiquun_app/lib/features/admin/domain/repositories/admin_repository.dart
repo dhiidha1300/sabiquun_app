@@ -2,9 +2,11 @@ import '../entities/user_management_entity.dart';
 import '../entities/system_settings_entity.dart';
 import '../entities/audit_log_entity.dart';
 import '../entities/notification_template_entity.dart';
+import '../entities/notification_schedule_entity.dart';
 import '../entities/rest_day_entity.dart';
 import '../entities/analytics_entity.dart';
 import '../../../deeds/domain/entities/deed_template_entity.dart';
+import '../../../deeds/domain/entities/deed_report_entity.dart';
 
 abstract class AdminRepository {
   // ==================== USER MANAGEMENT ====================
@@ -170,15 +172,79 @@ abstract class AdminRepository {
   /// Get a single notification template
   Future<NotificationTemplateEntity> getNotificationTemplateById(String templateId);
 
-  /// Update notification template
-  Future<void> updateNotificationTemplate({
-    required String templateId,
+  /// Create notification template
+  Future<NotificationTemplateEntity> createNotificationTemplate({
+    required String templateKey,
+    required String title,
+    required String body,
     String? emailSubject,
     String? emailBody,
-    String? pushTitle,
-    String? pushBody,
+    required String notificationType,
+  });
+
+  /// Update notification template
+  Future<NotificationTemplateEntity> updateNotificationTemplate({
+    required String templateId,
+    String? title,
+    String? body,
+    String? emailSubject,
+    String? emailBody,
+    bool? isEnabled,
+  });
+
+  /// Delete notification template
+  Future<void> deleteNotificationTemplate(String templateId);
+
+  /// Toggle notification template status
+  Future<NotificationTemplateEntity> toggleNotificationTemplate({
+    required String templateId,
+    required bool isEnabled,
+  });
+
+  // ==================== NOTIFICATION SCHEDULES ====================
+
+  /// Get all notification schedules
+  Future<List<NotificationScheduleEntity>> getNotificationSchedules();
+
+  /// Get notification schedule by ID
+  Future<NotificationScheduleEntity> getNotificationScheduleById(String scheduleId);
+
+  /// Create notification schedule
+  Future<NotificationScheduleEntity> createNotificationSchedule({
+    required String notificationTemplateId,
+    required String scheduledTime,
+    required String frequency,
+    List<int>? daysOfWeek,
+    Map<String, dynamic>? conditions,
+    required String createdBy,
+  });
+
+  /// Update notification schedule
+  Future<NotificationScheduleEntity> updateNotificationSchedule({
+    required String scheduleId,
+    String? notificationTemplateId,
+    String? scheduledTime,
+    String? frequency,
+    List<int>? daysOfWeek,
+    Map<String, dynamic>? conditions,
     bool? isActive,
-    required String updatedBy,
+  });
+
+  /// Delete notification schedule
+  Future<void> deleteNotificationSchedule(String scheduleId);
+
+  /// Toggle notification schedule status
+  Future<NotificationScheduleEntity> toggleNotificationSchedule({
+    required String scheduleId,
+    required bool isActive,
+  });
+
+  /// Send manual notification to users
+  Future<void> sendManualNotification({
+    required List<String> userIds,
+    required String title,
+    required String body,
+    String? notificationType,
   });
 
   // ==================== REST DAYS MANAGEMENT ====================
@@ -272,6 +338,26 @@ abstract class AdminRepository {
   Future<int> bulkRejectExcuses({
     required List<String> excuseIds,
     required String rejectedBy,
+    required String reason,
+  });
+
+  // ==================== REPORT MANAGEMENT ====================
+
+  /// Search reports by user and date range
+  Future<List<DeedReportEntity>> searchReports({
+    String? userId,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? status,
+  });
+
+  /// Get a single report by ID with all deed entries
+  Future<DeedReportEntity> getReportById(String reportId);
+
+  /// Update report deed entries (admin override)
+  Future<DeedReportEntity> updateReport({
+    required String reportId,
+    required Map<String, double> deedValues,
     required String reason,
   });
 }

@@ -303,3 +303,174 @@ class BulkExcusesRejected extends AdminState {
   @override
   List<Object?> get props => [count];
 }
+
+// ==================== NOTIFICATION TEMPLATE STATES ====================
+
+/// Notification templates loaded successfully
+class NotificationTemplatesLoaded extends AdminState {
+  final List<dynamic> templates;
+
+  const NotificationTemplatesLoaded(this.templates);
+
+  @override
+  List<Object?> get props => [templates];
+}
+
+/// Notification template loaded successfully
+class NotificationTemplateLoaded extends AdminState {
+  final dynamic template;
+
+  const NotificationTemplateLoaded(this.template);
+
+  @override
+  List<Object?> get props => [template];
+}
+
+/// Notification template created successfully
+class NotificationTemplateCreated extends AdminState {
+  final dynamic template;
+
+  const NotificationTemplateCreated(this.template);
+
+  @override
+  List<Object?> get props => [template];
+}
+
+/// Notification template updated successfully
+class NotificationTemplateUpdated extends AdminState {
+  final dynamic template;
+
+  const NotificationTemplateUpdated(this.template);
+
+  @override
+  List<Object?> get props => [template];
+}
+
+/// Notification template deleted successfully
+class NotificationTemplateDeleted extends AdminState {
+  final String templateId;
+
+  const NotificationTemplateDeleted(this.templateId);
+
+  @override
+  List<Object?> get props => [templateId];
+}
+
+/// Notification template toggled successfully
+class NotificationTemplateToggled extends AdminState {
+  final dynamic template;
+
+  const NotificationTemplateToggled(this.template);
+
+  @override
+  List<Object?> get props => [template];
+}
+
+// ==================== NOTIFICATION SCHEDULE STATES ====================
+
+/// Notification schedules loaded successfully
+class NotificationSchedulesLoaded extends AdminState {
+  final List<dynamic> schedules;
+
+  const NotificationSchedulesLoaded(this.schedules);
+
+  @override
+  List<Object?> get props => [schedules];
+}
+
+/// Notification schedule loaded successfully
+class NotificationScheduleLoaded extends AdminState {
+  final dynamic schedule;
+
+  const NotificationScheduleLoaded(this.schedule);
+
+  @override
+  List<Object?> get props => [schedule];
+}
+
+/// Notification schedule created successfully
+class NotificationScheduleCreated extends AdminState {
+  final dynamic schedule;
+
+  const NotificationScheduleCreated(this.schedule);
+
+  @override
+  List<Object?> get props => [schedule];
+}
+
+/// Notification schedule updated successfully
+class NotificationScheduleUpdated extends AdminState {
+  final dynamic schedule;
+
+  const NotificationScheduleUpdated(this.schedule);
+
+  @override
+  List<Object?> get props => [schedule];
+}
+
+/// Notification schedule deleted successfully
+class NotificationScheduleDeleted extends AdminState {
+  final String scheduleId;
+
+  const NotificationScheduleDeleted(this.scheduleId);
+
+  @override
+  List<Object?> get props => [scheduleId];
+}
+
+/// Notification schedule toggled successfully
+class NotificationScheduleToggled extends AdminState {
+  final dynamic schedule;
+
+  const NotificationScheduleToggled(this.schedule);
+
+  @override
+  List<Object?> get props => [schedule];
+}
+
+/// Manual notification sent successfully
+class ManualNotificationSent extends AdminState {
+  final int userCount;
+
+  const ManualNotificationSent(this.userCount);
+
+  @override
+  List<Object?> get props => [userCount];
+}
+
+// ==================== REPORT MANAGEMENT STATES ====================
+
+/// Reports search in progress
+class ReportsSearchInProgress extends AdminState {
+  const ReportsSearchInProgress();
+}
+
+/// Reports search successful
+class ReportsSearchSuccess extends AdminState {
+  final List<dynamic> reports;
+
+  const ReportsSearchSuccess(this.reports);
+
+  @override
+  List<Object?> get props => [reports];
+}
+
+/// Single report loaded successfully
+class ReportLoadedSuccess extends AdminState {
+  final dynamic report;
+
+  const ReportLoadedSuccess(this.report);
+
+  @override
+  List<Object?> get props => [report];
+}
+
+/// Report updated successfully
+class ReportUpdatedSuccess extends AdminState {
+  final dynamic report;
+
+  const ReportUpdatedSuccess(this.report);
+
+  @override
+  List<Object?> get props => [report];
+}

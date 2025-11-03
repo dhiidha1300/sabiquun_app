@@ -32,6 +32,22 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<RejectExcuseRequested>(_onRejectExcuse);
     on<BulkApproveExcusesRequested>(_onBulkApproveExcuses);
     on<BulkRejectExcusesRequested>(_onBulkRejectExcuses);
+    on<LoadNotificationTemplatesRequested>(_onLoadNotificationTemplates);
+    on<LoadNotificationTemplateByIdRequested>(_onLoadNotificationTemplateById);
+    on<CreateNotificationTemplateRequested>(_onCreateNotificationTemplate);
+    on<UpdateNotificationTemplateRequested>(_onUpdateNotificationTemplate);
+    on<DeleteNotificationTemplateRequested>(_onDeleteNotificationTemplate);
+    on<ToggleNotificationTemplateRequested>(_onToggleNotificationTemplate);
+    on<LoadNotificationSchedulesRequested>(_onLoadNotificationSchedules);
+    on<LoadNotificationScheduleByIdRequested>(_onLoadNotificationScheduleById);
+    on<CreateNotificationScheduleRequested>(_onCreateNotificationSchedule);
+    on<UpdateNotificationScheduleRequested>(_onUpdateNotificationSchedule);
+    on<DeleteNotificationScheduleRequested>(_onDeleteNotificationSchedule);
+    on<ToggleNotificationScheduleRequested>(_onToggleNotificationSchedule);
+    on<SendManualNotificationRequested>(_onSendManualNotification);
+    on<SearchReportsRequested>(_onSearchReports);
+    on<GetReportByIdRequested>(_onGetReportById);
+    on<UpdateReportRequested>(_onUpdateReport);
   }
 
   Future<void> _onLoadUsers(
@@ -513,6 +529,290 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       add(const LoadExcusesRequested());
     } catch (e) {
       emit(AdminError('Failed to bulk reject excuses: ${e.toString()}'));
+    }
+  }
+
+  // ==================== NOTIFICATION TEMPLATE EVENT HANDLERS ====================
+
+  Future<void> _onLoadNotificationTemplates(
+    LoadNotificationTemplatesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final templates = await _repository.getNotificationTemplates(
+        templateType: event.templateType,
+        isActive: event.isActive,
+      );
+      emit(NotificationTemplatesLoaded(templates));
+    } catch (e) {
+      emit(AdminError('Failed to load notification templates: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onLoadNotificationTemplateById(
+    LoadNotificationTemplateByIdRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final template = await _repository.getNotificationTemplateById(event.templateId);
+      emit(NotificationTemplateLoaded(template));
+    } catch (e) {
+      emit(AdminError('Failed to load notification template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onCreateNotificationTemplate(
+    CreateNotificationTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final template = await _repository.createNotificationTemplate(
+        templateKey: event.templateKey,
+        title: event.title,
+        body: event.body,
+        emailSubject: event.emailSubject,
+        emailBody: event.emailBody,
+        notificationType: event.notificationType,
+      );
+      emit(NotificationTemplateCreated(template));
+      // Reload templates list
+      add(const LoadNotificationTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to create notification template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onUpdateNotificationTemplate(
+    UpdateNotificationTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final template = await _repository.updateNotificationTemplate(
+        templateId: event.templateId,
+        title: event.title,
+        body: event.body,
+        emailSubject: event.emailSubject,
+        emailBody: event.emailBody,
+        isEnabled: event.isEnabled,
+      );
+      emit(NotificationTemplateUpdated(template));
+      // Reload templates list
+      add(const LoadNotificationTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to update notification template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onDeleteNotificationTemplate(
+    DeleteNotificationTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.deleteNotificationTemplate(event.templateId);
+      emit(NotificationTemplateDeleted(event.templateId));
+      // Reload templates list
+      add(const LoadNotificationTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to delete notification template: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onToggleNotificationTemplate(
+    ToggleNotificationTemplateRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final template = await _repository.toggleNotificationTemplate(
+        templateId: event.templateId,
+        isEnabled: event.isEnabled,
+      );
+      emit(NotificationTemplateToggled(template));
+      // Reload templates list
+      add(const LoadNotificationTemplatesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to toggle notification template: ${e.toString()}'));
+    }
+  }
+
+  // ==================== NOTIFICATION SCHEDULE EVENT HANDLERS ====================
+
+  Future<void> _onLoadNotificationSchedules(
+    LoadNotificationSchedulesRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final schedules = await _repository.getNotificationSchedules();
+      emit(NotificationSchedulesLoaded(schedules));
+    } catch (e) {
+      emit(AdminError('Failed to load notification schedules: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onLoadNotificationScheduleById(
+    LoadNotificationScheduleByIdRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final schedule = await _repository.getNotificationScheduleById(event.scheduleId);
+      emit(NotificationScheduleLoaded(schedule));
+    } catch (e) {
+      emit(AdminError('Failed to load notification schedule: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onCreateNotificationSchedule(
+    CreateNotificationScheduleRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final schedule = await _repository.createNotificationSchedule(
+        notificationTemplateId: event.notificationTemplateId,
+        scheduledTime: event.scheduledTime,
+        frequency: event.frequency,
+        daysOfWeek: event.daysOfWeek,
+        conditions: event.conditions,
+        createdBy: event.createdBy,
+      );
+      emit(NotificationScheduleCreated(schedule));
+      // Reload schedules list
+      add(const LoadNotificationSchedulesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to create notification schedule: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onUpdateNotificationSchedule(
+    UpdateNotificationScheduleRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final schedule = await _repository.updateNotificationSchedule(
+        scheduleId: event.scheduleId,
+        notificationTemplateId: event.notificationTemplateId,
+        scheduledTime: event.scheduledTime,
+        frequency: event.frequency,
+        daysOfWeek: event.daysOfWeek,
+        conditions: event.conditions,
+        isActive: event.isActive,
+      );
+      emit(NotificationScheduleUpdated(schedule));
+      // Reload schedules list
+      add(const LoadNotificationSchedulesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to update notification schedule: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onDeleteNotificationSchedule(
+    DeleteNotificationScheduleRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.deleteNotificationSchedule(event.scheduleId);
+      emit(NotificationScheduleDeleted(event.scheduleId));
+      // Reload schedules list
+      add(const LoadNotificationSchedulesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to delete notification schedule: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onToggleNotificationSchedule(
+    ToggleNotificationScheduleRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final schedule = await _repository.toggleNotificationSchedule(
+        scheduleId: event.scheduleId,
+        isActive: event.isActive,
+      );
+      emit(NotificationScheduleToggled(schedule));
+      // Reload schedules list
+      add(const LoadNotificationSchedulesRequested());
+    } catch (e) {
+      emit(AdminError('Failed to toggle notification schedule: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onSendManualNotification(
+    SendManualNotificationRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.sendManualNotification(
+        userIds: event.userIds,
+        title: event.title,
+        body: event.body,
+        notificationType: event.notificationType,
+      );
+      emit(ManualNotificationSent(event.userIds.length));
+    } catch (e) {
+      emit(AdminError('Failed to send manual notification: ${e.toString()}'));
+    }
+  }
+
+  // ==================== REPORT MANAGEMENT HANDLERS ====================
+
+  Future<void> _onSearchReports(
+    SearchReportsRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const ReportsSearchInProgress());
+    try {
+      final reports = await _repository.searchReports(
+        userId: event.userId,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        status: event.status,
+      );
+      emit(ReportsSearchSuccess(reports));
+    } catch (e) {
+      emit(AdminError('Failed to search reports: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onGetReportById(
+    GetReportByIdRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final report = await _repository.getReportById(event.reportId);
+      emit(ReportLoadedSuccess(report));
+    } catch (e) {
+      emit(AdminError('Failed to load report: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onUpdateReport(
+    UpdateReportRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final report = await _repository.updateReport(
+        reportId: event.reportId,
+        deedValues: event.deedValues,
+        reason: event.reason,
+      );
+      emit(ReportUpdatedSuccess(report));
+      // Auto-reload reports list if we have previous search criteria
+      // The UI can handle re-fetching based on this success state
+    } catch (e) {
+      emit(AdminError('Failed to update report: ${e.toString()}'));
     }
   }
 }

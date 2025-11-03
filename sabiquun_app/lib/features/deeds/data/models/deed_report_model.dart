@@ -78,7 +78,7 @@ class DeedReportModel extends DeedReportEntity {
       submittedAt: submittedAt,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      entries: entries,
+      entries: entries?.map((e) => (e as DeedEntryModel).toEntity()).toList(),
     );
   }
 }

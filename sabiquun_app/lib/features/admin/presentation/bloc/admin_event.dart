@@ -461,3 +461,259 @@ class BulkRejectExcusesRequested extends AdminEvent {
   @override
   List<Object?> get props => [excuseIds, rejectedBy, reason];
 }
+
+// ==================== NOTIFICATION TEMPLATE EVENTS ====================
+
+/// Load notification templates
+class LoadNotificationTemplatesRequested extends AdminEvent {
+  final String? templateType;
+  final bool? isActive;
+
+  const LoadNotificationTemplatesRequested({
+    this.templateType,
+    this.isActive,
+  });
+
+  @override
+  List<Object?> get props => [templateType, isActive];
+}
+
+/// Load notification template by ID
+class LoadNotificationTemplateByIdRequested extends AdminEvent {
+  final String templateId;
+
+  const LoadNotificationTemplateByIdRequested({
+    required this.templateId,
+  });
+
+  @override
+  List<Object?> get props => [templateId];
+}
+
+/// Create notification template
+class CreateNotificationTemplateRequested extends AdminEvent {
+  final String templateKey;
+  final String title;
+  final String body;
+  final String? emailSubject;
+  final String? emailBody;
+  final String notificationType;
+
+  const CreateNotificationTemplateRequested({
+    required this.templateKey,
+    required this.title,
+    required this.body,
+    this.emailSubject,
+    this.emailBody,
+    required this.notificationType,
+  });
+
+  @override
+  List<Object?> get props => [templateKey, title, body, emailSubject, emailBody, notificationType];
+}
+
+/// Update notification template
+class UpdateNotificationTemplateRequested extends AdminEvent {
+  final String templateId;
+  final String? title;
+  final String? body;
+  final String? emailSubject;
+  final String? emailBody;
+  final bool? isEnabled;
+
+  const UpdateNotificationTemplateRequested({
+    required this.templateId,
+    this.title,
+    this.body,
+    this.emailSubject,
+    this.emailBody,
+    this.isEnabled,
+  });
+
+  @override
+  List<Object?> get props => [templateId, title, body, emailSubject, emailBody, isEnabled];
+}
+
+/// Delete notification template
+class DeleteNotificationTemplateRequested extends AdminEvent {
+  final String templateId;
+
+  const DeleteNotificationTemplateRequested({
+    required this.templateId,
+  });
+
+  @override
+  List<Object?> get props => [templateId];
+}
+
+/// Toggle notification template status
+class ToggleNotificationTemplateRequested extends AdminEvent {
+  final String templateId;
+  final bool isEnabled;
+
+  const ToggleNotificationTemplateRequested({
+    required this.templateId,
+    required this.isEnabled,
+  });
+
+  @override
+  List<Object?> get props => [templateId, isEnabled];
+}
+
+// ==================== NOTIFICATION SCHEDULE EVENTS ====================
+
+/// Load notification schedules
+class LoadNotificationSchedulesRequested extends AdminEvent {
+  const LoadNotificationSchedulesRequested();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// Load notification schedule by ID
+class LoadNotificationScheduleByIdRequested extends AdminEvent {
+  final String scheduleId;
+
+  const LoadNotificationScheduleByIdRequested({
+    required this.scheduleId,
+  });
+
+  @override
+  List<Object?> get props => [scheduleId];
+}
+
+/// Create notification schedule
+class CreateNotificationScheduleRequested extends AdminEvent {
+  final String notificationTemplateId;
+  final String scheduledTime;
+  final String frequency;
+  final List<int>? daysOfWeek;
+  final Map<String, dynamic>? conditions;
+  final String createdBy;
+
+  const CreateNotificationScheduleRequested({
+    required this.notificationTemplateId,
+    required this.scheduledTime,
+    required this.frequency,
+    this.daysOfWeek,
+    this.conditions,
+    required this.createdBy,
+  });
+
+  @override
+  List<Object?> get props => [notificationTemplateId, scheduledTime, frequency, daysOfWeek, conditions, createdBy];
+}
+
+/// Update notification schedule
+class UpdateNotificationScheduleRequested extends AdminEvent {
+  final String scheduleId;
+  final String? notificationTemplateId;
+  final String? scheduledTime;
+  final String? frequency;
+  final List<int>? daysOfWeek;
+  final Map<String, dynamic>? conditions;
+  final bool? isActive;
+
+  const UpdateNotificationScheduleRequested({
+    required this.scheduleId,
+    this.notificationTemplateId,
+    this.scheduledTime,
+    this.frequency,
+    this.daysOfWeek,
+    this.conditions,
+    this.isActive,
+  });
+
+  @override
+  List<Object?> get props => [scheduleId, notificationTemplateId, scheduledTime, frequency, daysOfWeek, conditions, isActive];
+}
+
+/// Delete notification schedule
+class DeleteNotificationScheduleRequested extends AdminEvent {
+  final String scheduleId;
+
+  const DeleteNotificationScheduleRequested({
+    required this.scheduleId,
+  });
+
+  @override
+  List<Object?> get props => [scheduleId];
+}
+
+/// Toggle notification schedule status
+class ToggleNotificationScheduleRequested extends AdminEvent {
+  final String scheduleId;
+  final bool isActive;
+
+  const ToggleNotificationScheduleRequested({
+    required this.scheduleId,
+    required this.isActive,
+  });
+
+  @override
+  List<Object?> get props => [scheduleId, isActive];
+}
+
+/// Send manual notification
+class SendManualNotificationRequested extends AdminEvent {
+  final List<String> userIds;
+  final String title;
+  final String body;
+  final String? notificationType;
+
+  const SendManualNotificationRequested({
+    required this.userIds,
+    required this.title,
+    required this.body,
+    this.notificationType,
+  });
+
+  @override
+  List<Object?> get props => [userIds, title, body, notificationType];
+}
+
+// ==================== REPORT MANAGEMENT EVENTS ====================
+
+/// Search reports by user and date range
+class SearchReportsRequested extends AdminEvent {
+  final String? userId;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? status;
+
+  const SearchReportsRequested({
+    this.userId,
+    this.startDate,
+    this.endDate,
+    this.status,
+  });
+
+  @override
+  List<Object?> get props => [userId, startDate, endDate, status];
+}
+
+/// Get a single report by ID
+class GetReportByIdRequested extends AdminEvent {
+  final String reportId;
+
+  const GetReportByIdRequested({required this.reportId});
+
+  @override
+  List<Object?> get props => [reportId];
+}
+
+/// Update report (admin override)
+class UpdateReportRequested extends AdminEvent {
+  final String reportId;
+  final Map<String, double> deedValues;
+  final String reason;
+
+  const UpdateReportRequested({
+    required this.reportId,
+    required this.deedValues,
+    required this.reason,
+  });
+
+  @override
+  List<Object?> get props => [reportId, deedValues, reason];
+}

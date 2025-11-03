@@ -25,6 +25,11 @@ import 'package:sabiquun_app/features/admin/presentation/pages/system_settings_p
 import 'package:sabiquun_app/features/admin/presentation/pages/deed_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/audit_log_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/excuse_management_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/notification_templates_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/notification_schedules_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/manual_notification_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/report_management_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.dart';
 import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 
@@ -218,6 +223,34 @@ class AppRouter {
         path: '/admin/excuses',
         name: 'admin-excuses',
         builder: (context, state) => const ExcuseManagementPage(),
+      ),
+      GoRoute(
+        path: '/admin/notification-templates',
+        name: 'admin-notification-templates',
+        builder: (context, state) => const NotificationTemplatesPage(),
+      ),
+      GoRoute(
+        path: '/admin/notification-schedules',
+        name: 'admin-notification-schedules',
+        builder: (context, state) => const NotificationSchedulesPage(),
+      ),
+      GoRoute(
+        path: '/admin/manual-notification',
+        name: 'admin-manual-notification',
+        builder: (context, state) => const ManualNotificationPage(),
+      ),
+      GoRoute(
+        path: '/admin/reports',
+        name: 'admin-reports',
+        builder: (context, state) => const ReportManagementPage(),
+      ),
+      GoRoute(
+        path: '/admin/report-edit',
+        name: 'admin-report-edit',
+        builder: (context, state) {
+          final reportId = state.uri.queryParameters['id'] ?? '';
+          return ReportEditPage(reportId: reportId);
+        },
       ),
 
       // Analytics Routes (Placeholder)

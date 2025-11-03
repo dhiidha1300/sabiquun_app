@@ -302,6 +302,20 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             route: '/admin/analytics',
           ),
           _QuickAction(
+            icon: Icons.notifications_active,
+            title: 'Notifications',
+            subtitle: 'Manage templates',
+            color: Colors.deepOrange,
+            route: '/admin/notification-templates',
+          ),
+          _QuickAction(
+            icon: Icons.description,
+            title: 'Reports',
+            subtitle: 'Edit user reports',
+            color: Colors.teal,
+            route: '/admin/reports',
+          ),
+          _QuickAction(
             icon: Icons.event_busy,
             title: 'Excuses',
             subtitle: 'Review requests',

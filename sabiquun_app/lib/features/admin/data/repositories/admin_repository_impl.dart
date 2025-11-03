@@ -2,10 +2,12 @@ import '../../domain/entities/user_management_entity.dart';
 import '../../domain/entities/system_settings_entity.dart';
 import '../../domain/entities/audit_log_entity.dart';
 import '../../domain/entities/notification_template_entity.dart';
+import '../../domain/entities/notification_schedule_entity.dart';
 import '../../domain/entities/rest_day_entity.dart';
 import '../../domain/entities/analytics_entity.dart';
 import '../../domain/repositories/admin_repository.dart';
 import '../../../deeds/domain/entities/deed_template_entity.dart';
+import '../../../deeds/domain/entities/deed_report_entity.dart';
 import '../datasources/admin_remote_datasource.dart';
 import '../models/system_settings_model.dart';
 
@@ -404,34 +406,6 @@ class AdminRepositoryImpl implements AdminRepository {
     }
   }
 
-  // ==================== NOTIFICATION TEMPLATES (Stub) ====================
-
-  @override
-  Future<List<NotificationTemplateEntity>> getNotificationTemplates({
-    String? templateType,
-    bool? isActive,
-  }) {
-    throw UnimplementedError('Notification templates not yet implemented');
-  }
-
-  @override
-  Future<NotificationTemplateEntity> getNotificationTemplateById(String templateId) {
-    throw UnimplementedError('Notification templates not yet implemented');
-  }
-
-  @override
-  Future<void> updateNotificationTemplate({
-    required String templateId,
-    String? emailSubject,
-    String? emailBody,
-    String? pushTitle,
-    String? pushBody,
-    bool? isActive,
-    required String updatedBy,
-  }) {
-    throw UnimplementedError('Notification templates not yet implemented');
-  }
-
   // ==================== REST DAYS (Stub) ====================
 
   @override
@@ -605,6 +579,313 @@ class AdminRepositoryImpl implements AdminRepository {
       );
     } catch (e) {
       throw Exception('Repository: Failed to bulk reject excuses - $e');
+    }
+  }
+
+  // ==================== NOTIFICATION TEMPLATES ====================
+
+  @override
+  Future<List<NotificationTemplateEntity>> getNotificationTemplates({
+    String? templateType,
+    bool? isActive,
+  }) async {
+    try {
+      final models = await _remoteDataSource.getNotificationTemplates();
+
+      // Filter by template type and active status if provided
+      var filtered = models;
+      if (templateType != null) {
+        filtered = filtered.where((m) => m.notificationType == templateType).toList();
+      }
+      if (isActive != null) {
+        filtered = filtered.where((m) => m.isEnabled == isActive).toList();
+      }
+
+      return filtered.map(_mapNotificationTemplateToEntity).toList();
+    } catch (e) {
+      throw Exception('Repository: Failed to get notification templates - $e');
+    }
+  }
+
+  @override
+  Future<NotificationTemplateEntity> getNotificationTemplateById(String templateId) async {
+    try {
+      final model = await _remoteDataSource.getNotificationTemplateById(templateId);
+      return _mapNotificationTemplateToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to get notification template - $e');
+    }
+  }
+
+  @override
+  Future<NotificationTemplateEntity> createNotificationTemplate({
+    required String templateKey,
+    required String title,
+    required String body,
+    String? emailSubject,
+    String? emailBody,
+    required String notificationType,
+  }) async {
+    try {
+      final model = await _remoteDataSource.createNotificationTemplate(
+        templateKey: templateKey,
+        title: title,
+        body: body,
+        emailSubject: emailSubject,
+        emailBody: emailBody,
+        notificationType: notificationType,
+      );
+      return _mapNotificationTemplateToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to create notification template - $e');
+    }
+  }
+
+  @override
+  Future<NotificationTemplateEntity> updateNotificationTemplate({
+    required String templateId,
+    String? title,
+    String? body,
+    String? emailSubject,
+    String? emailBody,
+    bool? isEnabled,
+  }) async {
+    try {
+      final model = await _remoteDataSource.updateNotificationTemplate(
+        templateId: templateId,
+        title: title,
+        body: body,
+        emailSubject: emailSubject,
+        emailBody: emailBody,
+        isEnabled: isEnabled,
+      );
+      return _mapNotificationTemplateToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to update notification template - $e');
+    }
+  }
+
+  @override
+  Future<void> deleteNotificationTemplate(String templateId) async {
+    try {
+      await _remoteDataSource.deleteNotificationTemplate(templateId);
+    } catch (e) {
+      throw Exception('Repository: Failed to delete notification template - $e');
+    }
+  }
+
+  @override
+  Future<NotificationTemplateEntity> toggleNotificationTemplate({
+    required String templateId,
+    required bool isEnabled,
+  }) async {
+    try {
+      final model = await _remoteDataSource.toggleNotificationTemplate(
+        templateId: templateId,
+        isEnabled: isEnabled,
+      );
+      return _mapNotificationTemplateToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to toggle notification template - $e');
+    }
+  }
+
+  // ==================== NOTIFICATION SCHEDULES ====================
+
+  @override
+  Future<List<NotificationScheduleEntity>> getNotificationSchedules() async {
+    try {
+      final models = await _remoteDataSource.getNotificationSchedules();
+      return models.map(_mapNotificationScheduleToEntity).toList();
+    } catch (e) {
+      throw Exception('Repository: Failed to get notification schedules - $e');
+    }
+  }
+
+  @override
+  Future<NotificationScheduleEntity> getNotificationScheduleById(String scheduleId) async {
+    try {
+      final model = await _remoteDataSource.getNotificationScheduleById(scheduleId);
+      return _mapNotificationScheduleToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to get notification schedule - $e');
+    }
+  }
+
+  @override
+  Future<NotificationScheduleEntity> createNotificationSchedule({
+    required String notificationTemplateId,
+    required String scheduledTime,
+    required String frequency,
+    List<int>? daysOfWeek,
+    Map<String, dynamic>? conditions,
+    required String createdBy,
+  }) async {
+    try {
+      final model = await _remoteDataSource.createNotificationSchedule(
+        notificationTemplateId: notificationTemplateId,
+        scheduledTime: scheduledTime,
+        frequency: frequency,
+        daysOfWeek: daysOfWeek,
+        conditions: conditions,
+        createdBy: createdBy,
+      );
+      return _mapNotificationScheduleToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to create notification schedule - $e');
+    }
+  }
+
+  @override
+  Future<NotificationScheduleEntity> updateNotificationSchedule({
+    required String scheduleId,
+    String? notificationTemplateId,
+    String? scheduledTime,
+    String? frequency,
+    List<int>? daysOfWeek,
+    Map<String, dynamic>? conditions,
+    bool? isActive,
+  }) async {
+    try {
+      final model = await _remoteDataSource.updateNotificationSchedule(
+        scheduleId: scheduleId,
+        notificationTemplateId: notificationTemplateId,
+        scheduledTime: scheduledTime,
+        frequency: frequency,
+        daysOfWeek: daysOfWeek,
+        conditions: conditions,
+        isActive: isActive,
+      );
+      return _mapNotificationScheduleToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to update notification schedule - $e');
+    }
+  }
+
+  @override
+  Future<void> deleteNotificationSchedule(String scheduleId) async {
+    try {
+      await _remoteDataSource.deleteNotificationSchedule(scheduleId);
+    } catch (e) {
+      throw Exception('Repository: Failed to delete notification schedule - $e');
+    }
+  }
+
+  @override
+  Future<NotificationScheduleEntity> toggleNotificationSchedule({
+    required String scheduleId,
+    required bool isActive,
+  }) async {
+    try {
+      final model = await _remoteDataSource.toggleNotificationSchedule(
+        scheduleId: scheduleId,
+        isActive: isActive,
+      );
+      return _mapNotificationScheduleToEntity(model);
+    } catch (e) {
+      throw Exception('Repository: Failed to toggle notification schedule - $e');
+    }
+  }
+
+  @override
+  Future<void> sendManualNotification({
+    required List<String> userIds,
+    required String title,
+    required String body,
+    String? notificationType,
+  }) async {
+    try {
+      await _remoteDataSource.sendManualNotification(
+        userIds: userIds,
+        title: title,
+        body: body,
+        notificationType: notificationType,
+      );
+    } catch (e) {
+      throw Exception('Repository: Failed to send manual notification - $e');
+    }
+  }
+
+  // ==================== MAPPER FUNCTIONS ====================
+
+  NotificationTemplateEntity _mapNotificationTemplateToEntity(model) {
+    return NotificationTemplateEntity(
+      id: model.id,
+      templateKey: model.templateKey,
+      title: model.title,
+      body: model.body,
+      emailSubject: model.emailSubject,
+      emailBody: model.emailBody,
+      notificationType: model.notificationType,
+      isEnabled: model.isEnabled,
+      isSystemDefault: model.isSystemDefault,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+    );
+  }
+
+  NotificationScheduleEntity _mapNotificationScheduleToEntity(model) {
+    return NotificationScheduleEntity(
+      id: model.id,
+      notificationTemplateId: model.notificationTemplateId,
+      scheduledTime: model.scheduledTime,
+      frequency: model.frequency,
+      daysOfWeek: model.daysOfWeek,
+      conditions: model.conditions,
+      isActive: model.isActive,
+      createdBy: model.createdBy,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+    );
+  }
+
+  // ==================== REPORT MANAGEMENT ====================
+
+  @override
+  Future<List<DeedReportEntity>> searchReports({
+    String? userId,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? status,
+  }) async {
+    try {
+      final reports = await _remoteDataSource.searchReports(
+        userId: userId,
+        startDate: startDate,
+        endDate: endDate,
+        status: status,
+      );
+      return reports.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Failed to search reports: $e');
+    }
+  }
+
+  @override
+  Future<DeedReportEntity> getReportById(String reportId) async {
+    try {
+      final report = await _remoteDataSource.getReportById(reportId);
+      return report.toEntity();
+    } catch (e) {
+      throw Exception('Failed to get report: $e');
+    }
+  }
+
+  @override
+  Future<DeedReportEntity> updateReport({
+    required String reportId,
+    required Map<String, double> deedValues,
+    required String reason,
+  }) async {
+    try {
+      final report = await _remoteDataSource.updateReport(
+        reportId: reportId,
+        deedValues: deedValues,
+        reason: reason,
+      );
+      return report.toEntity();
+    } catch (e) {
+      throw Exception('Failed to update report: $e');
     }
   }
 }

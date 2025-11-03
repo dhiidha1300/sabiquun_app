@@ -4,6 +4,9 @@ import '../models/analytics_model.dart';
 import '../models/system_settings_model.dart';
 import '../models/deed_template_model.dart';
 import '../models/audit_log_model.dart';
+import '../models/notification_template_model.dart';
+import '../models/notification_schedule_model.dart';
+import '../../../deeds/data/models/deed_report_model.dart';
 
 class AdminRemoteDataSource {
   final SupabaseClient _supabase;
@@ -1352,6 +1355,486 @@ class AdminRemoteDataSource {
       return successCount;
     } catch (e) {
       throw Exception('Failed to bulk reject excuses: $e');
+    }
+  }
+
+  // ==================== NOTIFICATION TEMPLATES ====================
+
+  /// Get all notification templates
+  Future<List<NotificationTemplateModel>> getNotificationTemplates() async {
+    try {
+      final response = await _supabase
+          .from('notification_templates')
+          .select()
+          .order('notification_type')
+          .order('created_at');
+
+      return (response as List<dynamic>)
+          .map((json) => NotificationTemplateModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to get notification templates: $e');
+    }
+  }
+
+  /// Get notification template by ID
+  Future<NotificationTemplateModel> getNotificationTemplateById(String templateId) async {
+    try {
+      final response = await _supabase
+          .from('notification_templates')
+          .select()
+          .eq('id', templateId)
+          .single();
+
+      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to get notification template: $e');
+    }
+  }
+
+  /// Create notification template
+  Future<NotificationTemplateModel> createNotificationTemplate({
+    required String templateKey,
+    required String title,
+    required String body,
+    String? emailSubject,
+    String? emailBody,
+    required String notificationType,
+  }) async {
+    try {
+      final response = await _supabase
+          .from('notification_templates')
+          .insert({
+            'template_key': templateKey,
+            'title': title,
+            'body': body,
+            'email_subject': emailSubject,
+            'email_body': emailBody,
+            'notification_type': notificationType,
+            'is_enabled': true,
+            'is_system_default': false,
+          })
+          .select()
+          .single();
+
+      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to create notification template: $e');
+    }
+  }
+
+  /// Update notification template
+  Future<NotificationTemplateModel> updateNotificationTemplate({
+    required String templateId,
+    String? title,
+    String? body,
+    String? emailSubject,
+    String? emailBody,
+    bool? isEnabled,
+  }) async {
+    try {
+      final updateData = <String, dynamic>{};
+      if (title != null) updateData['title'] = title;
+      if (body != null) updateData['body'] = body;
+      if (emailSubject != null) updateData['email_subject'] = emailSubject;
+      if (emailBody != null) updateData['email_body'] = emailBody;
+      if (isEnabled != null) updateData['is_enabled'] = isEnabled;
+      updateData['updated_at'] = DateTime.now().toIso8601String();
+
+      final response = await _supabase
+          .from('notification_templates')
+          .update(updateData)
+          .eq('id', templateId)
+          .select()
+          .single();
+
+      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to update notification template: $e');
+    }
+  }
+
+  /// Delete notification template (only custom templates, not system defaults)
+  Future<void> deleteNotificationTemplate(String templateId) async {
+    try {
+      // Check if it's a system default
+      final template = await getNotificationTemplateById(templateId);
+      if (template.isSystemDefault) {
+        throw Exception('Cannot delete system default templates');
+      }
+
+      await _supabase
+          .from('notification_templates')
+          .delete()
+          .eq('id', templateId);
+    } catch (e) {
+      throw Exception('Failed to delete notification template: $e');
+    }
+  }
+
+  /// Toggle notification template status
+  Future<NotificationTemplateModel> toggleNotificationTemplate({
+    required String templateId,
+    required bool isEnabled,
+  }) async {
+    try {
+      final response = await _supabase
+          .from('notification_templates')
+          .update({
+            'is_enabled': isEnabled,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', templateId)
+          .select()
+          .single();
+
+      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to toggle notification template: $e');
+    }
+  }
+
+  // ==================== NOTIFICATION SCHEDULES ====================
+
+  /// Get all notification schedules
+  Future<List<NotificationScheduleModel>> getNotificationSchedules() async {
+    try {
+      final response = await _supabase
+          .from('notification_schedules')
+          .select()
+          .order('scheduled_time');
+
+      return (response as List<dynamic>)
+          .map((json) => NotificationScheduleModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to get notification schedules: $e');
+    }
+  }
+
+  /// Get notification schedule by ID
+  Future<NotificationScheduleModel> getNotificationScheduleById(String scheduleId) async {
+    try {
+      final response = await _supabase
+          .from('notification_schedules')
+          .select()
+          .eq('id', scheduleId)
+          .single();
+
+      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to get notification schedule: $e');
+    }
+  }
+
+  /// Create notification schedule
+  Future<NotificationScheduleModel> createNotificationSchedule({
+    required String notificationTemplateId,
+    required String scheduledTime,
+    required String frequency,
+    List<int>? daysOfWeek,
+    Map<String, dynamic>? conditions,
+    required String createdBy,
+  }) async {
+    try {
+      final response = await _supabase
+          .from('notification_schedules')
+          .insert({
+            'notification_template_id': notificationTemplateId,
+            'scheduled_time': scheduledTime,
+            'frequency': frequency,
+            'days_of_week': daysOfWeek,
+            'conditions': conditions,
+            'is_active': true,
+            'created_by': createdBy,
+          })
+          .select()
+          .single();
+
+      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to create notification schedule: $e');
+    }
+  }
+
+  /// Update notification schedule
+  Future<NotificationScheduleModel> updateNotificationSchedule({
+    required String scheduleId,
+    String? notificationTemplateId,
+    String? scheduledTime,
+    String? frequency,
+    List<int>? daysOfWeek,
+    Map<String, dynamic>? conditions,
+    bool? isActive,
+  }) async {
+    try {
+      final updateData = <String, dynamic>{};
+      if (notificationTemplateId != null) updateData['notification_template_id'] = notificationTemplateId;
+      if (scheduledTime != null) updateData['scheduled_time'] = scheduledTime;
+      if (frequency != null) updateData['frequency'] = frequency;
+      if (daysOfWeek != null) updateData['days_of_week'] = daysOfWeek;
+      if (conditions != null) updateData['conditions'] = conditions;
+      if (isActive != null) updateData['is_active'] = isActive;
+      updateData['updated_at'] = DateTime.now().toIso8601String();
+
+      final response = await _supabase
+          .from('notification_schedules')
+          .update(updateData)
+          .eq('id', scheduleId)
+          .select()
+          .single();
+
+      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to update notification schedule: $e');
+    }
+  }
+
+  /// Delete notification schedule
+  Future<void> deleteNotificationSchedule(String scheduleId) async {
+    try {
+      await _supabase
+          .from('notification_schedules')
+          .delete()
+          .eq('id', scheduleId);
+    } catch (e) {
+      throw Exception('Failed to delete notification schedule: $e');
+    }
+  }
+
+  /// Toggle notification schedule status
+  Future<NotificationScheduleModel> toggleNotificationSchedule({
+    required String scheduleId,
+    required bool isActive,
+  }) async {
+    try {
+      final response = await _supabase
+          .from('notification_schedules')
+          .update({
+            'is_active': isActive,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', scheduleId)
+          .select()
+          .single();
+
+      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to toggle notification schedule: $e');
+    }
+  }
+
+  /// Send manual notification to users
+  Future<void> sendManualNotification({
+    required List<String> userIds,
+    required String title,
+    required String body,
+    String? notificationType,
+  }) async {
+    try {
+      // Insert notifications into notifications_log for each user
+      final notifications = userIds.map((userId) => {
+        'user_id': userId,
+        'title': title,
+        'body': body,
+        'notification_type': notificationType ?? 'manual',
+        'is_read': false,
+      }).toList();
+
+      await _supabase
+          .from('notifications_log')
+          .insert(notifications);
+
+      // TODO: Trigger actual push notifications via FCM
+      // This would typically call a Supabase Edge Function or backend service
+    } catch (e) {
+      throw Exception('Failed to send manual notification: $e');
+    }
+  }
+
+  // ==================== REPORT MANAGEMENT ====================
+
+  /// Search reports by user and date range
+  Future<List<DeedReportModel>> searchReports({
+    String? userId,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? status, // 'draft', 'submitted', null for all
+  }) async {
+    try {
+      var query = _supabase
+          .from('deeds_reports')
+          .select('''
+            *,
+            deed_entries(*)
+          ''');
+
+      if (userId != null && userId.isNotEmpty) {
+        query = query.eq('user_id', userId);
+      }
+
+      if (startDate != null) {
+        query = query.gte('report_date', startDate.toIso8601String().split('T')[0]);
+      }
+
+      if (endDate != null) {
+        query = query.lte('report_date', endDate.toIso8601String().split('T')[0]);
+      }
+
+      if (status != null && status.isNotEmpty) {
+        query = query.eq('status', status);
+      }
+
+      final response = await query.order('report_date', ascending: false);
+      return (response as List)
+          .map((json) => DeedReportModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to search reports: $e');
+    }
+  }
+
+  /// Get a single report by ID with all deed entries
+  Future<DeedReportModel> getReportById(String reportId) async {
+    try {
+      // First get the report
+      final reportResponse = await _supabase
+          .from('deeds_reports')
+          .select('*')
+          .eq('id', reportId)
+          .single();
+
+      // Then get deed entries separately
+      final entriesResponse = await _supabase
+          .from('deed_entries')
+          .select('*')
+          .eq('report_id', reportId)
+          .order('created_at', ascending: true);
+
+      print('DEBUG: Report response: $reportResponse');
+      print('DEBUG: Deed entries: $entriesResponse');
+
+      // Combine them
+      reportResponse['deed_entries'] = entriesResponse;
+
+      final model = DeedReportModel.fromJson(reportResponse);
+      print('DEBUG: Model entries count: ${model.entries?.length ?? 0}');
+
+      return model;
+    } catch (e) {
+      print('DEBUG: Error loading report: $e');
+      throw Exception('Failed to get report: $e');
+    }
+  }
+
+  /// Update report deed entries (admin override)
+  Future<DeedReportModel> updateReport({
+    required String reportId,
+    required Map<String, double> deedValues, // deedTemplateId -> value
+    required String reason,
+  }) async {
+    try {
+      // 1. Get the current report to check penalties
+      final currentReport = await getReportById(reportId);
+
+      // 2. Calculate new totals
+      double newTotalDeeds = 0;
+      double newSunnahCount = 0;
+      double newFaraidCount = 0;
+
+      // Get all deed templates to know categories
+      final templatesResponse = await _supabase
+          .from('deed_templates')
+          .select('id, category')
+          .inFilter('id', deedValues.keys.toList());
+
+      final templates = <String, String>{
+        for (var e in templatesResponse as List)
+          e['id'] as String: e['category'] as String
+      };
+
+      for (var entry in deedValues.entries) {
+        final value = entry.value;
+        newTotalDeeds += value;
+
+        final category = templates[entry.key];
+        if (category == 'sunnah') {
+          newSunnahCount += value;
+        } else if (category == 'faraid') {
+          newFaraidCount += value;
+        }
+      }
+
+      // 3. Update deed entries
+      for (var entry in deedValues.entries) {
+        final deedTemplateId = entry.key;
+        final newValue = entry.value;
+
+        await _supabase
+            .from('deed_entries')
+            .update({'deed_value': newValue})
+            .eq('report_id', reportId)
+            .eq('deed_template_id', deedTemplateId);
+      }
+
+      // 4. Update report totals
+      await _supabase
+          .from('deeds_reports')
+          .update({
+            'total_deeds': newTotalDeeds,
+            'sunnah_count': newSunnahCount,
+            'faraid_count': newFaraidCount,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', reportId);
+
+      // 5. Recalculate penalties
+      // Delete existing penalties for this report
+      await _supabase
+          .from('penalties')
+          .delete()
+          .eq('report_id', reportId);
+
+      // Calculate new penalty if needed
+      final missedDeeds = 10 - newTotalDeeds; // Assuming 10 total deeds
+      if (missedDeeds > 0) {
+        final penaltyAmount = missedDeeds * 5000; // 5000 per missed deed
+
+        await _supabase.from('penalties').insert({
+          'user_id': currentReport.userId,
+          'report_id': reportId,
+          'amount': penaltyAmount,
+          'date_incurred': currentReport.reportDate.toIso8601String().split('T')[0],
+          'status': 'unpaid',
+        });
+      }
+
+      // 6. Create audit log
+      final currentUser = _supabase.auth.currentUser;
+      await _supabase.from('audit_logs').insert({
+        'user_id': currentReport.userId,
+        'action_type': 'report_edited',
+        'entity_type': 'report',
+        'entity_id': reportId,
+        'performed_by': currentUser?.id,
+        'old_value': {
+          'total_deeds': currentReport.totalDeeds,
+          'sunnah_count': currentReport.sunnahCount,
+          'faraid_count': currentReport.faraidCount,
+        },
+        'new_value': {
+          'total_deeds': newTotalDeeds,
+          'sunnah_count': newSunnahCount,
+          'faraid_count': newFaraidCount,
+        },
+        'description': 'Admin edited report for ${currentReport.reportDate.toIso8601String().split("T")[0]}',
+        'reason': reason,
+      });
+
+      // 7. Return updated report
+      return await getReportById(reportId);
+    } catch (e) {
+      throw Exception('Failed to update report: $e');
     }
   }
 }
