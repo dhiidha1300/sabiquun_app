@@ -9,6 +9,7 @@ import 'package:sabiquun_app/features/admin/presentation/widgets/analytics_metri
 import 'package:sabiquun_app/features/auth/domain/entities/user_entity.dart';
 import 'package:sabiquun_app/features/home/widgets/enhanced_feature_card.dart';
 import 'package:sabiquun_app/features/home/widgets/collapsible_deed_tracker.dart';
+import 'package:sabiquun_app/features/home/widgets/admin_menu_grid.dart';
 
 /// Admin Home Content - Analytics Dashboard as Default Home
 class AdminHomeContent extends StatefulWidget {
@@ -43,47 +44,62 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _onRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                // Header with user profile
-                _buildHeader(),
+      body: Stack(
+        children: [
+          // Main content
+          SafeArea(
+            child: RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Header with user profile
+                    _buildHeader(),
 
-                // Main content
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Quick Actions Grid
-                      _buildQuickActionsSection(),
-                      const SizedBox(height: 20),
+                    // Main content
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Menu button placeholder (to reserve space)
+                          const SizedBox(height: 60),
 
-                      // Personal Deed Tracker (Collapsible)
-                      const CollapsibleDeedTracker(),
-                      const SizedBox(height: 20),
+                          // Quick Actions Grid
+                          _buildQuickActionsSection(),
+                          const SizedBox(height: 20),
 
-                      // Analytics Dashboard Content
-                      _buildAnalyticsDashboard(),
-                      const SizedBox(height: 100), // Space for bottom nav
-                    ],
-                  ),
+                          // Personal Deed Tracker (Collapsible)
+                          const CollapsibleDeedTracker(),
+                          const SizedBox(height: 20),
+
+                          // Analytics Dashboard Content
+                          _buildAnalyticsDashboard(),
+                          const SizedBox(height: 100), // Space for bottom nav
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+
+          // Sidebar Drawer Overlay
+          const Positioned(
+            left: 16,
+            top: 100,
+            child: AdminMenuGrid(),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(
@@ -94,94 +110,40 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
         ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Avatar with modern shadow effect
-          GestureDetector(
-            onTap: () => context.push('/profile'),
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                    spreadRadius: 0,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
+          // Admin badge only
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.accent.withValues(alpha: 0.15),
+                  AppColors.accentDark.withValues(alpha: 0.12),
                 ],
               ),
-              child: Center(
-                child: Text(
-                  widget.user.initials,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.accent.withValues(alpha: 0.3),
+                width: 1,
               ),
             ),
-          ),
-          const SizedBox(width: 14),
-
-          // User info with elegant styling
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  widget.user.fullName,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
-                  ),
+                Icon(
+                  Icons.shield_outlined,
+                  size: 18,
+                  color: AppColors.accentDark,
                 ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.accent.withValues(alpha: 0.15),
-                        AppColors.accentDark.withValues(alpha: 0.12),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.accent.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.shield_outlined,
-                        size: 14,
-                        color: AppColors.accentDark,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Admin',
-                        style: TextStyle(
-                          color: AppColors.accentDark,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+                const SizedBox(width: 6),
+                Text(
+                  'Admin',
+                  style: TextStyle(
+                    color: AppColors.accentDark,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
@@ -274,48 +236,6 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             hasUrgentItem: pendingUsers > 0,
           ),
           _QuickAction(
-            icon: Icons.assignment_turned_in,
-            title: 'Deed Management',
-            subtitle: 'Manage deeds',
-            color: Colors.teal,
-            route: '/admin/deed-management',
-          ),
-          _QuickAction(
-            icon: Icons.settings,
-            title: 'System Settings',
-            subtitle: 'Configure app',
-            color: Colors.purple,
-            route: '/admin/system-settings',
-          ),
-          _QuickAction(
-            icon: Icons.history,
-            title: 'Audit Logs',
-            subtitle: 'System activity',
-            color: Colors.blueGrey,
-            route: '/admin/audit-logs',
-          ),
-          _QuickAction(
-            icon: Icons.analytics,
-            title: 'Analytics',
-            subtitle: 'View reports',
-            color: Colors.indigo,
-            route: '/admin/analytics',
-          ),
-          _QuickAction(
-            icon: Icons.notifications_active,
-            title: 'Notifications',
-            subtitle: 'Manage templates',
-            color: Colors.deepOrange,
-            route: '/admin/notification-templates',
-          ),
-          _QuickAction(
-            icon: Icons.description,
-            title: 'Reports',
-            subtitle: 'Edit user reports',
-            color: Colors.teal,
-            route: '/admin/reports',
-          ),
-          _QuickAction(
             icon: Icons.event_busy,
             title: 'Excuses',
             subtitle: 'Review requests',
@@ -332,6 +252,13 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             route: '/payment-review',
             badgeCount: pendingPayments,
             hasUrgentItem: pendingPayments > 5,
+          ),
+          _QuickAction(
+            icon: Icons.analytics,
+            title: 'Analytics',
+            subtitle: 'View reports',
+            color: Colors.indigo,
+            route: '/admin/analytics',
           ),
         ];
 
