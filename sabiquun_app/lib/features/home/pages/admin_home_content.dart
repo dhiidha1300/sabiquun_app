@@ -10,6 +10,7 @@ import 'package:sabiquun_app/features/auth/domain/entities/user_entity.dart';
 import 'package:sabiquun_app/features/home/widgets/enhanced_feature_card.dart';
 import 'package:sabiquun_app/features/home/widgets/collapsible_deed_tracker.dart';
 import 'package:sabiquun_app/features/home/widgets/admin_menu_grid.dart';
+import 'package:sabiquun_app/features/notifications/presentation/widgets/notification_bell.dart';
 
 /// Admin Home Content - Analytics Dashboard as Default Home
 class AdminHomeContent extends StatefulWidget {
@@ -151,31 +152,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
           ),
 
           // Modern notification bell with badge
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.1),
-                  AppColors.secondary.withValues(alpha: 0.08),
-                ],
-              ),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              onPressed: () {
-                // TODO: Navigate to notifications
-              },
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: AppColors.primary,
-                size: 24,
-              ),
-            ),
-          ),
+          NotificationBell(userId: widget.user.id),
         ],
       ),
     );

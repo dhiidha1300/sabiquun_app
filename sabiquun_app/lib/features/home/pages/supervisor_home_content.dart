@@ -12,6 +12,7 @@ import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
 import 'package:sabiquun_app/features/admin/presentation/bloc/admin_bloc.dart';
 import 'package:sabiquun_app/features/admin/presentation/bloc/admin_event.dart';
 import 'package:sabiquun_app/features/admin/presentation/bloc/admin_state.dart';
+import 'package:sabiquun_app/features/notifications/presentation/widgets/notification_bell.dart';
 
 /// Supervisor Home Content - Deed Analytics and User Tracking Dashboard
 class SupervisorHomeContent extends StatefulWidget {
@@ -227,31 +228,7 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
           ),
 
           // Notification bell
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.1),
-                  AppColors.secondary.withValues(alpha: 0.08),
-                ],
-              ),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              onPressed: () {
-                // TODO: Navigate to notifications
-              },
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: AppColors.primary,
-                size: 22,
-              ),
-            ),
-          ),
+          NotificationBell(userId: widget.user.id),
         ],
       ),
     );

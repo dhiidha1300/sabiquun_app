@@ -14,6 +14,7 @@ import 'package:sabiquun_app/features/payments/presentation/bloc/payment_state.d
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_event.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_state.dart';
+import 'package:sabiquun_app/features/notifications/presentation/widgets/notification_bell.dart';
 
 /// Cashier Home Content - Payment Management Dashboard
 class CashierHomeContent extends StatefulWidget {
@@ -252,31 +253,7 @@ class _CashierHomeContentState extends State<CashierHomeContent> with WidgetsBin
           ),
 
           // Notification bell
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.1),
-                  AppColors.secondary.withValues(alpha: 0.08),
-                ],
-              ),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              onPressed: () {
-                // TODO: Navigate to notifications
-              },
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: AppColors.primary,
-                size: 22,
-              ),
-            ),
-          ),
+          NotificationBell(userId: widget.user.id),
         ],
       ),
     );

@@ -15,6 +15,7 @@ import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_state.
 import 'package:sabiquun_app/features/home/utils/membership_helper.dart';
 import 'package:sabiquun_app/features/home/utils/time_helper.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.dart';
+import 'package:sabiquun_app/features/notifications/presentation/widgets/notification_bell.dart';
 
 /// Normal User Home Content - Standard Dashboard
 class UserHomeContent extends StatefulWidget {
@@ -256,54 +257,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
           ),
 
           // Notification bell
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.1),
-                  AppColors.secondary.withValues(alpha: 0.08),
-                ],
-              ),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: Stack(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    // TODO: Navigate to notifications
-                  },
-                  icon: Icon(
-                    Icons.notifications_outlined,
-                    color: AppColors.primary,
-                    size: 22,
-                  ),
-                ),
-                Positioned(
-                  right: 10,
-                  top: 10,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: AppColors.error,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.error.withValues(alpha: 0.5),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          NotificationBell(userId: widget.user.id),
         ],
       ),
     );

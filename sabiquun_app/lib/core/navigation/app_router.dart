@@ -32,6 +32,7 @@ import 'package:sabiquun_app/features/admin/presentation/pages/report_management
 import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.dart';
 import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
+import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -176,6 +177,13 @@ class AppRouter {
         path: '/profile',
         name: 'profile',
         builder: (context, state) => const ProfilePage(),
+      ),
+
+      // Notifications Route
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        builder: (context, state) => const NotificationsPage(),
       ),
 
       // Excuse Routes (Placeholder)

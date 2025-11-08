@@ -20,6 +20,10 @@ import 'package:sabiquun_app/features/admin/data/datasources/admin_remote_dataso
 import 'package:sabiquun_app/features/admin/data/repositories/admin_repository_impl.dart';
 import 'package:sabiquun_app/features/admin/domain/repositories/admin_repository.dart';
 import 'package:sabiquun_app/features/admin/presentation/bloc/admin_bloc.dart';
+import 'package:sabiquun_app/features/notifications/data/datasources/notification_remote_datasource.dart';
+import 'package:sabiquun_app/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:sabiquun_app/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:sabiquun_app/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
 
 /// Dependency injection container
@@ -43,6 +47,9 @@ class Injection {
   static late AdminRemoteDataSource _adminRemoteDataSource;
   static late AdminRepository _adminRepository;
   static late AdminBloc _adminBloc;
+  static late NotificationRemoteDatasource _notificationRemoteDataSource;
+  static late NotificationRepository _notificationRepository;
+  static late NotificationBloc _notificationBloc;
 
   /// Initialize all dependencies
   static Future<void> init() async {
@@ -105,6 +112,15 @@ class Injection {
 
     // Initialize Admin Blocs
     _adminBloc = AdminBloc(_adminRepository);
+
+    // Initialize Notification Data Sources
+    _notificationRemoteDataSource = NotificationRemoteDatasource(supabaseClient: _supabase);
+
+    // Initialize Notification Repositories
+    _notificationRepository = NotificationRepositoryImpl(remoteDatasource: _notificationRemoteDataSource);
+
+    // Initialize Notification Blocs
+    _notificationBloc = NotificationBloc(repository: _notificationRepository);
   }
 
   /// Get Supabase client instance
@@ -158,6 +174,15 @@ class Injection {
   /// Get Admin Bloc instance
   static AdminBloc get adminBloc => _adminBloc;
 
+  /// Get Notification Remote Data Source instance
+  static NotificationRemoteDatasource get notificationRemoteDataSource => _notificationRemoteDataSource;
+
+  /// Get Notification Repository instance
+  static NotificationRepository get notificationRepository => _notificationRepository;
+
+  /// Get Notification Bloc instance
+  static NotificationBloc get notificationBloc => _notificationBloc;
+
   /// Reset/dispose all dependencies (useful for testing)
   static Future<void> reset() async {
     await _authBloc.close();
@@ -165,6 +190,7 @@ class Injection {
     await _penaltyBloc.close();
     await _paymentBloc.close();
     await _adminBloc.close();
+    await _notificationBloc.close();
     // Add any other cleanup needed
   }
 }
