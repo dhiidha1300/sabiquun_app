@@ -18,6 +18,17 @@ class RedesignedHomePage extends StatefulWidget {
 }
 
 class _RedesignedHomePageState extends State<RedesignedHomePage> {
+  int _rebuildKey = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Force rebuild with new key every time dependencies change (e.g., when navigating back)
+    setState(() {
+      _rebuildKey++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -34,15 +45,16 @@ class _RedesignedHomePageState extends State<RedesignedHomePage> {
         final user = authState.user;
 
         // Route to appropriate home content based on user role
+        // Use rebuild key to force complete widget recreation
         Widget homeContent;
         if (user.isAdmin) {
-          homeContent = AdminHomeContent(user: user);
+          homeContent = AdminHomeContent(key: ValueKey('admin-$_rebuildKey'), user: user);
         } else if (user.isCashier) {
-          homeContent = CashierHomeContent(user: user);
+          homeContent = CashierHomeContent(key: ValueKey('cashier-$_rebuildKey'), user: user);
         } else if (user.isSupervisor) {
-          homeContent = SupervisorHomeContent(user: user);
+          homeContent = SupervisorHomeContent(key: ValueKey('supervisor-$_rebuildKey'), user: user);
         } else {
-          homeContent = UserHomeContent(user: user);
+          homeContent = UserHomeContent(key: ValueKey('user-$_rebuildKey'), user: user);
         }
 
         return RoleBasedScaffold(

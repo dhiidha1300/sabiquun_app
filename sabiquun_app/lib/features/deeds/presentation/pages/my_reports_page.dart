@@ -6,7 +6,7 @@ import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.d
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_state.dart';
-import 'package:sabiquun_app/features/home/widgets/main_scaffold.dart';
+import 'package:sabiquun_app/features/home/widgets/role_based_scaffold.dart';
 
 class MyReportsPage extends StatefulWidget {
   const MyReportsPage({super.key});
@@ -36,7 +36,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainScaffold(
+    return RoleBasedScaffold(
       currentIndex: 1,
       child: Scaffold(
         appBar: AppBar(

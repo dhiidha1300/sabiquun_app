@@ -54,7 +54,7 @@ class _OnboardingCardState extends State<OnboardingCard> {
     }
 
     return Card(
-      color: AppColors.info.withOpacity(0.05),
+      color: AppColors.info.withValues(alpha: 0.05),
       elevation: 3,
       child: Column(
         children: [
@@ -72,7 +72,7 @@ class _OnboardingCardState extends State<OnboardingCard> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.info.withOpacity(0.1),
+                      color: AppColors.info.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

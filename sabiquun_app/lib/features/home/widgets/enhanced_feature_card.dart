@@ -106,7 +106,7 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                 onTapCancel: _handleTapCancel,
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +118,7 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
@@ -139,7 +139,7 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                             ),
                             child: Icon(
                               widget.icon,
-                              size: 24,
+                              size: 20,
                               color: widget.color,
                             ),
                           ),
@@ -170,36 +170,40 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                             ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
 
                       // Title with better typography
-                      Text(
-                        widget.title,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.5,
-                              letterSpacing: 0.1,
-                              height: 1.15,
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      Flexible(
+                        child: Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                                letterSpacing: 0.1,
+                                height: 1.1,
+                              ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
 
                       // Subtitle
                       if (widget.subtitle != null) ...[
                         const SizedBox(height: 2),
-                        Text(
-                          widget.subtitle!,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w400,
-                                height: 1.15,
-                              ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        Flexible(
+                          child: Text(
+                            widget.subtitle!,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.1,
+                                ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ],

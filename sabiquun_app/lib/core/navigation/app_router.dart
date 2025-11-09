@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_state.dart';
@@ -144,7 +145,9 @@ class AppRouter {
         path: '/penalty-history',
         name: 'penalty-history',
         builder: (context, state) {
-          final userId = state.extra as String;
+          final authState = context.read<AuthBloc>().state;
+          final userId = state.extra as String? ??
+              (authState is Authenticated ? authState.user.id : '');
           return PenaltyHistoryPage(userId: userId);
         },
       ),
@@ -154,7 +157,9 @@ class AppRouter {
         path: '/submit-payment',
         name: 'submit-payment',
         builder: (context, state) {
-          final userId = state.extra as String;
+          final authState = context.read<AuthBloc>().state;
+          final userId = state.extra as String? ??
+              (authState is Authenticated ? authState.user.id : '');
           return SubmitPaymentPage(userId: userId);
         },
       ),
@@ -162,7 +167,9 @@ class AppRouter {
         path: '/payment-history',
         name: 'payment-history',
         builder: (context, state) {
-          final userId = state.extra as String;
+          final authState = context.read<AuthBloc>().state;
+          final userId = state.extra as String? ??
+              (authState is Authenticated ? authState.user.id : '');
           return PaymentHistoryPage(userId: userId);
         },
       ),

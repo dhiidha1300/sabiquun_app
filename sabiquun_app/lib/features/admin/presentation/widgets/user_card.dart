@@ -32,7 +32,7 @@ class UserCard extends StatelessWidget {
                   // Profile icon or image
                   CircleAvatar(
                     radius: 24,
-                    backgroundColor: _getStatusColor(context).withOpacity(0.2),
+                    backgroundColor: _getStatusColor(context).withValues(alpha: 0.2),
                     child: Text(
                       user.name.isNotEmpty
                           ? user.name[0].toUpperCase()
@@ -180,7 +180,7 @@ class UserCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: _getStatusColor(context).withOpacity(0.1),
+        color: _getStatusColor(context).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(

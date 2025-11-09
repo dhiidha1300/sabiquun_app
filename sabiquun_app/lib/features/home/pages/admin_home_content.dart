@@ -7,9 +7,9 @@ import 'package:sabiquun_app/features/admin/presentation/bloc/admin_event.dart';
 import 'package:sabiquun_app/features/admin/presentation/bloc/admin_state.dart';
 import 'package:sabiquun_app/features/admin/presentation/widgets/analytics_metric_card.dart';
 import 'package:sabiquun_app/features/auth/domain/entities/user_entity.dart';
-import 'package:sabiquun_app/features/home/widgets/enhanced_feature_card.dart';
 import 'package:sabiquun_app/features/home/widgets/collapsible_deed_tracker.dart';
 import 'package:sabiquun_app/features/home/widgets/admin_menu_grid.dart';
+import 'package:sabiquun_app/features/home/widgets/admin_menu_button.dart';
 import 'package:sabiquun_app/features/notifications/presentation/widgets/notification_bell.dart';
 
 /// Admin Home Content - Analytics Dashboard as Default Home
@@ -26,14 +26,21 @@ class AdminHomeContent extends StatefulWidget {
 }
 
 class _AdminHomeContentState extends State<AdminHomeContent> {
+  final GlobalKey<AdminMenuGridState> _menuKey = GlobalKey<AdminMenuGridState>();
+
   @override
   void initState() {
     super.initState();
-    _loadData();
+    // Load data on initial mount
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
   }
 
   void _loadData() {
-    context.read<AdminBloc>().add(const LoadAnalyticsRequested());
+    if (mounted) {
+      context.read<AdminBloc>().add(const LoadAnalyticsRequested());
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -64,9 +71,6 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Menu button placeholder (to reserve space)
-                          const SizedBox(height: 60),
-
                           // Quick Actions Grid
                           _buildQuickActionsSection(),
                           const SizedBox(height: 20),
@@ -87,12 +91,8 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             ),
           ),
 
-          // Sidebar Drawer Overlay
-          const Positioned(
-            left: 16,
-            top: 100,
-            child: AdminMenuGrid(),
-          ),
+          // Sidebar Drawer Overlay (full screen)
+          AdminMenuGrid(key: _menuKey),
         ],
       ),
     );
@@ -100,52 +100,79 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            width: 1,
-          ),
-        ),
+        color: AppColors.background,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Admin badge only
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.accent.withValues(alpha: 0.15),
-                  AppColors.accentDark.withValues(alpha: 0.12),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.accent.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          // Menu button integrated in header
+          AdminMenuButton(
+            onPressed: () {
+              _menuKey.currentState?.toggleDrawer();
+            },
+          ),
+          const SizedBox(width: 16),
+
+          // Welcome text with user greeting
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.shield_outlined,
-                  size: 18,
-                  color: AppColors.accentDark,
-                ),
-                const SizedBox(width: 6),
                 Text(
-                  'Admin',
+                  'Welcome back,',
                   style: TextStyle(
-                    color: AppColors.accentDark,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(
+                      widget.user.fullName.split(' ').first,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.accent.withValues(alpha: 0.2),
+                            AppColors.accentDark.withValues(alpha: 0.15),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.shield,
+                            size: 12,
+                            color: AppColors.accentDark,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Admin',
+                            style: TextStyle(
+                              color: AppColors.accentDark,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -162,34 +189,24 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 4,
-              height: 24,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(2),
-              ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Text(
+            'Quick Actions',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.3,
             ),
-            const SizedBox(width: 10),
-            const Text(
-              'Quick Actions',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              ),
-            ),
-          ],
+          ),
         ),
-        const SizedBox(height: 16),
-        _buildQuickActionsGrid(),
+        _buildModernQuickActions(),
       ],
     );
   }
 
-  Widget _buildQuickActionsGrid() {
+  Widget _buildModernQuickActions() {
     return BlocBuilder<AdminBloc, AdminState>(
       builder: (context, state) {
         int pendingUsers = 0;
@@ -239,30 +256,127 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
           ),
         ];
 
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 2.2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: actions.length,
-          itemBuilder: (context, index) {
-            final action = actions[index];
-            return EnhancedFeatureCard(
-              icon: action.icon,
-              title: action.title,
-              subtitle: action.subtitle,
-              color: action.color,
-              badgeCount: action.badgeCount,
-              hasUrgentItem: action.hasUrgentItem,
-              onTap: () => context.push(action.route),
-            );
-          },
+        return Column(
+          children: actions.map((action) => _buildModernActionItem(action)).toList(),
         );
       },
+    );
+  }
+
+  Widget _buildModernActionItem(_QuickAction action) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.push(action.route),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: action.color.withValues(alpha: 0.1),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                // Icon with colored background
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        action.color.withValues(alpha: 0.15),
+                        action.color.withValues(alpha: 0.08),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    action.icon,
+                    color: action.color,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                // Title and subtitle
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        action.title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      if (action.subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          action.subtitle!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                // Badge or arrow
+                if (action.badgeCount > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: action.hasUrgentItem
+                            ? [AppColors.error, AppColors.error.withValues(alpha: 0.8)]
+                            : [action.color, action.color.withValues(alpha: 0.8)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (action.hasUrgentItem ? AppColors.error : action.color)
+                              .withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      action.badgeCount > 99 ? '99+' : '${action.badgeCount}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: AppColors.textSecondary.withValues(alpha: 0.5),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -340,47 +454,30 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
   }
 
   Widget _buildSectionTitle(String title, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(icon, size: 20, color: Colors.white),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 3,
-          width: 50,
-          decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(2),
+            child: Icon(icon, size: 20, color: AppColors.primary),
           ),
-        ),
-      ],
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

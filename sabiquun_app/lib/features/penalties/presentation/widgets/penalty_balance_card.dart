@@ -49,7 +49,7 @@ class PenaltyBalanceCard extends StatelessWidget {
               Text(
                 '${balance.unpaidPenaltiesCount} unpaid ${balance.unpaidPenaltiesCount == 1 ? 'penalty' : 'penalties'}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
               ),
 
@@ -121,7 +121,7 @@ class PenaltyBalanceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -142,7 +142,7 @@ class PenaltyBalanceCard extends StatelessWidget {
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                 ),
               ],

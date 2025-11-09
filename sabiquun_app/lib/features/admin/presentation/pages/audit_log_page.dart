@@ -156,9 +156,9 @@ class _AuditLogPageState extends State<AuditLogPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withValues(alpha: 0.1),
         border: Border(
-          bottom: BorderSide(color: Colors.blue.withOpacity(0.3)),
+          bottom: BorderSide(color: Colors.blue.withValues(alpha: 0.3)),
         ),
       ),
       child: Column(
@@ -691,7 +691,7 @@ class _DetailDialog extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -717,7 +717,7 @@ class _DetailDialog extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

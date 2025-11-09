@@ -125,7 +125,7 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
           const SizedBox(height: 12),
           // Status filter
           DropdownButtonFormField<String>(
-            initialValue: _selectedStatus ?? '',
+            value: _selectedStatus ?? '',
             decoration: const InputDecoration(
               labelText: 'Status',
               border: OutlineInputBorder(),

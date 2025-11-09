@@ -458,7 +458,7 @@ class _ScheduleFormDialogState extends State<_ScheduleFormDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DropdownButtonFormField<String>(
-                initialValue: _selectedTemplateId,
+                value: _selectedTemplateId,
                 decoration: const InputDecoration(
                   labelText: 'Notification Template',
                   border: OutlineInputBorder(),
@@ -496,7 +496,7 @@ class _ScheduleFormDialogState extends State<_ScheduleFormDialog> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                initialValue: _frequency,
+                value: _frequency,
                 decoration: const InputDecoration(
                   labelText: 'Frequency',
                   border: OutlineInputBorder(),

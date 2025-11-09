@@ -501,7 +501,7 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
               if (!isEdit) const SizedBox(height: 16),
               if (!isEdit)
                 DropdownButtonFormField<String>(
-                  initialValue: _notificationType,
+                  value: _notificationType,
                   decoration: const InputDecoration(
                     labelText: 'Notification Type',
                     border: OutlineInputBorder(),

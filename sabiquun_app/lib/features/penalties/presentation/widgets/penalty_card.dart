@@ -93,7 +93,7 @@ class PenaltyCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: _getStatusColor().withOpacity(0.1),
+        color: _getStatusColor().withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _getStatusColor(),

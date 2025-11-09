@@ -4,13 +4,18 @@ import 'package:sabiquun_app/core/theme/app_colors.dart';
 
 /// Beautiful Sidebar Drawer with smooth animations
 class AdminMenuGrid extends StatefulWidget {
-  const AdminMenuGrid({super.key});
+  const AdminMenuGrid({Key? key}) : super(key: key);
 
   @override
-  State<AdminMenuGrid> createState() => _AdminMenuGridState();
+  State<AdminMenuGrid> createState() => AdminMenuGridState();
+
+  /// Get the state to allow external toggling
+  static AdminMenuGridState? of(BuildContext context) {
+    return context.findAncestorStateOfType<AdminMenuGridState>();
+  }
 }
 
-class _AdminMenuGridState extends State<AdminMenuGrid>
+class AdminMenuGridState extends State<AdminMenuGrid>
     with SingleTickerProviderStateMixin {
   bool _isDrawerOpen = false;
   late AnimationController _animationController;
@@ -45,7 +50,7 @@ class _AdminMenuGridState extends State<AdminMenuGrid>
     super.dispose();
   }
 
-  void _toggleDrawer() {
+  void toggleDrawer() {
     setState(() {
       _isDrawerOpen = !_isDrawerOpen;
       if (_isDrawerOpen) {
@@ -56,7 +61,7 @@ class _AdminMenuGridState extends State<AdminMenuGrid>
     });
   }
 
-  void _closeDrawer() {
+  void closeDrawer() {
     if (_isDrawerOpen) {
       setState(() {
         _isDrawerOpen = false;
@@ -67,73 +72,23 @@ class _AdminMenuGridState extends State<AdminMenuGrid>
 
   @override
   Widget build(BuildContext context) {
+    // Return nothing if drawer is closed (so it doesn't interfere)
+    if (!_isDrawerOpen) return const SizedBox.shrink();
+
     return Stack(
       children: [
-        // Menu toggle button (always visible)
-        Positioned(
-          left: 0,
-          top: 0,
-          child: InkWell(
-            onTap: _toggleDrawer,
-            borderRadius: BorderRadius.circular(12),
+        // Overlay (darkens background when drawer is open)
+        GestureDetector(
+          onTap: closeDrawer,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
             child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.1),
-                    AppColors.secondary.withValues(alpha: 0.08),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.menu_rounded,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Menu',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              ),
+              color: Colors.black.withValues(alpha: 0.5),
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height,
             ),
           ),
         ),
-
-        // Overlay (darkens background when drawer is open)
-        if (_isDrawerOpen)
-          GestureDetector(
-            onTap: _closeDrawer,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.5),
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height,
-              ),
-            ),
-          ),
 
         // Sliding Drawer
         SlideTransition(
@@ -262,7 +217,7 @@ class _AdminMenuGridState extends State<AdminMenuGrid>
             ),
           ),
           IconButton(
-            onPressed: _closeDrawer,
+            onPressed: closeDrawer,
             icon: const Icon(
               Icons.close_rounded,
               color: Colors.white,
@@ -364,7 +319,7 @@ class _AdminMenuGridState extends State<AdminMenuGrid>
         child: InkWell(
           onTap: () {
             context.push(item.route);
-            _closeDrawer();
+            closeDrawer();
           },
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -447,27 +402,39 @@ class _AdminMenuGridState extends State<AdminMenuGrid>
   // Personal Actions Menu Items
   List<_MenuItem> get _personalActions => [
         _MenuItem(
-          icon: Icons.assignment_outlined,
-          title: 'My Reports',
-          route: '/deed-report',
+          icon: Icons.today,
+          title: 'Today\'s Deeds',
+          route: '/today-deeds',
           color: Colors.blue,
         ),
         _MenuItem(
-          icon: Icons.check_circle_outline,
-          title: 'My Deeds',
-          route: '/deed-history',
+          icon: Icons.assignment_outlined,
+          title: 'My Reports',
+          route: '/my-reports',
           color: Colors.teal,
+        ),
+        _MenuItem(
+          icon: Icons.account_balance_wallet,
+          title: 'Penalty History',
+          route: '/penalty-history',
+          color: Colors.orange,
         ),
         _MenuItem(
           icon: Icons.payment_outlined,
           title: 'Submit Payment',
-          route: '/payment',
+          route: '/submit-payment',
           color: Colors.green,
         ),
         _MenuItem(
+          icon: Icons.receipt_long,
+          title: 'Payment History',
+          route: '/payment-history',
+          color: Colors.indigo,
+        ),
+        _MenuItem(
           icon: Icons.bar_chart_outlined,
-          title: 'My Statistics',
-          route: '/statistics',
+          title: 'My Analytics',
+          route: '/analytics',
           color: Colors.purple,
         ),
       ];

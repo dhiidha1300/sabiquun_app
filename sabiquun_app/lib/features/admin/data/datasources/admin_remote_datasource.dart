@@ -801,7 +801,7 @@ class AdminRemoteDataSource {
         },
       );
 
-      return DeedTemplateModel.fromJson(response as Map<String, dynamic>);
+      return DeedTemplateModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to create deed template: $e');
     }
@@ -1386,7 +1386,7 @@ class AdminRemoteDataSource {
           .eq('id', templateId)
           .single();
 
-      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+      return NotificationTemplateModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to get notification template: $e');
     }
@@ -1417,7 +1417,7 @@ class AdminRemoteDataSource {
           .select()
           .single();
 
-      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+      return NotificationTemplateModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to create notification template: $e');
     }
@@ -1448,7 +1448,7 @@ class AdminRemoteDataSource {
           .select()
           .single();
 
-      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+      return NotificationTemplateModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to update notification template: $e');
     }
@@ -1488,7 +1488,7 @@ class AdminRemoteDataSource {
           .select()
           .single();
 
-      return NotificationTemplateModel.fromJson(response as Map<String, dynamic>);
+      return NotificationTemplateModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to toggle notification template: $e');
     }
@@ -1521,7 +1521,7 @@ class AdminRemoteDataSource {
           .eq('id', scheduleId)
           .single();
 
-      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+      return NotificationScheduleModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to get notification schedule: $e');
     }
@@ -1551,7 +1551,7 @@ class AdminRemoteDataSource {
           .select()
           .single();
 
-      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+      return NotificationScheduleModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to create notification schedule: $e');
     }
@@ -1584,7 +1584,7 @@ class AdminRemoteDataSource {
           .select()
           .single();
 
-      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+      return NotificationScheduleModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to update notification schedule: $e');
     }
@@ -1618,7 +1618,7 @@ class AdminRemoteDataSource {
           .select()
           .single();
 
-      return NotificationScheduleModel.fromJson(response as Map<String, dynamic>);
+      return NotificationScheduleModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to toggle notification schedule: $e');
     }

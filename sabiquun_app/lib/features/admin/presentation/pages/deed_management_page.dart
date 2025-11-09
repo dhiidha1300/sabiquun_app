@@ -212,7 +212,7 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -253,8 +253,8 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
           height: 40,
           decoration: BoxDecoration(
             color: deed.category == 'faraid'
-                ? Colors.purple.withOpacity(0.2)
-                : Colors.blue.withOpacity(0.2),
+                ? Colors.purple.withValues(alpha: 0.2)
+                : Colors.blue.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -279,7 +279,7 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.2),
+                  color: Colors.orange.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Row(
@@ -371,14 +371,14 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontSize: 11,
-          color: color.withOpacity(0.8),
+          color: color.withValues(alpha: 0.8),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -674,7 +674,7 @@ class _ReorderDeedsDialogState extends State<_ReorderDeedsDialog> {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: categoryColor.withOpacity(0.2),
+                    color: categoryColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Center(

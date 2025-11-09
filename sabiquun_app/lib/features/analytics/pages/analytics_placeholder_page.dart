@@ -26,7 +26,7 @@ class AnalyticsPlaceholderPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: AppColors.supervisorColor.withOpacity(0.1),
+                  color: AppColors.supervisorColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
