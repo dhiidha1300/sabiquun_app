@@ -18,7 +18,12 @@ import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_histo
 import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_review_page.dart';
-import 'package:sabiquun_app/features/excuses/pages/excuses_placeholder_page.dart';
+import 'package:sabiquun_app/features/excuses/presentation/pages/excuse_history_page.dart';
+import 'package:sabiquun_app/features/excuses/presentation/pages/submit_excuse_page.dart';
+import 'package:sabiquun_app/features/settings/pages/edit_profile_page.dart';
+import 'package:sabiquun_app/features/settings/pages/change_password_page.dart';
+import 'package:sabiquun_app/features/settings/pages/notification_settings_page.dart';
+import 'package:sabiquun_app/features/settings/pages/rules_policies_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_edit_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/analytics_dashboard_page.dart';
@@ -31,7 +36,7 @@ import 'package:sabiquun_app/features/admin/presentation/pages/notification_sche
 import 'package:sabiquun_app/features/admin/presentation/pages/manual_notification_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/report_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.dart';
-import 'package:sabiquun_app/features/analytics/pages/analytics_placeholder_page.dart';
+import 'package:sabiquun_app/features/analytics/presentation/pages/analytics_dashboard_page.dart' as user_analytics;
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
 
@@ -193,11 +198,38 @@ class AppRouter {
         builder: (context, state) => const NotificationsPage(),
       ),
 
-      // Excuse Routes (Placeholder)
+      // Excuse Routes
       GoRoute(
         path: '/excuses',
         name: 'excuses',
-        builder: (context, state) => const ExcusesPlaceholderPage(),
+        builder: (context, state) => const ExcuseHistoryPage(),
+      ),
+      GoRoute(
+        path: '/excuses/submit',
+        name: 'excuses-submit',
+        builder: (context, state) => const SubmitExcusePage(),
+      ),
+
+      // Settings Routes
+      GoRoute(
+        path: '/settings/edit-profile',
+        name: 'settings-edit-profile',
+        builder: (context, state) => const EditProfilePage(),
+      ),
+      GoRoute(
+        path: '/settings/change-password',
+        name: 'settings-change-password',
+        builder: (context, state) => const ChangePasswordPage(),
+      ),
+      GoRoute(
+        path: '/settings/notifications',
+        name: 'settings-notifications',
+        builder: (context, state) => const NotificationSettingsPage(),
+      ),
+      GoRoute(
+        path: '/settings/rules',
+        name: 'settings-rules',
+        builder: (context, state) => const RulesPoliciesPage(),
       ),
 
       // Admin Routes
@@ -268,11 +300,11 @@ class AppRouter {
         },
       ),
 
-      // Analytics Routes (Placeholder)
+      // Analytics Routes
       GoRoute(
         path: '/analytics',
         name: 'analytics',
-        builder: (context, state) => const AnalyticsPlaceholderPage(),
+        builder: (context, state) => const user_analytics.AnalyticsDashboardPage(),
       ),
 
     ],

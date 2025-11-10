@@ -18,8 +18,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _excuseModeEnabled = false;
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -49,8 +47,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        // Excuse Mode Card
-                        _buildExcuseModeCard(),
+                        // Quick Stats Card
+                        _buildQuickStatsCard(),
+                        const SizedBox(height: 16),
+
+                        // Feature Management Card
+                        _buildFeatureManagementCard(),
                         const SizedBox(height: 16),
 
                         // Account Information Card
@@ -171,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildExcuseModeCard() {
+  Widget _buildQuickStatsCard() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -185,58 +187,191 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       padding: const EdgeInsets.all(20),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _excuseModeEnabled
-                  ? AppColors.warning.withValues(alpha: 0.1)
-                  : Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.medical_services,
-              color: _excuseModeEnabled ? AppColors.warning : Colors.grey[600],
-              size: 28,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Quick Stats',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => context.push('/analytics'),
+                icon: const Icon(Icons.analytics, size: 18),
+                label: const Text('View All'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatItem(
+                  icon: Icons.check_circle,
+                  label: 'This Month',
+                  value: '--',
+                  color: AppColors.success,
+                ),
+              ),
+              Expanded(
+                child: _buildStatItem(
+                  icon: Icons.trending_up,
+                  label: 'Streak',
+                  value: '-- days',
+                  color: AppColors.primary,
+                ),
+              ),
+              Expanded(
+                child: _buildStatItem(
+                  icon: Icons.stars,
+                  label: 'Total',
+                  value: '--',
+                  color: AppColors.warning,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureManagementCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+            child: Row(
               children: [
                 const Text(
-                  'Excuse Mode',
+                  'Feature Management',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _excuseModeEnabled
-                      ? 'You are currently excused from daily deeds'
-                      : 'Enable when you have a valid excuse',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
                   ),
                 ),
               ],
             ),
           ),
-          Switch(
-            value: _excuseModeEnabled,
-            onChanged: (value) {
-              setState(() => _excuseModeEnabled = value);
-              // TODO: Save excuse mode to backend
-              _showExcuseModeDialog(value);
-            },
-            activeTrackColor: AppColors.warning,
+          _buildFeatureTile(
+            icon: Icons.event_busy,
+            title: 'My Excuses',
+            subtitle: 'View and manage your excuse requests',
+            color: AppColors.warning,
+            onTap: () => context.push('/excuses'),
+          ),
+          const Divider(height: 1),
+          _buildFeatureTile(
+            icon: Icons.add_circle_outline,
+            title: 'Submit Excuse',
+            subtitle: 'Request excuse for missed deeds',
+            color: AppColors.info,
+            onTap: () => context.push('/excuses/submit'),
+          ),
+          const Divider(height: 1),
+          _buildFeatureTile(
+            icon: Icons.bar_chart,
+            title: 'My Analytics',
+            subtitle: 'View your performance insights',
+            color: AppColors.primary,
+            onTap: () => context.push('/analytics'),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFeatureTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      leading: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: color, size: 22),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey[600],
+        ),
+      ),
+      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+      onTap: onTap,
     );
   }
 
@@ -309,7 +444,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: 'Edit Profile',
             subtitle: 'Update your personal information',
             onTap: () {
-              // TODO: Navigate to edit profile
+              context.push('/settings/edit-profile');
             },
           ),
           const Divider(height: 1),
@@ -318,7 +453,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: 'Change Password',
             subtitle: 'Update your account password',
             onTap: () {
-              // TODO: Navigate to change password
+              context.push('/settings/change-password');
             },
           ),
           const Divider(height: 1),
@@ -327,7 +462,16 @@ class _ProfilePageState extends State<ProfilePage> {
             title: 'Notifications',
             subtitle: 'Manage notification preferences',
             onTap: () {
-              // TODO: Navigate to notifications settings
+              context.push('/settings/notifications');
+            },
+          ),
+          const Divider(height: 1),
+          _buildSettingTile(
+            icon: Icons.rule,
+            title: 'Rules & Policies',
+            subtitle: 'View app rules and guidelines',
+            onTap: () {
+              context.push('/settings/rules');
             },
           ),
           const Divider(height: 1),
@@ -336,7 +480,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: 'Help & Support',
             subtitle: 'Get help or contact support',
             onTap: () {
-              // TODO: Navigate to help
+              _showHelpDialog(context);
             },
           ),
           const Divider(height: 1),
@@ -345,7 +489,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: 'About',
             subtitle: 'App version and information',
             onTap: () {
-              // TODO: Show about dialog
+              _showAboutDialog(context);
             },
           ),
         ],
@@ -466,26 +610,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
-  void _showExcuseModeDialog(bool enabled) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(enabled ? 'Excuse Mode Enabled' : 'Excuse Mode Disabled'),
-        content: Text(
-          enabled
-              ? 'You are now excused from daily deed submissions. Remember to disable this when your excuse period ends.'
-              : 'Excuse mode has been disabled. You will need to submit your daily deeds.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -510,6 +634,110 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Help & Support'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Need help? Contact us:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              _buildContactRow(Icons.email, 'Email', 'support@sabiquun.com'),
+              const SizedBox(height: 12),
+              _buildContactRow(Icons.phone, 'Phone', '+252 XX XXX XXXX'),
+              const SizedBox(height: 12),
+              _buildContactRow(Icons.access_time, 'Hours', '9 AM - 5 PM (Mon-Fri)'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('About Sabiquun'),
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Sabiquun - Good Deeds Tracker',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text('Version 1.0.0'),
+              SizedBox(height: 16),
+              Text(
+                'Track your daily Islamic good deeds with financial accountability. Stay committed to your spiritual journey.',
+              ),
+              SizedBox(height: 16),
+              Text(
+                '© 2025 Sabiquun. All rights reserved.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.primary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                value,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

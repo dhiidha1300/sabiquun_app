@@ -24,6 +24,18 @@ import 'package:sabiquun_app/features/notifications/data/datasources/notificatio
 import 'package:sabiquun_app/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:sabiquun_app/features/notifications/domain/repositories/notification_repository.dart';
 import 'package:sabiquun_app/features/notifications/presentation/bloc/notification_bloc.dart';
+import 'package:sabiquun_app/features/excuses/data/datasources/excuse_remote_datasource.dart';
+import 'package:sabiquun_app/features/excuses/data/repositories/excuse_repository_impl.dart';
+import 'package:sabiquun_app/features/excuses/domain/repositories/excuse_repository.dart';
+import 'package:sabiquun_app/features/excuses/presentation/bloc/excuse_bloc.dart';
+import 'package:sabiquun_app/features/analytics/data/datasources/analytics_remote_datasource.dart';
+import 'package:sabiquun_app/features/analytics/data/repositories/analytics_repository_impl.dart';
+import 'package:sabiquun_app/features/analytics/domain/repositories/analytics_repository.dart';
+import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_bloc.dart';
+import 'package:sabiquun_app/features/settings/data/datasources/app_content_remote_datasource.dart';
+import 'package:sabiquun_app/features/settings/data/repositories/app_content_repository_impl.dart';
+import 'package:sabiquun_app/features/settings/domain/repositories/app_content_repository.dart';
+import 'package:sabiquun_app/features/settings/presentation/bloc/app_content_bloc.dart';
 import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
 
 /// Dependency injection container
@@ -50,6 +62,15 @@ class Injection {
   static late NotificationRemoteDatasource _notificationRemoteDataSource;
   static late NotificationRepository _notificationRepository;
   static late NotificationBloc _notificationBloc;
+  static late ExcuseRemoteDataSource _excuseRemoteDataSource;
+  static late ExcuseRepository _excuseRepository;
+  static late ExcuseBloc _excuseBloc;
+  static late AnalyticsRemoteDataSource _analyticsRemoteDataSource;
+  static late AnalyticsRepository _analyticsRepository;
+  static late AnalyticsBloc _analyticsBloc;
+  static late AppContentRemoteDataSource _appContentRemoteDataSource;
+  static late AppContentRepository _appContentRepository;
+  static late AppContentBloc _appContentBloc;
 
   /// Initialize all dependencies
   static Future<void> init() async {
@@ -121,6 +142,33 @@ class Injection {
 
     // Initialize Notification Blocs
     _notificationBloc = NotificationBloc(repository: _notificationRepository);
+
+    // Initialize Excuse Data Sources
+    _excuseRemoteDataSource = ExcuseRemoteDataSource(_supabase);
+
+    // Initialize Excuse Repositories
+    _excuseRepository = ExcuseRepositoryImpl(_excuseRemoteDataSource);
+
+    // Initialize Excuse Blocs
+    _excuseBloc = ExcuseBloc(repository: _excuseRepository);
+
+    // Initialize Analytics Data Sources
+    _analyticsRemoteDataSource = AnalyticsRemoteDataSource(_supabase);
+
+    // Initialize Analytics Repositories
+    _analyticsRepository = AnalyticsRepositoryImpl(remoteDataSource: _analyticsRemoteDataSource);
+
+    // Initialize Analytics Blocs
+    _analyticsBloc = AnalyticsBloc(repository: _analyticsRepository);
+
+    // Initialize AppContent Data Sources
+    _appContentRemoteDataSource = AppContentRemoteDataSource(_supabase);
+
+    // Initialize AppContent Repositories
+    _appContentRepository = AppContentRepositoryImpl(remoteDataSource: _appContentRemoteDataSource);
+
+    // Initialize AppContent Blocs
+    _appContentBloc = AppContentBloc(repository: _appContentRepository);
   }
 
   /// Get Supabase client instance
@@ -183,6 +231,33 @@ class Injection {
   /// Get Notification Bloc instance
   static NotificationBloc get notificationBloc => _notificationBloc;
 
+  /// Get Excuse Remote Data Source instance
+  static ExcuseRemoteDataSource get excuseRemoteDataSource => _excuseRemoteDataSource;
+
+  /// Get Excuse Repository instance
+  static ExcuseRepository get excuseRepository => _excuseRepository;
+
+  /// Get Excuse Bloc instance
+  static ExcuseBloc get excuseBloc => _excuseBloc;
+
+  /// Get Analytics Remote Data Source instance
+  static AnalyticsRemoteDataSource get analyticsRemoteDataSource => _analyticsRemoteDataSource;
+
+  /// Get Analytics Repository instance
+  static AnalyticsRepository get analyticsRepository => _analyticsRepository;
+
+  /// Get Analytics Bloc instance
+  static AnalyticsBloc get analyticsBloc => _analyticsBloc;
+
+  /// Get AppContent Remote Data Source instance
+  static AppContentRemoteDataSource get appContentRemoteDataSource => _appContentRemoteDataSource;
+
+  /// Get AppContent Repository instance
+  static AppContentRepository get appContentRepository => _appContentRepository;
+
+  /// Get AppContent Bloc instance
+  static AppContentBloc get appContentBloc => _appContentBloc;
+
   /// Reset/dispose all dependencies (useful for testing)
   static Future<void> reset() async {
     await _authBloc.close();
@@ -191,6 +266,9 @@ class Injection {
     await _paymentBloc.close();
     await _adminBloc.close();
     await _notificationBloc.close();
+    await _excuseBloc.close();
+    await _analyticsBloc.close();
+    await _appContentBloc.close();
     // Add any other cleanup needed
   }
 }
