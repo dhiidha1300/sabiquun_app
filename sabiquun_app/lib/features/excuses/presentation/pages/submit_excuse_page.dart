@@ -184,7 +184,7 @@ class _SubmitExcusePageState extends State<SubmitExcusePage> {
                             ),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<ExcuseType>(
-                              initialValue: _selectedType,
+                              value: _selectedType,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 contentPadding: EdgeInsets.symmetric(

@@ -381,8 +381,10 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
   }
 
   Widget _buildAnalyticsDashboard() {
+    
     return BlocBuilder<AdminBloc, AdminState>(
       builder: (context, state) {
+        
         if (state is AdminLoading) {
           return const Center(
             child: Padding(
