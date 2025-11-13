@@ -9,11 +9,13 @@ import 'package:sabiquun_app/features/auth/presentation/bloc/auth_state.dart';
 class RoleBasedScaffold extends StatelessWidget {
   final Widget child;
   final int currentIndex;
+  final Widget? drawer;
 
   const RoleBasedScaffold({
     super.key,
     required this.child,
     required this.currentIndex,
+    this.drawer,
   });
 
   @override
@@ -40,6 +42,7 @@ class RoleBasedScaffold extends StatelessWidget {
 
         return Scaffold(
           body: child,
+          drawer: drawer,
           extendBody: true,
           bottomNavigationBar: _buildFloatingBottomNav(context, navItems, user),
         );

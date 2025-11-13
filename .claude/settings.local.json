@@ -5,7 +5,10 @@
       "Bash(flutter analyze:*)",
       "Bash(cat:*)",
       "Bash(mkdir:*)",
-      "Bash(flutter pub get:*)"
+      "Bash(flutter pub get:*)",
+      "Bash(dir /s /b d:sabiquun_applib*.dart 2)",
+      "Bash(nul)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

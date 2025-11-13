@@ -47,6 +47,8 @@ class _RedesignedHomePageState extends State<RedesignedHomePage> {
         // Route to appropriate home content based on user role
         // Use rebuild key to force complete widget recreation
         Widget homeContent;
+        Widget? drawer;
+
         if (user.isAdmin) {
           homeContent = AdminHomeContent(key: ValueKey('admin-$_rebuildKey'), user: user);
         } else if (user.isCashier) {
@@ -55,10 +57,13 @@ class _RedesignedHomePageState extends State<RedesignedHomePage> {
           homeContent = SupervisorHomeContent(key: ValueKey('supervisor-$_rebuildKey'), user: user);
         } else {
           homeContent = UserHomeContent(key: ValueKey('user-$_rebuildKey'), user: user);
+          // Build drawer widget for users
+          drawer = UserHomeContent.buildDrawer(user);
         }
 
         return RoleBasedScaffold(
           currentIndex: 0,
+          drawer: drawer,
           child: homeContent,
         );
       },
