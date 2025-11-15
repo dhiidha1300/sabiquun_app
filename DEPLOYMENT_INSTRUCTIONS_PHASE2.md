@@ -118,23 +118,92 @@ curl -X POST \
 
 ---
 
-## Step 5: Setup Automatic Cron Trigger
+## Step 5: Setup Automatic Cron Trigger with Authentication
 
-### 5.1 Enable Cron Triggers (Supabase Dashboard)
+**IMPORTANT:** The Supabase Dashboard cron feature does NOT include authentication headers, which will cause 401 errors. We'll use `pg_cron` with `pg_net` instead for proper authentication.
 
-1. Go to **Edge Functions** in Supabase Dashboard
-2. Click on `calculate-penalties` function
-3. Scroll to **Cron Jobs** section
-4. Click **Add Cron Job**
+### 5.1 Prepare Required Information
 
-### 5.2 Configure Cron Schedule
+Before starting, gather these values:
 
-**Settings:**
-- **Name:** `daily-penalty-calculation`
-- **Cron Expression:** `0 9 * * *`
-  - This means: 9:00 AM UTC = 12:00 PM EAT (UTC+3)
-- **Timezone:** `UTC`
-- **Enabled:** ✅ Yes
+1. **Project Reference ID**
+   - Go to: Supabase Dashboard → Settings → General
+   - Copy the **Reference ID** (e.g., `vrvlqitoyskyzoertfwz`)
+
+2. **Anon/Public Key**
+   - Go to: Supabase Dashboard → Settings → API
+   - Copy the **anon/public** key under "Project API keys"
+
+### 5.2 Execute Cron Setup SQL Script
+
+1. Open the file `setup_penalty_cron_with_auth.sql` in your project root
+2. Replace these placeholders with your actual values:
+   - `YOUR_PROJECT_REF` → Your project reference ID
+   - `YOUR_ANON_KEY` → Your anon/public key
+3. Open **Supabase Dashboard** → **SQL Editor** → **New Query**
+4. Copy and paste the entire modified script
+5. Click **Run** to execute
+
+**What this script does:**
+- Enables required extensions: `vault`, `pg_cron`, `pg_net`
+- Stores your credentials securely in Supabase Vault
+- Creates a cron job that runs daily at 9:00 AM UTC (12:00 PM EAT)
+- Includes proper `Authorization` header to prevent 401 errors
+
+### 5.3 Verify Configuration
+
+After running the script, verify everything is set up correctly:
+
+**Check secrets are stored:**
+```sql
+SELECT name, description, created_at
+FROM vault.decrypted_secrets
+WHERE name IN ('supabase_project_url', 'supabase_anon_key');
+```
+
+**Check cron job is scheduled:**
+```sql
+SELECT jobid, jobname, schedule, active
+FROM cron.job
+WHERE jobname = 'daily-penalty-calculation';
+```
+
+**Expected output:** Job with schedule `0 9 * * *` and `active = t`
+
+### 5.4 Test Immediately (Don't Wait for Tomorrow!)
+
+Test the cron job right now to ensure it works:
+
+```sql
+-- Make a test HTTP request with authentication
+SELECT net.http_post(
+  url := (
+    SELECT decrypted_secret
+    FROM vault.decrypted_secrets
+    WHERE name = 'supabase_project_url'
+  ) || '/functions/v1/calculate-penalties',
+  headers := jsonb_build_object(
+    'Content-Type', 'application/json',
+    'Authorization', 'Bearer ' || (
+      SELECT decrypted_secret
+      FROM vault.decrypted_secrets
+      WHERE name = 'supabase_anon_key'
+    )
+  ),
+  body := '{}'::jsonb
+) AS request_id;
+```
+
+**Then check the response (wait 5-10 seconds):**
+```sql
+SELECT id, status_code, content::json->>'success' as success, created
+FROM net._http_response
+ORDER BY created DESC
+LIMIT 1;
+```
+
+✅ **Expected:** `status_code = 200` and `success = true`
+❌ **If you see:** `status_code = 401` → Double-check your anon key is correct
 
 **Cron Expression Reference:**
 ```
@@ -152,13 +221,6 @@ curl -X POST \
 - **Target Time:** 12:00 PM EAT
 - **UTC Time:** 9:00 AM UTC
 - **Cron Expression:** `0 9 * * *`
-
-### 5.3 Save and Verify
-
-After creating the cron job:
-1. Click **Save**
-2. Verify status shows **Active**
-3. Note the **Next Run Time** (should be tomorrow at 9:00 AM UTC)
 
 ---
 
@@ -241,17 +303,60 @@ If you need additional environment variables (for FCM, etc.), add them:
 supabase functions logs calculate-penalties
 ```
 
+### 401 Unauthorized Error
+**Error:** HTTP response shows `status_code = 401`
+
+**Cause:** Missing or incorrect authorization header
+
+**Solution:**
+1. Verify you completed Step 5 (pg_cron setup, NOT dashboard cron)
+2. Check your anon key is correct:
+   ```sql
+   SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = 'supabase_anon_key';
+   ```
+3. If wrong, delete and recreate:
+   ```sql
+   SELECT vault.delete_secret('supabase_anon_key');
+   SELECT vault.create_secret('YOUR_CORRECT_ANON_KEY', 'supabase_anon_key', 'Anon key');
+   ```
+
 ### Cron job doesn't run
 **Verify:**
-1. Cron job is **Enabled** in dashboard
-2. Time expression is correct (`0 9 * * *`)
-3. Function has no errors in latest manual test
+```sql
+-- Check job exists and is active
+SELECT * FROM cron.job WHERE jobname = 'daily-penalty-calculation';
+
+-- Check execution history
+SELECT * FROM cron.job_run_details
+WHERE jobid = (SELECT jobid FROM cron.job WHERE jobname = 'daily-penalty-calculation')
+ORDER BY start_time DESC LIMIT 5;
+```
+
+### Extensions not available
+**Error:** `extension "vault" does not exist`
+
+**Solution:** Enable extensions manually:
+```sql
+CREATE EXTENSION IF NOT EXISTS vault;
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+CREATE EXTENSION IF NOT EXISTS pg_net;
+```
+
+If still failing, contact Supabase support—some extensions may need project-level enablement.
 
 ### Wrong timezone
 **Adjust cron expression:**
 - For 12 PM EAT (UTC+3): Use `0 9 * * *` (9 AM UTC)
 - For 1 PM EAT: Use `0 10 * * *` (10 AM UTC)
 - For 11 AM EAT: Use `0 8 * * *` (8 AM UTC)
+
+**To change schedule:**
+```sql
+SELECT cron.alter_job(
+  job_id := (SELECT jobid FROM cron.job WHERE jobname = 'daily-penalty-calculation'),
+  schedule := '0 10 * * *'  -- Change to your desired time
+);
+```
 
 ---
 
@@ -261,9 +366,13 @@ Checklist:
 - ✅ Supabase CLI installed
 - ✅ Project linked
 - ✅ Edge Function deployed
-- ✅ Manual test successful
-- ✅ Cron job configured (0 9 * * * UTC = 12 PM EAT)
-- ✅ Logs showing successful execution
+- ✅ Manual test successful via CLI
+- ✅ pg_cron configured with Vault authentication (NOT dashboard cron)
+- ✅ Cron job scheduled (0 9 * * * UTC = 12 PM EAT)
+- ✅ Test HTTP request returns status 200 (not 401)
+- ✅ Logs showing successful execution in database
+
+**IMPORTANT:** If you used the Supabase Dashboard cron feature earlier, make sure to disable/delete it. Only the pg_cron setup (Step 5) should be active to avoid 401 errors.
 
 **Next:** Phase 3 - Notification System Integration
 

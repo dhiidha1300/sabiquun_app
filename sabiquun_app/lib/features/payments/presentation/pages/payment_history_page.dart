@@ -6,7 +6,7 @@ import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../../domain/entities/payment_entity.dart';
 import '../../../../core/constants/payment_status.dart';
-import 'package:sabiquun_app/features/home/widgets/main_scaffold.dart';
+import 'package:sabiquun_app/features/home/widgets/role_based_scaffold.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
   final String userId;
@@ -38,7 +38,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainScaffold(
+    return RoleBasedScaffold(
       currentIndex: 2,
       child: Scaffold(
         appBar: AppBar(
@@ -120,35 +120,65 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   }
 
   Widget _buildPaymentCard(PaymentEntity payment) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header: Date and Status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _getStatusColor(payment.status).withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            // Optional: Add tap animation or navigation to details
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  DateFormat('MMM dd, yyyy - hh:mm a').format(payment.createdAt),
-                  style: Theme.of(context).textTheme.titleSmall,
+                // Header: Date and Status
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        DateFormat('MMM dd, yyyy - hh:mm a').format(payment.createdAt),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    _buildStatusBadge(payment.status),
+                  ],
                 ),
-                _buildStatusBadge(payment.status),
-              ],
-            ),
-            const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
-            // Amount
-            Text(
-              payment.formattedAmount,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: _getStatusColor(payment.status),
-                  ),
-            ),
-            const SizedBox(height: 12),
+                // Amount
+                Text(
+                  payment.formattedAmount,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 24,
+                        color: _getStatusColor(payment.status),
+                        letterSpacing: 0.3,
+                      ),
+                ),
+                const SizedBox(height: 16),
 
             // Payment Method
             if (payment.paymentMethodName != null) ...[
@@ -234,7 +264,9 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 label: const Text('Download Receipt'),
               ),
             ],
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -244,19 +276,27 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: _getStatusColor(status).withValues(alpha: 0.1),
+        gradient: LinearGradient(
+          colors: [
+            _getStatusColor(status).withValues(alpha: 0.15),
+            _getStatusColor(status).withValues(alpha: 0.1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _getStatusColor(status),
-          width: 1,
+          color: _getStatusColor(status).withValues(alpha: 0.3),
+          width: 1.5,
         ),
       ),
       child: Text(
         status.displayName,
         style: TextStyle(
           color: _getStatusColor(status),
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          fontSize: 11,
+          letterSpacing: 0.5,
         ),
       ),
     );

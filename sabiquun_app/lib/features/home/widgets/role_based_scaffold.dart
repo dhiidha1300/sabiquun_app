@@ -10,12 +10,14 @@ class RoleBasedScaffold extends StatelessWidget {
   final Widget child;
   final int currentIndex;
   final Widget? drawer;
+  final Widget? overlay; // Overlay widget (e.g., drawer, dialogs) that appears above bottom nav
 
   const RoleBasedScaffold({
     super.key,
     required this.child,
     required this.currentIndex,
     this.drawer,
+    this.overlay,
   });
 
   @override
@@ -40,11 +42,17 @@ class RoleBasedScaffold extends StatelessWidget {
           navItems = _getUserNavItems();
         }
 
-        return Scaffold(
-          body: child,
-          drawer: drawer,
-          extendBody: true,
-          bottomNavigationBar: _buildFloatingBottomNav(context, navItems, user),
+        return Stack(
+          children: [
+            Scaffold(
+              body: child,
+              drawer: drawer,
+              extendBody: true,
+              bottomNavigationBar: _buildFloatingBottomNav(context, navItems, user),
+            ),
+            // Render overlay on top of everything (including bottom nav)
+            if (overlay != null) overlay!,
+          ],
         );
       },
     );
@@ -159,11 +167,6 @@ class RoleBasedScaffold extends StatelessWidget {
         activeIcon: Icon(Icons.people),
         label: 'Balances',
       ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person_outline),
-        activeIcon: Icon(Icons.person),
-        label: 'Profile',
-      ),
     ];
   }
 
@@ -259,9 +262,6 @@ class RoleBasedScaffold extends StatelessWidget {
         break;
       case 3:
         context.go('/user-balances');
-        break;
-      case 4:
-        context.go('/profile');
         break;
     }
   }

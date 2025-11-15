@@ -12,6 +12,7 @@ import 'package:sabiquun_app/features/payments/presentation/bloc/payment_state.d
 import 'package:sabiquun_app/features/payments/presentation/widgets/payment_card.dart';
 import 'package:sabiquun_app/features/payments/presentation/widgets/approve_payment_dialog.dart';
 import 'package:sabiquun_app/features/payments/presentation/widgets/reject_payment_dialog.dart';
+import 'package:sabiquun_app/features/home/widgets/role_based_scaffold.dart';
 
 /// Payment Review Dashboard for Cashiers
 /// Allows cashiers to review, approve, and reject pending payments
@@ -122,9 +123,11 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return RoleBasedScaffold(
+      currentIndex: 1, // Pending tab in cashier nav
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
         title: const Text(
           'Payment Management',
           style: TextStyle(
@@ -138,7 +141,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/home'),
         ),
         actions: [
           IconButton(
@@ -272,6 +275,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
             _buildHistoryTab(),
           ],
         ),
+      ),
       ),
     );
   }
