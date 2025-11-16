@@ -717,3 +717,89 @@ class UpdateReportRequested extends AdminEvent {
   @override
   List<Object?> get props => [reportId, deedValues, reason];
 }
+
+// ==================== REST DAYS MANAGEMENT EVENTS ====================
+
+/// Load all rest days with optional filters
+class LoadRestDaysRequested extends AdminEvent {
+  final int? year;
+  final bool? isRecurring;
+
+  const LoadRestDaysRequested({
+    this.year,
+    this.isRecurring,
+  });
+
+  @override
+  List<Object?> get props => [year, isRecurring];
+}
+
+/// Create a rest day
+class CreateRestDayRequested extends AdminEvent {
+  final DateTime date;
+  final DateTime? endDate;
+  final String description;
+  final bool isRecurring;
+  final String createdBy;
+
+  const CreateRestDayRequested({
+    required this.date,
+    this.endDate,
+    required this.description,
+    required this.isRecurring,
+    required this.createdBy,
+  });
+
+  @override
+  List<Object?> get props => [date, endDate, description, isRecurring, createdBy];
+}
+
+/// Update rest day
+class UpdateRestDayRequested extends AdminEvent {
+  final String restDayId;
+  final DateTime? date;
+  final DateTime? endDate;
+  final String? description;
+  final bool? isRecurring;
+  final String updatedBy;
+
+  const UpdateRestDayRequested({
+    required this.restDayId,
+    this.date,
+    this.endDate,
+    this.description,
+    this.isRecurring,
+    required this.updatedBy,
+  });
+
+  @override
+  List<Object?> get props => [restDayId, date, endDate, description, isRecurring, updatedBy];
+}
+
+/// Delete rest day
+class DeleteRestDayRequested extends AdminEvent {
+  final String restDayId;
+  final String deletedBy;
+
+  const DeleteRestDayRequested({
+    required this.restDayId,
+    required this.deletedBy,
+  });
+
+  @override
+  List<Object?> get props => [restDayId, deletedBy];
+}
+
+/// Bulk import rest days
+class BulkImportRestDaysRequested extends AdminEvent {
+  final List<Map<String, dynamic>> restDaysData;
+  final String createdBy;
+
+  const BulkImportRestDaysRequested({
+    required this.restDaysData,
+    required this.createdBy,
+  });
+
+  @override
+  List<Object?> get props => [restDaysData, createdBy];
+}

@@ -36,6 +36,7 @@ import 'package:sabiquun_app/features/admin/presentation/pages/notification_sche
 import 'package:sabiquun_app/features/admin/presentation/pages/manual_notification_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/report_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/rest_days_management_page.dart';
 import 'package:sabiquun_app/features/analytics/presentation/pages/analytics_dashboard_page.dart' as user_analytics;
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
@@ -270,6 +271,11 @@ class AppRouter {
         path: '/admin/excuses',
         name: 'admin-excuses',
         builder: (context, state) => const ExcuseManagementPage(),
+      ),
+      GoRoute(
+        path: '/admin/rest-days',
+        name: 'admin-rest-days',
+        builder: (context, state) => const RestDaysManagementPage(),
       ),
       GoRoute(
         path: '/admin/notification-templates',

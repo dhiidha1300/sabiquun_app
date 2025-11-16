@@ -888,4 +888,98 @@ class AdminRepositoryImpl implements AdminRepository {
       throw Exception('Failed to update report: $e');
     }
   }
+
+  // ==================== REST DAYS MANAGEMENT ====================
+
+  @override
+  Future<List<RestDayEntity>> getRestDays({
+    int? year,
+    bool? isRecurring,
+  }) async {
+    try {
+      final restDays = await _remoteDataSource.getRestDays(
+        year: year,
+        isRecurring: isRecurring,
+      );
+      return restDays.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Failed to get rest days: $e');
+    }
+  }
+
+  @override
+  Future<RestDayEntity> createRestDay({
+    required DateTime date,
+    DateTime? endDate,
+    required String description,
+    required bool isRecurring,
+    required String createdBy,
+  }) async {
+    try {
+      final restDay = await _remoteDataSource.createRestDay(
+        date: date,
+        endDate: endDate,
+        description: description,
+        isRecurring: isRecurring,
+        createdBy: createdBy,
+      );
+      return restDay.toEntity();
+    } catch (e) {
+      throw Exception('Failed to create rest day: $e');
+    }
+  }
+
+  @override
+  Future<void> updateRestDay({
+    required String restDayId,
+    DateTime? date,
+    DateTime? endDate,
+    String? description,
+    bool? isRecurring,
+    required String updatedBy,
+  }) async {
+    try {
+      await _remoteDataSource.updateRestDay(
+        restDayId: restDayId,
+        date: date,
+        endDate: endDate,
+        description: description,
+        isRecurring: isRecurring,
+        updatedBy: updatedBy,
+      );
+    } catch (e) {
+      throw Exception('Failed to update rest day: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteRestDay({
+    required String restDayId,
+    required String deletedBy,
+  }) async {
+    try {
+      await _remoteDataSource.deleteRestDay(
+        restDayId: restDayId,
+        deletedBy: deletedBy,
+      );
+    } catch (e) {
+      throw Exception('Failed to delete rest day: $e');
+    }
+  }
+
+  @override
+  Future<List<RestDayEntity>> bulkImportRestDays({
+    required List<Map<String, dynamic>> restDaysData,
+    required String createdBy,
+  }) async {
+    try {
+      final restDays = await _remoteDataSource.bulkImportRestDays(
+        restDaysData: restDaysData,
+        createdBy: createdBy,
+      );
+      return restDays.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Failed to bulk import rest days: $e');
+    }
+  }
 }

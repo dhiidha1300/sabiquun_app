@@ -15,6 +15,7 @@ class AnalyticsDashboardPage extends StatefulWidget {
 class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
   DateTime? _startDate;
   DateTime? _endDate;
+  String _selectedView = 'overview'; // overview, users, deeds, financial
 
   @override
   void initState() {
@@ -37,6 +38,16 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
       initialDateRange: _startDate != null && _endDate != null
           ? DateTimeRange(start: _startDate!, end: _endDate!)
           : null,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).primaryColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -56,12 +67,26 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     _loadAnalytics();
   }
 
+  void _exportData() {
+    // TODO: Implement CSV/Excel export
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Export functionality coming soon')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        elevation: 0,
         title: const Text('Analytics Dashboard'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.file_download),
+            onPressed: _exportData,
+            tooltip: 'Export Data',
+          ),
           if (_startDate != null || _endDate != null)
             IconButton(
               icon: const Icon(Icons.clear),
@@ -80,121 +105,244 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
           ),
         ],
       ),
-      body: BlocBuilder<AdminBloc, AdminState>(
-        builder: (context, state) {
-          if (state is AdminLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (state is AdminError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
+        children: [
+          // View selector
+          Container(
+            color: Theme.of(context).primaryColor.withOpacity(0.05),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error loading analytics',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _loadAnalytics,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
+                  _buildViewChip('Overview', 'overview', Icons.dashboard),
+                  const SizedBox(width: 8),
+                  _buildViewChip('Users', 'users', Icons.people),
+                  const SizedBox(width: 8),
+                  _buildViewChip('Deeds', 'deeds', Icons.assignment_turned_in),
+                  const SizedBox(width: 8),
+                  _buildViewChip('Financial', 'financial', Icons.account_balance_wallet),
+                  const SizedBox(width: 8),
+                  _buildViewChip('Engagement', 'engagement', Icons.trending_up),
                 ],
               ),
-            );
-          }
+            ),
+          ),
 
-          if (state is AnalyticsLoaded) {
-            final analytics = state.analytics;
+          // Content
+          Expanded(
+            child: BlocBuilder<AdminBloc, AdminState>(
+              builder: (context, state) {
+                if (state is AdminLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            return RefreshIndicator(
-              onRefresh: () async => _loadAnalytics(),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Date Range Display
-                    if (_startDate != null || _endDate != null)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.date_range, size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Filtered: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    if (_startDate != null || _endDate != null)
-                      const SizedBox(height: 16),
+                if (state is AdminError) {
+                  return _buildErrorState(state.message);
+                }
 
-                    // User Metrics Section
-                    _buildSectionTitle(context, 'User Metrics', Icons.people),
-                    const SizedBox(height: 12),
-                    _buildUserMetrics(context, analytics.userMetrics),
-                    const SizedBox(height: 24),
+                if (state is AnalyticsLoaded) {
+                  return RefreshIndicator(
+                    onRefresh: () async => _loadAnalytics(),
+                    child: _buildContent(state),
+                  );
+                }
 
-                    // Deed Metrics Section
-                    _buildSectionTitle(context, 'Deed Metrics', Icons.assignment_turned_in),
-                    const SizedBox(height: 12),
-                    _buildDeedMetrics(context, analytics.deedMetrics),
-                    const SizedBox(height: 24),
-
-                    // Financial Metrics Section
-                    _buildSectionTitle(context, 'Financial Overview', Icons.account_balance_wallet),
-                    const SizedBox(height: 12),
-                    _buildFinancialMetrics(context, analytics.financialMetrics),
-                    const SizedBox(height: 24),
-
-                    // Engagement Metrics Section
-                    _buildSectionTitle(context, 'Engagement', Icons.trending_up),
-                    const SizedBox(height: 12),
-                    _buildEngagementMetrics(context, analytics.engagementMetrics),
-                    const SizedBox(height: 24),
-
-                    // Excuse Metrics Section
-                    _buildSectionTitle(context, 'Excuse Requests', Icons.event_busy),
-                    const SizedBox(height: 12),
-                    _buildExcuseMetrics(context, analytics.excuseMetrics),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
+  Widget _buildViewChip(String label, String value, IconData icon) {
+    final isSelected = _selectedView == value;
+    return FilterChip(
+      selected: isSelected,
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16),
+          const SizedBox(width: 4),
+          Text(label),
+        ],
+      ),
+      onSelected: (selected) {
+        setState(() => _selectedView = value);
+      },
+      backgroundColor: Colors.white,
+      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      checkmarkColor: Theme.of(context).primaryColor,
+    );
+  }
+
+  Widget _buildContent(AnalyticsLoaded state) {
+    final analytics = state.analytics;
+
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Date Range Display
+          if (_startDate != null || _endDate != null)
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(Icons.date_range,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Period: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (_startDate != null || _endDate != null)
+            const SizedBox(height: 16),
+
+          // Content based on selected view
+          if (_selectedView == 'overview') ...[
+            _buildOverviewSection(analytics),
+          ] else if (_selectedView == 'users') ...[
+            _buildUserMetricsSection(analytics.userMetrics),
+          ] else if (_selectedView == 'deeds') ...[
+            _buildDeedMetricsSection(analytics.deedMetrics),
+          ] else if (_selectedView == 'financial') ...[
+            _buildFinancialMetricsSection(analytics.financialMetrics),
+          ] else if (_selectedView == 'engagement') ...[
+            _buildEngagementSection(analytics.engagementMetrics, analytics.excuseMetrics),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverviewSection(dynamic analytics) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('Quick Overview', Icons.dashboard),
+        const SizedBox(height: 16),
+
+        // Key metrics grid
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.5,
+          children: [
+            _buildHighlightCard(
+              'Active Users',
+              analytics.userMetrics.activeUsers.toString(),
+              Icons.people,
+              Colors.green,
+            ),
+            _buildHighlightCard(
+              'Pending Approvals',
+              analytics.userMetrics.pendingUsers.toString(),
+              Icons.hourglass_empty,
+              Colors.orange,
+            ),
+            _buildHighlightCard(
+              'Compliance Rate',
+              '${(analytics.deedMetrics.complianceRateToday * 100).toStringAsFixed(0)}%',
+              Icons.check_circle,
+              Colors.blue,
+            ),
+            _buildHighlightCard(
+              'Outstanding',
+              _formatCurrency(analytics.financialMetrics.outstandingBalance),
+              Icons.account_balance,
+              Colors.red,
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+        _buildSectionHeader('All Sections', Icons.apps),
+        const SizedBox(height: 12),
+
+        _buildUserMetricsSection(analytics.userMetrics),
+        const SizedBox(height: 24),
+        _buildDeedMetricsSection(analytics.deedMetrics),
+        const SizedBox(height: 24),
+        _buildFinancialMetricsSection(analytics.financialMetrics),
+      ],
+    );
+  }
+
+  Widget _buildHighlightCard(String title, String value, IconData icon, Color color) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: color, size: 32),
+            const Spacer(),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, size: 24, color: Theme.of(context).primaryColor),
-        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+        ),
+        const SizedBox(width: 12),
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -205,72 +353,56 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     );
   }
 
-  Widget _buildUserMetrics(BuildContext context, userMetrics) {
+  Widget _buildUserMetricsSection(dynamic userMetrics) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        _buildSectionHeader('User Metrics', Icons.people),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.3,
           children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Pending',
-                value: userMetrics.pendingUsers.toString(),
-                icon: Icons.hourglass_empty,
-                color: Colors.orange,
-              ),
+            AnalyticsMetricCard(
+              title: 'Pending',
+              value: userMetrics.pendingUsers.toString(),
+              icon: Icons.hourglass_empty,
+              color: Colors.orange,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Active',
-                value: userMetrics.activeUsers.toString(),
-                icon: Icons.check_circle,
-                color: Colors.green,
-              ),
+            AnalyticsMetricCard(
+              title: 'Active',
+              value: userMetrics.activeUsers.toString(),
+              icon: Icons.check_circle,
+              color: Colors.green,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Suspended',
-                value: userMetrics.suspendedUsers.toString(),
-                icon: Icons.block,
-                color: Colors.red,
-              ),
+            AnalyticsMetricCard(
+              title: 'Suspended',
+              value: userMetrics.suspendedUsers.toString(),
+              icon: Icons.block,
+              color: Colors.red,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Deactivated',
-                value: userMetrics.deactivatedUsers.toString(),
-                icon: Icons.cancel,
-                color: Colors.grey,
-              ),
+            AnalyticsMetricCard(
+              title: 'Deactivated',
+              value: userMetrics.deactivatedUsers.toString(),
+              icon: Icons.cancel,
+              color: Colors.grey,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'At Risk',
-                value: userMetrics.usersAtRisk.toString(),
-                subtitle: 'Balance > 400k',
-                icon: Icons.warning,
-                color: Colors.deepOrange,
-              ),
+            AnalyticsMetricCard(
+              title: 'At Risk',
+              value: userMetrics.usersAtRisk.toString(),
+              subtitle: 'Balance > 400k',
+              icon: Icons.warning,
+              color: Colors.deepOrange,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'New This Week',
-                value: userMetrics.newRegistrationsThisWeek.toString(),
-                icon: Icons.person_add,
-                color: Colors.blue,
-              ),
+            AnalyticsMetricCard(
+              title: 'New This Week',
+              value: userMetrics.newRegistrationsThisWeek.toString(),
+              icon: Icons.person_add,
+              color: Colors.blue,
             ),
           ],
         ),
@@ -278,53 +410,47 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     );
   }
 
-  Widget _buildDeedMetrics(BuildContext context, deedMetrics) {
+  Widget _buildDeedMetricsSection(dynamic deedMetrics) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        _buildSectionHeader('Deed Performance', Icons.assignment_turned_in),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.3,
           children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Today',
-                value: deedMetrics.totalDeedsToday.toString(),
-                subtitle: 'Avg: ${deedMetrics.averagePerUserToday.toStringAsFixed(1)}',
-                icon: Icons.today,
-                color: Colors.blue,
-              ),
+            AnalyticsMetricCard(
+              title: 'Today',
+              value: deedMetrics.totalDeedsToday.toString(),
+              subtitle: 'Avg: ${deedMetrics.averagePerUserToday.toStringAsFixed(1)}',
+              icon: Icons.today,
+              color: Colors.blue,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'This Week',
-                value: deedMetrics.totalDeedsWeek.toString(),
-                subtitle: 'Avg: ${deedMetrics.averagePerUserWeek.toStringAsFixed(1)}',
-                icon: Icons.date_range,
-                color: Colors.indigo,
-              ),
+            AnalyticsMetricCard(
+              title: 'This Week',
+              value: deedMetrics.totalDeedsWeek.toString(),
+              subtitle: 'Avg: ${deedMetrics.averagePerUserWeek.toStringAsFixed(1)}',
+              icon: Icons.date_range,
+              color: Colors.indigo,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Compliance Today',
-                value: '${(deedMetrics.complianceRateToday * 100).toStringAsFixed(1)}%',
-                subtitle: '${deedMetrics.usersCompletedToday}/${deedMetrics.totalActiveUsers} users',
-                icon: Icons.check_circle_outline,
-                color: Colors.green,
-              ),
+            AnalyticsMetricCard(
+              title: 'Compliance Today',
+              value: '${(deedMetrics.complianceRateToday * 100).toStringAsFixed(1)}%',
+              subtitle: '${deedMetrics.usersCompletedToday}/${deedMetrics.totalActiveUsers} users',
+              icon: Icons.check_circle_outline,
+              color: Colors.green,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Faraid',
-                value: '${(deedMetrics.faraidComplianceRate * 100).toStringAsFixed(1)}%',
-                subtitle: 'Compliance',
-                icon: Icons.stars,
-                color: Colors.purple,
-              ),
+            AnalyticsMetricCard(
+              title: 'Faraid',
+              value: '${(deedMetrics.faraidComplianceRate * 100).toStringAsFixed(1)}%',
+              subtitle: 'Compliance',
+              icon: Icons.stars,
+              color: Colors.purple,
             ),
           ],
         ),
@@ -332,52 +458,46 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     );
   }
 
-  Widget _buildFinancialMetrics(BuildContext context, financialMetrics) {
+  Widget _buildFinancialMetricsSection(dynamic financialMetrics) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        _buildSectionHeader('Financial Overview', Icons.account_balance_wallet),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.3,
           children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Outstanding',
-                value: _formatCurrency(financialMetrics.outstandingBalance),
-                icon: Icons.account_balance,
-                color: Colors.red,
-              ),
+            AnalyticsMetricCard(
+              title: 'Outstanding',
+              value: _formatCurrency(financialMetrics.outstandingBalance),
+              icon: Icons.account_balance,
+              color: Colors.red,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Pending Payments',
-                value: financialMetrics.pendingPaymentsCount.toString(),
-                subtitle: _formatCurrency(financialMetrics.pendingPaymentsAmount),
-                icon: Icons.pending,
-                color: Colors.orange,
-              ),
+            AnalyticsMetricCard(
+              title: 'Pending Payments',
+              value: financialMetrics.pendingPaymentsCount.toString(),
+              subtitle: _formatCurrency(financialMetrics.pendingPaymentsAmount),
+              icon: Icons.pending,
+              color: Colors.orange,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'This Month',
-                value: _formatCurrency(financialMetrics.penaltiesIncurredThisMonth),
-                subtitle: 'Penalties',
-                icon: Icons.trending_up,
-                color: Colors.deepOrange,
-              ),
+            AnalyticsMetricCard(
+              title: 'This Month',
+              value: _formatCurrency(financialMetrics.penaltiesIncurredThisMonth),
+              subtitle: 'Penalties',
+              icon: Icons.trending_up,
+              color: Colors.deepOrange,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'This Month',
-                value: _formatCurrency(financialMetrics.paymentsReceivedThisMonth),
-                subtitle: 'Payments',
-                icon: Icons.trending_down,
-                color: Colors.green,
-              ),
+            AnalyticsMetricCard(
+              title: 'This Month',
+              value: _formatCurrency(financialMetrics.paymentsReceivedThisMonth),
+              subtitle: 'Payments',
+              icon: Icons.trending_down,
+              color: Colors.green,
             ),
           ],
         ),
@@ -385,76 +505,70 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     );
   }
 
-  Widget _buildEngagementMetrics(BuildContext context, engagementMetrics) {
+  Widget _buildEngagementSection(dynamic engagementMetrics, dynamic excuseMetrics) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        _buildSectionHeader('Engagement & Activity', Icons.trending_up),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.3,
           children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Daily Active',
-                value: engagementMetrics.dailyActiveUsers.toString(),
-                subtitle: '${((engagementMetrics.dailyActiveUsers / engagementMetrics.totalActiveUsers) * 100).toStringAsFixed(0)}% of total',
-                icon: Icons.people,
-                color: Colors.blue,
-              ),
+            AnalyticsMetricCard(
+              title: 'Daily Active',
+              value: engagementMetrics.dailyActiveUsers.toString(),
+              subtitle: '${((engagementMetrics.dailyActiveUsers / engagementMetrics.totalActiveUsers) * 100).toStringAsFixed(0)}% of total',
+              icon: Icons.people,
+              color: Colors.blue,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Submission Rate',
-                value: '${(engagementMetrics.reportSubmissionRate * 100).toStringAsFixed(0)}%',
-                subtitle: 'Avg time: ${engagementMetrics.averageSubmissionTime}',
-                icon: Icons.send,
-                color: Colors.green,
-              ),
+            AnalyticsMetricCard(
+              title: 'Submission Rate',
+              value: '${(engagementMetrics.reportSubmissionRate * 100).toStringAsFixed(0)}%',
+              subtitle: 'Avg time: ${engagementMetrics.averageSubmissionTime}',
+              icon: Icons.send,
+              color: Colors.green,
             ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildExcuseMetrics(BuildContext context, excuseMetrics) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Pending',
-                value: excuseMetrics.pendingExcuses.toString(),
-                icon: Icons.pending_actions,
-                color: Colors.orange,
-              ),
+            AnalyticsMetricCard(
+              title: 'Pending Excuses',
+              value: excuseMetrics.pendingExcuses.toString(),
+              icon: Icons.pending_actions,
+              color: Colors.orange,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnalyticsMetricCard(
-                title: 'Approval Rate',
-                value: '${(excuseMetrics.approvalRate * 100).toStringAsFixed(0)}%',
-                icon: Icons.check,
-                color: Colors.green,
-              ),
+            AnalyticsMetricCard(
+              title: 'Approval Rate',
+              value: '${(excuseMetrics.approvalRate * 100).toStringAsFixed(0)}%',
+              icon: Icons.check,
+              color: Colors.green,
             ),
           ],
         ),
         if (excuseMetrics.mostCommonReason != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline),
+                  const Icon(Icons.info_outline, color: Colors.blue),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Most Common Reason',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          'Most Common Excuse Reason',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -472,6 +586,37 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, size: 64, color: Colors.red),
+          const SizedBox(height: 16),
+          Text(
+            'Error loading analytics',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _loadAnalytics,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+          ),
+        ],
+      ),
     );
   }
 

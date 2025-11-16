@@ -474,3 +474,51 @@ class ReportUpdatedSuccess extends AdminState {
   @override
   List<Object?> get props => [report];
 }
+
+// ==================== REST DAYS MANAGEMENT STATES ====================
+
+/// Rest days loaded successfully
+class RestDaysLoaded extends AdminState {
+  final List<dynamic> restDays;
+
+  const RestDaysLoaded(this.restDays);
+
+  @override
+  List<Object?> get props => [restDays];
+}
+
+/// Rest day created successfully
+class RestDayCreated extends AdminState {
+  final dynamic restDay;
+
+  const RestDayCreated(this.restDay);
+
+  @override
+  List<Object?> get props => [restDay];
+}
+
+/// Rest day updated successfully
+class RestDayUpdated extends AdminState {
+  const RestDayUpdated();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// Rest day deleted successfully
+class RestDayDeleted extends AdminState {
+  const RestDayDeleted();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// Rest days bulk imported successfully
+class RestDaysBulkImported extends AdminState {
+  final List<dynamic> restDays;
+
+  const RestDaysBulkImported(this.restDays);
+
+  @override
+  List<Object?> get props => [restDays];
+}
