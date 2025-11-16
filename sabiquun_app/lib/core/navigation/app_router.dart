@@ -39,6 +39,10 @@ import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.
 import 'package:sabiquun_app/features/analytics/presentation/pages/analytics_dashboard_page.dart' as user_analytics;
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
+import 'package:sabiquun_app/features/supervisor/presentation/pages/user_reports_page.dart';
+import 'package:sabiquun_app/features/supervisor/presentation/pages/leaderboard_page.dart';
+import 'package:sabiquun_app/features/supervisor/presentation/pages/users_at_risk_page.dart';
+import 'package:sabiquun_app/features/supervisor/presentation/pages/achievement_tags_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -305,6 +309,33 @@ class AppRouter {
         path: '/analytics',
         name: 'analytics',
         builder: (context, state) => const user_analytics.AnalyticsDashboardPage(),
+      ),
+
+      // Supervisor Routes
+      GoRoute(
+        path: '/user-reports',
+        name: 'user-reports',
+        builder: (context, state) => const UserReportsPage(),
+      ),
+      GoRoute(
+        path: '/leaderboard',
+        name: 'leaderboard',
+        builder: (context, state) => const LeaderboardPage(),
+      ),
+      GoRoute(
+        path: '/users-at-risk',
+        name: 'users-at-risk',
+        builder: (context, state) => const UsersAtRiskPage(),
+      ),
+      GoRoute(
+        path: '/achievement-tags',
+        name: 'achievement-tags',
+        builder: (context, state) => const AchievementTagsPage(),
+      ),
+      GoRoute(
+        path: '/send-notification',
+        name: 'send-notification',
+        builder: (context, state) => const ManualNotificationPage(),
       ),
 
     ],

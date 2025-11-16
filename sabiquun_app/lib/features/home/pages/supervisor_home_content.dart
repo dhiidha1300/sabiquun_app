@@ -275,7 +275,7 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
             title: 'Pending Excuses',
             subtitle: 'Review requests',
             color: Colors.orange,
-            route: '/excuse-management',
+            route: '/admin/excuses',
             badgeCount: pendingExcuses,
             hasUrgentItem: pendingExcuses > 5,
           ),
