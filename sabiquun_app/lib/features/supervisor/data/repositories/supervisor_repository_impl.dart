@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
+import '../../../../core/errors/failures.dart';
 import '../../domain/entities/user_report_summary_entity.dart';
 import '../../domain/entities/leaderboard_entry_entity.dart';
 import '../../domain/entities/achievement_tag_entity.dart';
@@ -32,7 +32,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
 
       return Right(models.map((m) => m.toEntity()).toList());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -49,7 +49,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
 
       return Right(models.map((m) => m.toEntity()).toList());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -64,7 +64,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
 
       return Right(models.map((m) => m.toEntity()).toList());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -74,7 +74,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       final model = await remoteDataSource.getUserDetail(userId);
       return Right(model.toEntity());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -84,7 +84,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       final models = await remoteDataSource.getAchievementTags();
       return Right(models.map((m) => m.toEntity()).toList());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -102,7 +102,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       );
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -118,7 +118,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       );
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -140,7 +140,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       );
       return Right(model.toEntity());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -164,7 +164,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       );
       return Right(model.toEntity());
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -174,7 +174,7 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       await remoteDataSource.deleteAchievementTag(tagId);
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(message: e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

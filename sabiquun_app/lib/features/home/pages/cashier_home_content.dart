@@ -910,19 +910,14 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
         builder: (context, child) {
           return Transform.translate(
             offset: Offset(_drawerSlideAnimation.value * 280, 0),
-            child: Container(
-              width: 280,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(5, 0),
-                  ),
-                ],
+            child: Material(
+              elevation: 16,
+              color: AppColors.surface,
+              shadowColor: Colors.black.withValues(alpha: 0.3),
+              child: SizedBox(
+                width: 280,
+                child: _buildDrawerContent(),
               ),
-              child: _buildDrawerContent(),
             ),
           );
         },

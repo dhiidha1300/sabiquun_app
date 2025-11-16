@@ -263,7 +263,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         onTap(selected ? label : null);
       },
       backgroundColor: Colors.grey.shade100,
-      selectedColor: AppColors.primary.withOpacity(0.2),
+      selectedColor: AppColors.primary.withValues(alpha: 0.2),
       checkmarkColor: AppColors.primary,
       labelStyle: TextStyle(
         color: isSelected ? AppColors.primary : Colors.grey.shade700,
@@ -282,7 +282,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         setState(() => _sortBy = value);
       },
       backgroundColor: Colors.grey.shade100,
-      selectedColor: AppColors.primary.withOpacity(0.2),
+      selectedColor: AppColors.primary.withValues(alpha: 0.2),
       labelStyle: TextStyle(
         color: isSelected ? AppColors.primary : Colors.grey.shade700,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,

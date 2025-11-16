@@ -906,11 +906,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   ) async {
     emit(const AdminLoading());
     try {
-      final restDays = await _repository.bulkImportRestDays(
-        restDaysData: event.restDaysData,
+      final count = await _repository.bulkImportRestDays(
+        fileContent: event.fileContent,
         createdBy: event.createdBy,
       );
-      emit(RestDaysBulkImported(restDays));
+      emit(RestDaysBulkImported(count));
       // Auto-reload rest days
       add(const LoadRestDaysRequested());
     } catch (e) {

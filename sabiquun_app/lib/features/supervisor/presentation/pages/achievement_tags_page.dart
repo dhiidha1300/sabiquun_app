@@ -196,7 +196,7 @@ class _AchievementTagsPageState extends State<AchievementTagsPage> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Center(
@@ -229,8 +229,8 @@ class _AchievementTagsPageState extends State<AchievementTagsPage> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: tag.autoAssign
-                                      ? Colors.green.withOpacity(0.1)
-                                      : Colors.grey.withOpacity(0.1),
+                                      ? Colors.green.withValues(alpha: 0.1)
+                                      : Colors.grey.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(

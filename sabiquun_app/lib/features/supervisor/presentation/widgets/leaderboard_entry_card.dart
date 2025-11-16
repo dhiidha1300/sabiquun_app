@@ -59,7 +59,7 @@ class LeaderboardEntryCard extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -78,7 +78,7 @@ class LeaderboardEntryCard extends StatelessWidget {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.1),
+          color: AppColors.primary.withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
         child: Center(
@@ -107,10 +107,10 @@ class LeaderboardEntryCard extends StatelessWidget {
         side: isTopThree
             ? BorderSide(
                 color: entry.rank == 1
-                    ? Colors.amber.withOpacity(0.5)
+                    ? Colors.amber.withValues(alpha: 0.5)
                     : entry.rank == 2
-                        ? Colors.grey.withOpacity(0.5)
-                        : Colors.orange.withOpacity(0.5),
+                        ? Colors.grey.withValues(alpha: 0.5)
+                        : Colors.orange.withValues(alpha: 0.5),
                 width: 2,
               )
             : BorderSide.none,

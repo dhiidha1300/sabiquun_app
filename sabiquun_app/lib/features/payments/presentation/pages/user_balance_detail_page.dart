@@ -115,7 +115,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
               );
             }
 
-            if (adminState is UserByIdLoaded) {
+            if (adminState is UserDetailLoaded) {
               final user = adminState.user;
 
               return SingleChildScrollView(
@@ -297,16 +297,16 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
         Color balanceColor = AppColors.textPrimary;
 
         if (state is PenaltyBalanceLoaded) {
-          final balance = state.balance;
-          balanceText = NumberFormat('#,###').format(balance);
+          final balanceAmount = state.balance.balance;
+          balanceText = NumberFormat('#,###').format(balanceAmount);
           lastUpdatedText = 'Updated just now';
 
           // Color code by severity
-          if (balance > 300000) {
+          if (balanceAmount > 300000) {
             balanceColor = AppColors.error;
-          } else if (balance > 150000) {
+          } else if (balanceAmount > 150000) {
             balanceColor = Colors.orange;
-          } else if (balance > 0) {
+          } else if (balanceAmount > 0) {
             balanceColor = Colors.amber.shade700;
           } else {
             balanceColor = Colors.green;
@@ -424,7 +424,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
         const SizedBox(height: 16),
         BlocBuilder<PenaltyBloc, PenaltyState>(
           builder: (context, state) {
-            if (state is PenaltiesLoading) {
+            if (state is PenaltyLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -581,10 +581,10 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                               ),
                           ],
                         ),
-                        if (penalty.reason != null && penalty.reason!.isNotEmpty) ...[
+                        if (penalty.waivedReason != null && penalty.waivedReason!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Text(
-                            penalty.reason!,
+                            'Waived: ${penalty.waivedReason!}',
                             style: TextStyle(
                               fontSize: 13,
                               color: AppColors.textSecondary,

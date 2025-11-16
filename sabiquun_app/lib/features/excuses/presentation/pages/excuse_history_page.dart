@@ -345,7 +345,7 @@ class _ExcuseHistoryPageState extends State<ExcuseHistoryPage> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: _getStatusColor(excuse.status).withOpacity(0.1),
+                                    color: _getStatusColor(excuse.status).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: _getStatusColor(excuse.status),

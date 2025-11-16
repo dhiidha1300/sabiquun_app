@@ -297,7 +297,7 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
                   shape: BoxShape.circle,
                 ),
                 todayDecoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
@@ -415,8 +415,8 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
               contentPadding: const EdgeInsets.all(16),
               leading: CircleAvatar(
                 backgroundColor: restDay.isRecurring
-                    ? Colors.purple.withOpacity(0.2)
-                    : Colors.green.withOpacity(0.2),
+                    ? Colors.purple.withValues(alpha: 0.2)
+                    : Colors.green.withValues(alpha: 0.2),
                 child: Icon(
                   restDay.isRecurring ? Icons.loop : Icons.event,
                   color: restDay.isRecurring ? Colors.purple : Colors.green,

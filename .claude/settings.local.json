@@ -8,7 +8,8 @@
       "Bash(flutter pub get:*)",
       "Bash(dir /s /b d:sabiquun_applib*.dart 2)",
       "Bash(nul)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(dir /s /b a:sabiquun_applib*.dart 2)"
     ],
     "deny": [],
     "ask": []

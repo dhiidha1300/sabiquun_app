@@ -43,8 +43,7 @@ class UserMetricsModel with _$UserMetricsModel {
     @JsonKey(name: 'exclusive_members') required int exclusiveMembers,
     @JsonKey(name: 'legacy_members') required int legacyMembers,
     @JsonKey(name: 'users_at_risk') required int usersAtRisk,
-    @JsonKey(name: 'new_registrations_this_week')
-    required int newRegistrationsThisWeek,
+    @JsonKey(name: 'new_registrations_this_week') required int newRegistrationsThisWeek,
   }) = _UserMetricsModel;
 
   factory UserMetricsModel.fromJson(Map<String, dynamic> json) =>
@@ -82,15 +81,11 @@ class DeedMetricsModel with _$DeedMetricsModel {
     @JsonKey(name: 'compliance_rate_month') required double complianceRateMonth,
     @JsonKey(name: 'users_completed_today') required int usersCompletedToday,
     @JsonKey(name: 'total_active_users') required int totalActiveUsers,
-    @JsonKey(name: 'faraid_compliance_rate')
-    required double faraidComplianceRate,
-    @JsonKey(name: 'sunnah_compliance_rate')
-    required double sunnahComplianceRate,
+    @JsonKey(name: 'faraid_compliance_rate') required double faraidComplianceRate,
+    @JsonKey(name: 'sunnah_compliance_rate') required double sunnahComplianceRate,
     @JsonKey(name: 'top_performers') required List<TopPerformerModel> topPerformers,
-    @JsonKey(name: 'users_needing_attention')
-    required List<UserNeedingAttentionModel> usersNeedingAttention,
-    @JsonKey(name: 'deed_compliance_by_type')
-    required Map<String, double> deedComplianceByType,
+    @JsonKey(name: 'users_needing_attention') required List<UserNeedingAttentionModel> usersNeedingAttention,
+    @JsonKey(name: 'deed_compliance_by_type') required Map<String, double> deedComplianceByType,
   }) = _DeedMetricsModel;
 
   factory DeedMetricsModel.fromJson(Map<String, dynamic> json) =>

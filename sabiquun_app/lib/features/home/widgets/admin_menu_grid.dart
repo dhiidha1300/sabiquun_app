@@ -448,6 +448,12 @@ class AdminMenuGridState extends State<AdminMenuGrid>
           color: Colors.teal,
         ),
         _MenuItem(
+          icon: Icons.event_busy,
+          title: 'Rest Days',
+          route: '/admin/rest-days',
+          color: Colors.amber,
+        ),
+        _MenuItem(
           icon: Icons.settings,
           title: 'System Settings',
           route: '/admin/system-settings',

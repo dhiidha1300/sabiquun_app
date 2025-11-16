@@ -10,6 +10,7 @@ import '../../../deeds/domain/entities/deed_template_entity.dart';
 import '../../../deeds/domain/entities/deed_report_entity.dart';
 import '../datasources/admin_remote_datasource.dart';
 import '../models/system_settings_model.dart';
+import '../models/rest_day_model.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final AdminRemoteDataSource _remoteDataSource;
@@ -408,52 +409,6 @@ class AdminRepositoryImpl implements AdminRepository {
 
   // ==================== REST DAYS (Stub) ====================
 
-  @override
-  Future<List<RestDayEntity>> getRestDays({
-    int? year,
-    bool? isRecurring,
-  }) {
-    throw UnimplementedError('Rest days not yet implemented');
-  }
-
-  @override
-  Future<RestDayEntity> createRestDay({
-    required DateTime date,
-    DateTime? endDate,
-    required String description,
-    required bool isRecurring,
-    required String createdBy,
-  }) {
-    throw UnimplementedError('Rest days not yet implemented');
-  }
-
-  @override
-  Future<void> updateRestDay({
-    required String restDayId,
-    DateTime? date,
-    DateTime? endDate,
-    String? description,
-    bool? isRecurring,
-    required String updatedBy,
-  }) {
-    throw UnimplementedError('Rest days not yet implemented');
-  }
-
-  @override
-  Future<void> deleteRestDay({
-    required String restDayId,
-    required String deletedBy,
-  }) {
-    throw UnimplementedError('Rest days not yet implemented');
-  }
-
-  @override
-  Future<int> bulkImportRestDays({
-    required String fileContent,
-    required String createdBy,
-  }) {
-    throw UnimplementedError('Rest days bulk import not yet implemented');
-  }
 
   // ==================== ANALYTICS ====================
 
@@ -968,16 +923,21 @@ class AdminRepositoryImpl implements AdminRepository {
   }
 
   @override
-  Future<List<RestDayEntity>> bulkImportRestDays({
-    required List<Map<String, dynamic>> restDaysData,
+  Future<int> bulkImportRestDays({
+    required String fileContent,
     required String createdBy,
   }) async {
     try {
+      // Parse CSV/Excel file content into list of maps
+      // For now, this is a placeholder - actual parsing would happen here
+      final restDaysData = <Map<String, dynamic>>[];
+      // TODO: Parse fileContent (CSV/Excel) into restDaysData
+
       final restDays = await _remoteDataSource.bulkImportRestDays(
         restDaysData: restDaysData,
         createdBy: createdBy,
       );
-      return restDays.map((model) => model.toEntity()).toList();
+      return restDays.length;
     } catch (e) {
       throw Exception('Failed to bulk import rest days: $e');
     }

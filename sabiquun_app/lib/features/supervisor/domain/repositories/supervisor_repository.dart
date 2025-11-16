@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
+import '../../../../core/errors/failures.dart';
 import '../entities/user_report_summary_entity.dart';
 import '../entities/leaderboard_entry_entity.dart';
 import '../entities/achievement_tag_entity.dart';

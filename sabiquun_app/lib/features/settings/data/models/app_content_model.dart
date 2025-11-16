@@ -17,7 +17,7 @@ class AppContentModel extends AppContentEntity {
   /// Create from JSON
   factory AppContentModel.fromJson(Map<String, dynamic> json) {
     try {
-      print('Parsing app content JSON: ${json.keys}');
+      // print('Parsing app content JSON: ${json.keys}');
       return AppContentModel(
         id: json['id'] as String,
         contentKey: json['content_key'] as String,
@@ -30,9 +30,9 @@ class AppContentModel extends AppContentEntity {
         updatedAt: DateTime.parse(json['updated_at'] as String),
       );
     } catch (e) {
-      print('Error parsing AppContentModel: $e');
-      print('JSON keys: ${json.keys}');
-      print('JSON values: $json');
+      // print('Error parsing AppContentModel: $e');
+      // print('JSON keys: ${json.keys}');
+      // print('JSON values: $json');
       rethrow;
     }
   }

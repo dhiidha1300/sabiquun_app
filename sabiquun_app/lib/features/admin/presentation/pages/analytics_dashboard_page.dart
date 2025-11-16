@@ -109,7 +109,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         children: [
           // View selector
           Container(
-            color: Theme.of(context).primaryColor.withOpacity(0.05),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -173,7 +173,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         setState(() => _selectedView = value);
       },
       backgroundColor: Colors.white,
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+      selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
       checkmarkColor: Theme.of(context).primaryColor,
     );
   }
@@ -298,7 +298,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
-            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+            colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.05)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -337,7 +337,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),

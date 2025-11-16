@@ -42,7 +42,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
     // Get current balance from the bloc if available
     final penaltyState = context.read<PenaltyBloc>().state;
     if (penaltyState is PenaltyBalanceLoaded) {
-      _currentBalance = penaltyState.balance;
+      _currentBalance = penaltyState.balance.balance;
     }
   }
 
@@ -199,7 +199,6 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
           ManualBalanceClearRequested(
             userId: widget.userId,
             amount: amount,
-            paymentMethod: _paymentMethod,
             reason: reason,
             clearedBy: widget.currentUserId,
           ),
@@ -309,7 +308,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                   BlocBuilder<PenaltyBloc, PenaltyState>(
                     builder: (context, state) {
                       if (state is PenaltyBalanceLoaded) {
-                        _currentBalance = state.balance;
+                        _currentBalance = state.balance.balance;
                       }
 
                       return Container(

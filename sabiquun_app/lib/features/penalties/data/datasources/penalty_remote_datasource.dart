@@ -350,7 +350,7 @@ class PenaltyRemoteDataSource {
       });
     } catch (e) {
       // Don't throw - audit log failure shouldn't break the main operation
-      print('Warning: Failed to log audit trail: $e');
+      // print('Warning: Failed to log audit trail: $e');
     }
   }
 }

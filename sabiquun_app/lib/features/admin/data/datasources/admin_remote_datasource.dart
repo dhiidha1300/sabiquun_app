@@ -7,7 +7,6 @@ import '../models/audit_log_model.dart';
 import '../models/notification_template_model.dart';
 import '../models/notification_schedule_model.dart';
 import '../models/rest_day_model.dart';
-import '../models/excuse_model.dart';
 import '../../../deeds/data/models/deed_report_model.dart';
 
 class AdminRemoteDataSource {
@@ -1321,7 +1320,7 @@ class AdminRemoteDataSource {
           successCount++;
         } catch (e) {
           // Log individual failure but continue
-          print('Failed to approve excuse $excuseId: $e');
+          // Failed to approve excuse: $excuseId
         }
       }
 
@@ -1350,7 +1349,7 @@ class AdminRemoteDataSource {
           successCount++;
         } catch (e) {
           // Log individual failure but continue
-          print('Failed to reject excuse $excuseId: $e');
+          // Failed to reject excuse: $excuseId
         }
       }
 
@@ -1713,18 +1712,13 @@ class AdminRemoteDataSource {
           .eq('report_id', reportId)
           .order('created_at', ascending: true);
 
-      print('DEBUG: Report response: $reportResponse');
-      print('DEBUG: Deed entries: $entriesResponse');
-
       // Combine them
       reportResponse['deed_entries'] = entriesResponse;
 
       final model = DeedReportModel.fromJson(reportResponse);
-      print('DEBUG: Model entries count: ${model.entries?.length ?? 0}');
 
       return model;
     } catch (e) {
-      print('DEBUG: Error loading report: $e');
       throw Exception('Failed to get report: $e');
     }
   }

@@ -515,10 +515,10 @@ class RestDayDeleted extends AdminState {
 
 /// Rest days bulk imported successfully
 class RestDaysBulkImported extends AdminState {
-  final List<dynamic> restDays;
+  final int count;
 
-  const RestDaysBulkImported(this.restDays);
+  const RestDaysBulkImported(this.count);
 
   @override
-  List<Object?> get props => [restDays];
+  List<Object?> get props => [count];
 }

@@ -792,14 +792,14 @@ class DeleteRestDayRequested extends AdminEvent {
 
 /// Bulk import rest days
 class BulkImportRestDaysRequested extends AdminEvent {
-  final List<Map<String, dynamic>> restDaysData;
+  final String fileContent;
   final String createdBy;
 
   const BulkImportRestDaysRequested({
-    required this.restDaysData,
+    required this.fileContent,
     required this.createdBy,
   });
 
   @override
-  List<Object?> get props => [restDaysData, createdBy];
+  List<Object?> get props => [fileContent, createdBy];
 }

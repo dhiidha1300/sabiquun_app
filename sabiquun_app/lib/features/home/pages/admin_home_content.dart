@@ -248,6 +248,13 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
             hasUrgentItem: pendingPayments > 5,
           ),
           _QuickAction(
+            icon: Icons.calendar_today,
+            title: 'Rest Days',
+            subtitle: 'Manage rest days',
+            color: Colors.amber,
+            route: '/admin/rest-days',
+          ),
+          _QuickAction(
             icon: Icons.analytics,
             title: 'Analytics',
             subtitle: 'View reports',

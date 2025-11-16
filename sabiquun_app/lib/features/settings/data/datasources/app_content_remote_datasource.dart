@@ -19,23 +19,23 @@ class AppContentRemoteDataSource {
       final contentList = response as List;
 
       if (contentList.isEmpty) {
-        print('No content found in app_content table');
+        // print('No content found in app_content table');
         return [];
       }
 
-      print('Found ${contentList.length} content items');
+      // print('Found ${contentList.length} content items');
 
       return contentList.map((json) {
         try {
           return AppContentModel.fromJson(json as Map<String, dynamic>);
         } catch (e) {
-          print('Error parsing app content item: $e');
-          print('JSON data: $json');
+          // print('Error parsing app content item: $e');
+          // print('JSON data: $json');
           rethrow;
         }
       }).toList();
     } catch (e) {
-      print('Error in getAllPublishedContent: $e');
+      // print('Error in getAllPublishedContent: $e');
       throw Exception('Failed to fetch app content: $e');
     }
   }

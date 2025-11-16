@@ -122,7 +122,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           height: 120,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFF2E7D32).withOpacity(0.1),
+                            color: const Color(0xFF2E7D32).withValues(alpha: 0.1),
                             border: Border.all(
                               color: const Color(0xFF2E7D32),
                               width: 2,

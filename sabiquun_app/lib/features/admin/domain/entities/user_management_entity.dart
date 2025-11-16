@@ -91,6 +91,22 @@ class UserManagementEntity extends Equatable {
   /// Get formatted compliance rate percentage
   String get formattedComplianceRate => '${(complianceRate * 100).toStringAsFixed(1)}%';
 
+  /// Get user initials from name (for avatar display)
+  String get initials {
+    final parts = name.trim().split(' ');
+    if (parts.isEmpty) return '??';
+    if (parts.length == 1) {
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  /// Get full name (alias for name)
+  String get fullName => name;
+
+  /// Get phone number (alias for phone)
+  String? get phoneNumber => phone;
+
   @override
   List<Object?> get props => [
         id,

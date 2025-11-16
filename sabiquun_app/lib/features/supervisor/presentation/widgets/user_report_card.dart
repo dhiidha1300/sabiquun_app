@@ -67,7 +67,7 @@ class UserReportCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isWarning ? Colors.orange.withOpacity(0.3) : Colors.transparent,
+          color: isWarning ? Colors.orange.withValues(alpha: 0.3) : Colors.transparent,
           width: 2,
         ),
       ),
@@ -85,7 +85,7 @@ class UserReportCard extends StatelessWidget {
                   // Avatar
                   CircleAvatar(
                     radius: 24,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                     child: Text(
                       userReport.fullName.substring(0, 1).toUpperCase(),
                       style: TextStyle(
@@ -138,7 +138,7 @@ class UserReportCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -220,7 +220,7 @@ class UserReportCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
