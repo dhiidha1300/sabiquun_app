@@ -36,6 +36,10 @@ import 'package:sabiquun_app/features/settings/data/datasources/app_content_remo
 import 'package:sabiquun_app/features/settings/data/repositories/app_content_repository_impl.dart';
 import 'package:sabiquun_app/features/settings/domain/repositories/app_content_repository.dart';
 import 'package:sabiquun_app/features/settings/presentation/bloc/app_content_bloc.dart';
+import 'package:sabiquun_app/features/supervisor/data/datasources/supervisor_remote_datasource.dart';
+import 'package:sabiquun_app/features/supervisor/data/repositories/supervisor_repository_impl.dart';
+import 'package:sabiquun_app/features/supervisor/domain/repositories/supervisor_repository.dart';
+import 'package:sabiquun_app/features/supervisor/presentation/bloc/supervisor_bloc.dart';
 import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
 
 /// Dependency injection container
@@ -71,6 +75,9 @@ class Injection {
   static late AppContentRemoteDataSource _appContentRemoteDataSource;
   static late AppContentRepository _appContentRepository;
   static late AppContentBloc _appContentBloc;
+  static late SupervisorRemoteDataSource _supervisorRemoteDataSource;
+  static late SupervisorRepository _supervisorRepository;
+  static late SupervisorBloc _supervisorBloc;
 
   /// Initialize all dependencies
   static Future<void> init() async {
@@ -169,6 +176,15 @@ class Injection {
 
     // Initialize AppContent Blocs
     _appContentBloc = AppContentBloc(repository: _appContentRepository);
+
+    // Initialize Supervisor Data Sources
+    _supervisorRemoteDataSource = SupervisorRemoteDataSource(supabaseClient: _supabase);
+
+    // Initialize Supervisor Repositories
+    _supervisorRepository = SupervisorRepositoryImpl(remoteDataSource: _supervisorRemoteDataSource);
+
+    // Initialize Supervisor Blocs
+    _supervisorBloc = SupervisorBloc(repository: _supervisorRepository);
   }
 
   /// Get Supabase client instance
@@ -258,6 +274,15 @@ class Injection {
   /// Get AppContent Bloc instance
   static AppContentBloc get appContentBloc => _appContentBloc;
 
+  /// Get Supervisor Remote Data Source instance
+  static SupervisorRemoteDataSource get supervisorRemoteDataSource => _supervisorRemoteDataSource;
+
+  /// Get Supervisor Repository instance
+  static SupervisorRepository get supervisorRepository => _supervisorRepository;
+
+  /// Get Supervisor Bloc instance
+  static SupervisorBloc get supervisorBloc => _supervisorBloc;
+
   /// Reset/dispose all dependencies (useful for testing)
   static Future<void> reset() async {
     await _authBloc.close();
@@ -269,6 +294,7 @@ class Injection {
     await _excuseBloc.close();
     await _analyticsBloc.close();
     await _appContentBloc.close();
+    await _supervisorBloc.close();
     // Add any other cleanup needed
   }
 }
