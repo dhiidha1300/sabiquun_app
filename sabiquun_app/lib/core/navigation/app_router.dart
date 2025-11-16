@@ -18,6 +18,9 @@ import 'package:sabiquun_app/features/penalties/presentation/pages/penalty_histo
 import 'package:sabiquun_app/features/payments/presentation/pages/submit_payment_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_history_page.dart';
 import 'package:sabiquun_app/features/payments/presentation/pages/payment_review_page.dart';
+import 'package:sabiquun_app/features/payments/presentation/pages/user_balance_management_page.dart';
+import 'package:sabiquun_app/features/payments/presentation/pages/user_balance_detail_page.dart';
+import 'package:sabiquun_app/features/payments/presentation/pages/payment_analytics_page.dart';
 import 'package:sabiquun_app/features/excuses/presentation/pages/excuse_history_page.dart';
 import 'package:sabiquun_app/features/excuses/presentation/pages/submit_excuse_page.dart';
 import 'package:sabiquun_app/features/settings/pages/edit_profile_page.dart';
@@ -183,6 +186,24 @@ class AppRouter {
         path: '/payment-review',
         name: 'payment-review',
         builder: (context, state) => const PaymentReviewPage(),
+      ),
+      GoRoute(
+        path: '/user-balances',
+        name: 'user-balances',
+        builder: (context, state) => const UserBalanceManagementPage(),
+      ),
+      GoRoute(
+        path: '/user-balance-detail/:userId',
+        name: 'user-balance-detail',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId']!;
+          return UserBalanceDetailPage(userId: userId);
+        },
+      ),
+      GoRoute(
+        path: '/payment-analytics',
+        name: 'payment-analytics',
+        builder: (context, state) => const PaymentAnalyticsPage(),
       ),
 
       // Profile Route
