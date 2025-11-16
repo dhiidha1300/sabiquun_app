@@ -48,6 +48,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<SearchReportsRequested>(_onSearchReports);
     on<GetReportByIdRequested>(_onGetReportById);
     on<UpdateReportRequested>(_onUpdateReport);
+    on<LoadRestDaysRequested>(_onLoadRestDays);
+    on<CreateRestDayRequested>(_onCreateRestDay);
+    on<UpdateRestDayRequested>(_onUpdateRestDay);
+    on<DeleteRestDayRequested>(_onDeleteRestDay);
+    on<BulkImportRestDaysRequested>(_onBulkImportRestDays);
   }
 
   Future<void> _onLoadUsers(
@@ -813,6 +818,103 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       // The UI can handle re-fetching based on this success state
     } catch (e) {
       emit(AdminError('Failed to update report: ${e.toString()}'));
+    }
+  }
+
+  // ==================== REST DAYS MANAGEMENT HANDLERS ====================
+
+  Future<void> _onLoadRestDays(
+    LoadRestDaysRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final restDays = await _repository.getRestDays(
+        year: event.year,
+        isRecurring: event.isRecurring,
+      );
+      emit(RestDaysLoaded(restDays));
+    } catch (e) {
+      emit(AdminError('Failed to load rest days: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onCreateRestDay(
+    CreateRestDayRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final restDay = await _repository.createRestDay(
+        date: event.date,
+        endDate: event.endDate,
+        description: event.description,
+        isRecurring: event.isRecurring,
+        createdBy: event.createdBy,
+      );
+      emit(RestDayCreated(restDay));
+      // Auto-reload rest days
+      add(LoadRestDaysRequested(year: event.date.year));
+    } catch (e) {
+      emit(AdminError('Failed to create rest day: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onUpdateRestDay(
+    UpdateRestDayRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.updateRestDay(
+        restDayId: event.restDayId,
+        date: event.date,
+        endDate: event.endDate,
+        description: event.description,
+        isRecurring: event.isRecurring,
+        updatedBy: event.updatedBy,
+      );
+      emit(const RestDayUpdated());
+      // Auto-reload rest days
+      add(LoadRestDaysRequested(year: event.date?.year));
+    } catch (e) {
+      emit(AdminError('Failed to update rest day: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onDeleteRestDay(
+    DeleteRestDayRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      await _repository.deleteRestDay(
+        restDayId: event.restDayId,
+        deletedBy: event.deletedBy,
+      );
+      emit(const RestDayDeleted());
+      // Auto-reload rest days
+      add(const LoadRestDaysRequested());
+    } catch (e) {
+      emit(AdminError('Failed to delete rest day: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onBulkImportRestDays(
+    BulkImportRestDaysRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(const AdminLoading());
+    try {
+      final restDays = await _repository.bulkImportRestDays(
+        restDaysData: event.restDaysData,
+        createdBy: event.createdBy,
+      );
+      emit(RestDaysBulkImported(restDays));
+      // Auto-reload rest days
+      add(const LoadRestDaysRequested());
+    } catch (e) {
+      emit(AdminError('Failed to bulk import rest days: ${e.toString()}'));
     }
   }
 }

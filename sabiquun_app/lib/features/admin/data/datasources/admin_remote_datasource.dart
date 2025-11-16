@@ -6,6 +6,8 @@ import '../models/deed_template_model.dart';
 import '../models/audit_log_model.dart';
 import '../models/notification_template_model.dart';
 import '../models/notification_schedule_model.dart';
+import '../models/rest_day_model.dart';
+import '../models/excuse_model.dart';
 import '../../../deeds/data/models/deed_report_model.dart';
 
 class AdminRemoteDataSource {
@@ -1835,6 +1837,188 @@ class AdminRemoteDataSource {
       return await getReportById(reportId);
     } catch (e) {
       throw Exception('Failed to update report: $e');
+    }
+  }
+
+  // ==================== REST DAYS MANAGEMENT ====================
+
+  /// Get all rest days with optional filters
+  Future<List<RestDayModel>> getRestDays({
+    int? year,
+    bool? isRecurring,
+  }) async {
+    try {
+      var query = _supabase
+          .from('rest_days')
+          .select();
+
+      // Filter by year if provided
+      if (year != null) {
+        final startDate = DateTime(year, 1, 1);
+        final endDate = DateTime(year, 12, 31);
+        query = query
+            .gte('date', startDate.toIso8601String().split('T')[0])
+            .lte('date', endDate.toIso8601String().split('T')[0]);
+      }
+
+      // Filter by recurring if provided
+      if (isRecurring != null) {
+        query = query.eq('is_recurring', isRecurring);
+      }
+
+      final response = await query.order('date', ascending: true);
+
+      return (response as List<dynamic>)
+          .map((json) => RestDayModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to get rest days: $e');
+    }
+  }
+
+  /// Create a rest day
+  Future<RestDayModel> createRestDay({
+    required DateTime date,
+    DateTime? endDate,
+    required String description,
+    required bool isRecurring,
+    required String createdBy,
+  }) async {
+    try {
+      final response = await _supabase
+          .from('rest_days')
+          .insert({
+            'date': date.toIso8601String().split('T')[0],
+            'end_date': endDate?.toIso8601String().split('T')[0],
+            'description': description,
+            'is_recurring': isRecurring,
+            'created_at': DateTime.now().toIso8601String(),
+          })
+          .select()
+          .single();
+
+      // Create audit log
+      await _supabase.from('audit_logs').insert({
+        'action_type': 'rest_day_created',
+        'entity_type': 'rest_day',
+        'entity_id': response['id'],
+        'performed_by': createdBy,
+        'new_value': {
+          'date': date.toIso8601String().split('T')[0],
+          'end_date': endDate?.toIso8601String().split('T')[0],
+          'description': description,
+          'is_recurring': isRecurring,
+        },
+        'description': 'Created rest day: $description',
+      });
+
+      return RestDayModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Failed to create rest day: $e');
+    }
+  }
+
+  /// Update rest day
+  Future<RestDayModel> updateRestDay({
+    required String restDayId,
+    DateTime? date,
+    DateTime? endDate,
+    String? description,
+    bool? isRecurring,
+    required String updatedBy,
+  }) async {
+    try {
+      // Get current values for audit log
+      final current = await _supabase
+          .from('rest_days')
+          .select()
+          .eq('id', restDayId)
+          .single();
+
+      final updateData = <String, dynamic>{};
+      if (date != null) updateData['date'] = date.toIso8601String().split('T')[0];
+      if (endDate != null) updateData['end_date'] = endDate.toIso8601String().split('T')[0];
+      if (description != null) updateData['description'] = description;
+      if (isRecurring != null) updateData['is_recurring'] = isRecurring;
+
+      final response = await _supabase
+          .from('rest_days')
+          .update(updateData)
+          .eq('id', restDayId)
+          .select()
+          .single();
+
+      // Create audit log
+      await _supabase.from('audit_logs').insert({
+        'action_type': 'rest_day_updated',
+        'entity_type': 'rest_day',
+        'entity_id': restDayId,
+        'performed_by': updatedBy,
+        'old_value': current,
+        'new_value': response,
+        'description': 'Updated rest day: ${response['description']}',
+      });
+
+      return RestDayModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Failed to update rest day: $e');
+    }
+  }
+
+  /// Delete rest day
+  Future<void> deleteRestDay({
+    required String restDayId,
+    required String deletedBy,
+  }) async {
+    try {
+      // Get current values for audit log
+      final current = await _supabase
+          .from('rest_days')
+          .select()
+          .eq('id', restDayId)
+          .single();
+
+      await _supabase
+          .from('rest_days')
+          .delete()
+          .eq('id', restDayId);
+
+      // Create audit log
+      await _supabase.from('audit_logs').insert({
+        'action_type': 'rest_day_deleted',
+        'entity_type': 'rest_day',
+        'entity_id': restDayId,
+        'performed_by': deletedBy,
+        'old_value': current,
+        'description': 'Deleted rest day: ${current['description']}',
+      });
+    } catch (e) {
+      throw Exception('Failed to delete rest day: $e');
+    }
+  }
+
+  /// Bulk import rest days from CSV data
+  Future<List<RestDayModel>> bulkImportRestDays({
+    required List<Map<String, dynamic>> restDaysData,
+    required String createdBy,
+  }) async {
+    try {
+      final result = <RestDayModel>[];
+
+      for (var data in restDaysData) {
+        final restDay = await createRestDay(
+          date: DateTime.parse(data['date']),
+          endDate: data['end_date'] != null ? DateTime.parse(data['end_date']) : null,
+          description: data['description'],
+          isRecurring: data['is_recurring'] ?? false,
+          createdBy: createdBy,
+        );
+        result.add(restDay);
+      }
+
+      return result;
+    } catch (e) {
+      throw Exception('Failed to bulk import rest days: $e');
     }
   }
 }
