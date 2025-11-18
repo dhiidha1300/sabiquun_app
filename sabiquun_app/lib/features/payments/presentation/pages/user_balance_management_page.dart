@@ -19,21 +19,44 @@ class UserBalanceManagementPage extends StatefulWidget {
   State<UserBalanceManagementPage> createState() => _UserBalanceManagementPageState();
 }
 
-class _UserBalanceManagementPageState extends State<UserBalanceManagementPage> {
+class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
+    with WidgetsBindingObserver {
   final TextEditingController _searchController = TextEditingController();
   final List<String> _recentSearches = [];
 
   @override
   void initState() {
     super.initState();
-    // Load all active users initially
-    context.read<AdminBloc>().add(const LoadUsersRequested(accountStatus: 'active'));
+    WidgetsBinding.instance.addObserver(this);
+    _loadUsers();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Reload users when app resumes
+    if (state == AppLifecycleState.resumed) {
+      _loadUsers();
+    }
+  }
+
+  void _loadUsers() {
+    // Load all active users
+    final query = _searchController.text.trim();
+    if (query.isEmpty) {
+      context.read<AdminBloc>().add(const LoadUsersRequested(accountStatus: 'active'));
+    } else {
+      context.read<AdminBloc>().add(LoadUsersRequested(
+        accountStatus: 'active',
+        searchQuery: query,
+      ));
+    }
   }
 
   void _performSearch(String query) {
@@ -373,8 +396,13 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            context.push('/user-balance-detail/${user.id}');
+          onTap: () async {
+            // Navigate and reload users when returning
+            await context.push('/user-balance-detail/${user.id}');
+            // Reload users list after returning from detail page
+            if (mounted) {
+              _loadUsers();
+            }
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

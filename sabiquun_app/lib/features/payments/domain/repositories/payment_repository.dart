@@ -30,6 +30,9 @@ abstract class PaymentRepository {
   /// Get recent approved payments (Cashier/Admin)
   Future<List<PaymentEntity>> getRecentApprovedPayments({int limit = 5});
 
+  /// Get all reviewed payments (approved/rejected) for Admin/Cashier
+  Future<List<PaymentEntity>> getAllReviewedPayments();
+
   /// Approve a payment and apply it to penalties using FIFO
   Future<void> approvePayment({
     required String paymentId,

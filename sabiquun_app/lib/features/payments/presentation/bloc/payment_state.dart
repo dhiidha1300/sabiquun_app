@@ -74,6 +74,16 @@ class RecentApprovedPaymentsLoaded extends PaymentState {
   List<Object?> get props => [payments];
 }
 
+/// All reviewed payments loaded (approved/rejected) for Admin/Cashier
+class AllReviewedPaymentsLoaded extends PaymentState {
+  final List<PaymentEntity> payments;
+
+  const AllReviewedPaymentsLoaded(this.payments);
+
+  @override
+  List<Object?> get props => [payments];
+}
+
 /// Payment approved successfully
 class PaymentApproved extends PaymentState {
   final String paymentId;

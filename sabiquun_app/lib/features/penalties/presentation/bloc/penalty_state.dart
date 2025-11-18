@@ -56,17 +56,18 @@ class PenaltiesLoaded extends PenaltyState {
 /// Unpaid penalties loaded (for payment)
 class UnpaidPenaltiesLoaded extends PenaltyState {
   final List<PenaltyEntity> penalties;
-  final double totalBalance;
+  final PenaltyBalanceEntity balance;
 
   const UnpaidPenaltiesLoaded({
     required this.penalties,
-    required this.totalBalance,
+    required this.balance,
   });
 
+  double get totalBalance => balance.totalBalance;
   double get formattedTotalBalance => totalBalance;
 
   @override
-  List<Object?> get props => [penalties, totalBalance];
+  List<Object?> get props => [penalties, balance];
 }
 
 /// Single penalty loaded

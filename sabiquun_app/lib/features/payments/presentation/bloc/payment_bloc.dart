@@ -12,6 +12,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     on<LoadPaymentHistoryRequested>(_onLoadPaymentHistoryRequested);
     on<LoadRecentApprovedPaymentsRequested>(_onLoadRecentApprovedPaymentsRequested);
     on<LoadPendingPaymentsRequested>(_onLoadPendingPaymentsRequested);
+    on<LoadAllReviewedPaymentsRequested>(_onLoadAllReviewedPaymentsRequested);
     on<ApprovePaymentRequested>(_onApprovePaymentRequested);
     on<RejectPaymentRequested>(_onRejectPaymentRequested);
     on<LoadPenaltyPaymentsRequested>(_onLoadPenaltyPaymentsRequested);
@@ -95,6 +96,19 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       emit(PendingPaymentsLoaded(payments));
     } catch (e) {
       emit(PaymentError('Failed to load pending payments: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onLoadAllReviewedPaymentsRequested(
+    LoadAllReviewedPaymentsRequested event,
+    Emitter<PaymentState> emit,
+  ) async {
+    emit(const PaymentLoading());
+    try {
+      final payments = await _paymentRepository.getAllReviewedPayments();
+      emit(AllReviewedPaymentsLoaded(payments));
+    } catch (e) {
+      emit(PaymentError('Failed to load reviewed payments: ${e.toString()}'));
     }
   }
 

@@ -75,15 +75,12 @@ class PenaltyBloc extends Bloc<PenaltyEvent, PenaltyState> {
         event.userId,
       );
 
-      // Calculate total balance
-      double totalBalance = 0;
-      for (final penalty in penalties) {
-        totalBalance += penalty.remainingAmount;
-      }
+      // Get user balance
+      final balance = await _penaltyRepository.getUserBalance(event.userId);
 
       emit(UnpaidPenaltiesLoaded(
         penalties: penalties,
-        totalBalance: totalBalance,
+        balance: balance,
       ));
     } catch (e) {
       emit(PenaltyError('Failed to load unpaid penalties: ${e.toString()}'));

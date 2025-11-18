@@ -8,6 +8,7 @@ import 'package:sabiquun_app/features/admin/presentation/bloc/admin_event.dart';
 import 'package:sabiquun_app/features/admin/presentation/bloc/admin_state.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sabiquun_app/features/penalties/domain/entities/penalty_entity.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_event.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_state.dart';
@@ -296,8 +297,16 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
         String lastUpdatedText = '';
         Color balanceColor = AppColors.textPrimary;
 
+        // Extract balance from either PenaltyBalanceLoaded or UnpaidPenaltiesLoaded
+        double? balanceAmount;
+
         if (state is PenaltyBalanceLoaded) {
-          final balanceAmount = state.balance.balance;
+          balanceAmount = state.balance.balance;
+        } else if (state is UnpaidPenaltiesLoaded) {
+          balanceAmount = state.balance.balance;
+        }
+
+        if (balanceAmount != null) {
           balanceText = NumberFormat('#,###').format(balanceAmount);
           lastUpdatedText = 'Updated just now';
 
@@ -428,8 +437,16 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
               return const Center(child: CircularProgressIndicator());
             }
 
+            // Handle both PenaltiesLoaded and UnpaidPenaltiesLoaded states
+            List<PenaltyEntity>? penalties;
+
             if (state is PenaltiesLoaded) {
-              final penalties = state.penalties;
+              penalties = state.penalties;
+            } else if (state is UnpaidPenaltiesLoaded) {
+              penalties = state.penalties;
+            }
+
+            if (penalties != null) {
 
               if (penalties.isEmpty) {
                 return Container(

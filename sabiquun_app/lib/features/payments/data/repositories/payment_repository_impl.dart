@@ -88,6 +88,16 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
+  Future<List<PaymentEntity>> getAllReviewedPayments() async {
+    try {
+      final models = await _remoteDataSource.getAllReviewedPayments();
+      return models.map((model) => model.toEntity()).toList();
+    } catch (e) {
+      throw Exception('Failed to get all reviewed payments: $e');
+    }
+  }
+
+  @override
   Future<void> approvePayment({
     required String paymentId,
     required String reviewedBy,

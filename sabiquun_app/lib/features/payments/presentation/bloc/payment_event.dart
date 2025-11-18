@@ -61,6 +61,11 @@ class LoadPendingPaymentsRequested extends PaymentEvent {
   const LoadPendingPaymentsRequested();
 }
 
+/// Load all reviewed payments (approved/rejected) for Admin/Cashier
+class LoadAllReviewedPaymentsRequested extends PaymentEvent {
+  const LoadAllReviewedPaymentsRequested();
+}
+
 /// Approve a payment
 class ApprovePaymentRequested extends PaymentEvent {
   final String paymentId;

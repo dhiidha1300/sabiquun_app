@@ -19,6 +19,9 @@ class PenaltyBalanceEntity extends Equatable {
     this.finalWarningThreshold,
   });
 
+  /// Get total balance (alias for balance field for consistency)
+  double get totalBalance => balance;
+
   /// Get balance color indicator level
   /// green: 0-100,000
   /// yellow: 100,001-300,000

@@ -43,6 +43,8 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
     final penaltyState = context.read<PenaltyBloc>().state;
     if (penaltyState is PenaltyBalanceLoaded) {
       _currentBalance = penaltyState.balance.balance;
+    } else if (penaltyState is UnpaidPenaltiesLoaded) {
+      _currentBalance = penaltyState.balance.balance;
     }
   }
 
@@ -307,7 +309,10 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                   // Current Balance Display
                   BlocBuilder<PenaltyBloc, PenaltyState>(
                     builder: (context, state) {
+                      // Extract balance from either state type
                       if (state is PenaltyBalanceLoaded) {
+                        _currentBalance = state.balance.balance;
+                      } else if (state is UnpaidPenaltiesLoaded) {
                         _currentBalance = state.balance.balance;
                       }
 

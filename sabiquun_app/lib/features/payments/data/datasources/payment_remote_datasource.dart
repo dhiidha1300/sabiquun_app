@@ -110,10 +110,13 @@ class PaymentRemoteDataSource {
     String? status,
   }) async {
     try {
+      print('🔍 Fetching payment history for user: $userId, status: $status');
+
       dynamic query = _supabaseClient
           .from('payments')
           .select('''
             *,
+            user:users!user_id(name, email),
             reviewed_by_user:users!reviewed_by(name)
           ''')
           .eq('user_id', userId);
@@ -126,19 +129,32 @@ class PaymentRemoteDataSource {
 
       final response = await query;
 
+      print('📦 Payment history response: ${(response as List).length} payments found');
+
       return (response as List).map((json) {
         // Flatten the joined data
         final flatJson = Map<String, dynamic>.from(json);
         // payment_method is already a VARCHAR in the table, use it directly
         flatJson['payment_method_name'] = json['payment_method'];
+
+        // Add user data
+        if (json['user'] != null) {
+          flatJson['user_name'] = json['user']['name'];
+          flatJson['user_email'] = json['user']['email'];
+        }
+
+        // Add reviewer data
         if (json['reviewed_by_user'] != null) {
           flatJson['reviewer_name'] = json['reviewed_by_user']['name'];
         }
+
+        flatJson.remove('user');
         flatJson.remove('reviewed_by_user');
 
         return PaymentModel.fromJson(flatJson);
       }).toList();
     } catch (e) {
+      print('❌ Error fetching payment history: $e');
       throw Exception('Failed to fetch payment history: $e');
     }
   }
@@ -231,6 +247,50 @@ class PaymentRemoteDataSource {
       }).toList();
     } catch (e) {
       throw Exception('Failed to fetch recent approved payments: $e');
+    }
+  }
+
+  /// Get all reviewed payments (approved/rejected) for Admin/Cashier
+  Future<List<PaymentModel>> getAllReviewedPayments() async {
+    try {
+      print('🔍 Fetching all reviewed payments (approved/rejected)');
+
+      final response = await _supabaseClient
+          .from('payments')
+          .select('''
+            *,
+            user:users!user_id(name, email),
+            reviewed_by_user:users!reviewed_by(name)
+          ''')
+          .inFilter('status', ['approved', 'rejected'])
+          .order('reviewed_at', ascending: false);
+
+      print('📦 All reviewed payments response: ${(response as List).length} payments found');
+
+      return (response as List).map((json) {
+        final flatJson = Map<String, dynamic>.from(json);
+        // payment_method is already a VARCHAR in the table, use it directly
+        flatJson['payment_method_name'] = json['payment_method'];
+
+        // Add user data
+        if (json['user'] != null) {
+          flatJson['user_name'] = json['user']['name'];
+          flatJson['user_email'] = json['user']['email'];
+        }
+
+        // Add reviewer data
+        if (json['reviewed_by_user'] != null) {
+          flatJson['reviewer_name'] = json['reviewed_by_user']['name'];
+        }
+
+        flatJson.remove('user');
+        flatJson.remove('reviewed_by_user');
+
+        return PaymentModel.fromJson(flatJson);
+      }).toList();
+    } catch (e) {
+      print('❌ Error fetching all reviewed payments: $e');
+      throw Exception('Failed to fetch all reviewed payments: $e');
     }
   }
 
@@ -369,6 +429,36 @@ class PaymentRemoteDataSource {
     }
   }
 
+  /// Get penalty payments with penalty details for receipt generation
+  Future<Map<String, dynamic>> getPenaltyPaymentsWithDetails(String paymentId) async {
+    try {
+      final response = await _supabaseClient
+          .from('penalty_payments')
+          .select('''
+            id,
+            payment_id,
+            penalty_id,
+            amount_applied,
+            created_at,
+            penalties (
+              id,
+              amount,
+              date_incurred,
+              status,
+              paid_amount
+            )
+          ''')
+          .eq('payment_id', paymentId)
+          .order('created_at', ascending: true);
+
+      return {
+        'penalty_payments': response as List,
+      };
+    } catch (e) {
+      throw Exception('Failed to fetch penalty payment details: $e');
+    }
+  }
+
   /// Manual balance clearing (Admin/Cashier)
   Future<void> manualBalanceClear({
     required String userId,
@@ -383,7 +473,8 @@ class PaymentRemoteDataSource {
           .insert({
             'user_id': userId,
             'amount': amount,
-            'payment_method_id': null, // Manual clearing has no method
+            'payment_method': 'MANUAL', // Manual clearing method
+            'payment_type': 'full', // Manual clearing is a full payment
             'reference_number': 'MANUAL_CLEAR',
             'status': 'approved',
             'reviewed_by': clearedBy,
@@ -519,14 +610,15 @@ class PaymentRemoteDataSource {
   }) async {
     try {
       await _supabaseClient.from('audit_logs').insert({
-        'action': action,
+        'action_type': action,  // Fixed: use 'action_type' to match database schema
         'performed_by': performedBy,
         'entity_type': entityType,
         'entity_id': entityId,
         'old_value': oldValue,
         'new_value': newValue,
         'reason': reason,
-        'timestamp': DateTime.now().toIso8601String(),
+        'description': reason,  // Add description field
+        // Note: created_at will be auto-generated by database
       });
     } catch (e) {
       print('Warning: Failed to log audit trail: $e');

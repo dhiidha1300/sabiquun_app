@@ -5,6 +5,8 @@ import '../bloc/payment_bloc.dart';
 import '../bloc/payment_event.dart';
 import '../bloc/payment_state.dart';
 import '../../domain/entities/payment_entity.dart';
+import '../../domain/entities/fifo_payment_distribution.dart';
+import '../../data/services/receipt_service.dart';
 import '../../../../core/constants/payment_status.dart';
 import 'package:sabiquun_app/features/home/widgets/role_based_scaffold.dart';
 
@@ -22,6 +24,7 @@ class PaymentHistoryPage extends StatefulWidget {
 
 class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   String? _selectedFilter;
+  final ReceiptService _receiptService = ReceiptService();
 
   @override
   void initState() {
@@ -34,6 +37,64 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           userId: widget.userId,
           statusFilter: _selectedFilter,
         ));
+  }
+
+  Future<void> _downloadReceipt(PaymentEntity payment) async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // For approved payments, create a simplified distribution
+      // The actual penalty applications were already done when payment was approved
+      final distribution = FifoPaymentDistribution(
+        paymentAmount: payment.amount,
+        currentBalance: payment.amount, // Simplified - showing payment amount
+        remainingPaymentAmount: 0, // Assume payment was fully applied
+        applications: [], // Could be populated by fetching penalty_payments records
+      );
+
+      // Generate receipt
+      final receiptNumber = _receiptService.generateReceiptNumber();
+      final pdf = await _receiptService.generatePaymentReceipt(
+        payment: payment,
+        distribution: distribution,
+        cashierName: payment.reviewerName ?? 'Cashier',
+        receiptNumber: receiptNumber,
+      );
+
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // Share/download the PDF
+      await _receiptService.sharePdf(pdf, receiptNumber);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ Receipt downloaded successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog if open
+      if (mounted) Navigator.of(context).pop();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error downloading receipt: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -68,7 +129,12 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           }
 
           if (state is PaymentHistoryLoaded) {
-            if (state.payments.isEmpty) {
+            // Apply filter if active
+            final filteredPayments = _selectedFilter == null
+                ? state.payments
+                : state.payments.where((p) => p.status.name == _selectedFilter).toList();
+
+            if (filteredPayments.isEmpty && _selectedFilter == null) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -81,6 +147,41 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                             color: Colors.grey[600],
                           ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your payment history will appear here',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[500],
+                          ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (filteredPayments.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.filter_list_off, size: 64, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No payments match your filter',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedFilter = null;
+                        });
+                        _loadPayments();
+                      },
+                      child: const Text('Clear Filter'),
+                    ),
                   ],
                 ),
               );
@@ -92,9 +193,9 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
               },
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: state.payments.length,
+                itemCount: filteredPayments.length,
                 itemBuilder: (context, index) {
-                  return _buildPaymentCard(state.payments[index]);
+                  return _buildPaymentCard(filteredPayments[index]);
                 },
               ),
             );
@@ -254,14 +355,13 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
             if (payment.status.isApproved) ...[
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Implement receipt download
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Receipt download coming soon')),
-                  );
-                },
+                onPressed: () => _downloadReceipt(payment),
                 icon: const Icon(Icons.download),
                 label: const Text('Download Receipt'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.green[700],
+                  side: BorderSide(color: Colors.green[300]!),
+                ),
               ),
             ],
               ],
