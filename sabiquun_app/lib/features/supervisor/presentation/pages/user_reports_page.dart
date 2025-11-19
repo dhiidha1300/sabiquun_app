@@ -76,21 +76,28 @@ class _UserReportsPageState extends State<UserReportsPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('All User Reports'),
+        title: const Text(
+          'All User Reports',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         backgroundColor: AppColors.surface,
         elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
             icon: Badge(
               isLabelVisible: _membershipFilter != null ||
                   _complianceFilter != null ||
                   _reportStatusFilter != null,
-              child: const Icon(Icons.filter_list),
+              child: const Icon(Icons.filter_list, color: AppColors.textPrimary),
             ),
             onPressed: _showFilterSheet,
           ),
           IconButton(
-            icon: const Icon(Icons.download_outlined),
+            icon: const Icon(Icons.download_outlined, color: AppColors.textPrimary),
             onPressed: () {
               // TODO: Implement export functionality
               ScaffoldMessenger.of(context).showSnackBar(
@@ -155,12 +162,30 @@ class _UserReportsPageState extends State<UserReportsPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                          const Icon(Icons.error_outline, size: 64, color: AppColors.error),
                           const SizedBox(height: 16),
-                          Text(state.message),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              state.message,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: _loadUserReports,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: AppColors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 12,
+                              ),
+                            ),
                             child: const Text('Retry'),
                           ),
                         ],

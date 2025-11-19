@@ -71,25 +71,29 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
       scale: _scaleAnimation,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              AppColors.surfaceVariant,
-              AppColors.surface,
+              widget.color.withValues(alpha: 0.08),
+              widget.color.withValues(alpha: 0.03),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+          border: Border.all(
+            color: widget.color.withValues(alpha: 0.15),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: widget.color.withValues(alpha: _isPressed ? 0.25 : 0.15),
-              blurRadius: _isPressed ? 12 : 8,
-              offset: Offset(0, _isPressed ? 6 : 4),
+              color: widget.color.withValues(alpha: _isPressed ? 0.25 : 0.12),
+              blurRadius: _isPressed ? 16 : 12,
+              offset: Offset(0, _isPressed ? 8 : 6),
               spreadRadius: 0,
             ),
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
@@ -98,70 +102,92 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
           color: Colors.transparent,
           child: Stack(
             children: [
+              // Background gradient accent
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: RadialGradient(
+                      center: Alignment.topRight,
+                      radius: 1.5,
+                      colors: [
+                        widget.color.withValues(alpha: 0.05),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
               // Main card content
               InkWell(
                 onTap: widget.onTap,
                 onTapDown: _handleTapDown,
                 onTapUp: _handleTapUp,
                 onTapCancel: _handleTapCancel,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Icon with gradient background
+                      // Icon with modern gradient background
                       Stack(
                         clipBehavior: Clip.none,
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(8),
+                            width: 56,
+                            height: 56,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  widget.color.withValues(alpha: 0.2),
-                                  widget.color.withValues(alpha: 0.1),
+                                  widget.color.withValues(alpha: 0.15),
+                                  widget.color.withValues(alpha: 0.08),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               shape: BoxShape.circle,
+                              border: Border.all(
+                                color: widget.color.withValues(alpha: 0.2),
+                                width: 1,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: widget.color.withValues(alpha: 0.2),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
+                                  color: widget.color.withValues(alpha: 0.15),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
                             child: Icon(
                               widget.icon,
-                              size: 20,
+                              size: 28,
                               color: widget.color,
                             ),
                           ),
                           // Pulsing urgent status dot
                           if (widget.hasUrgentItem)
                             Positioned(
-                              top: -1,
-                              right: -1,
+                              top: 0,
+                              right: 0,
                               child: Container(
-                                width: 12,
-                                height: 12,
+                                width: 14,
+                                height: 14,
                                 decoration: BoxDecoration(
                                   color: AppColors.error,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.surfaceVariant,
+                                    color: Colors.white,
                                     width: 2.5,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.error.withValues(alpha: 0.5),
-                                      blurRadius: 4,
+                                      color: AppColors.error.withValues(alpha: 0.6),
+                                      blurRadius: 6,
                                       spreadRadius: 1,
                                     ),
                                   ],
@@ -170,40 +196,37 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                             ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 12),
 
                       // Title with better typography
-                      Flexible(
-                        child: Text(
-                          widget.title,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 11,
-                                letterSpacing: 0.1,
-                                height: 1.1,
-                              ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Text(
+                        widget.title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              letterSpacing: 0.1,
+                              height: 1.2,
+                              color: AppColors.textPrimary,
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
 
                       // Subtitle
                       if (widget.subtitle != null) ...[
-                        const SizedBox(height: 2),
-                        Flexible(
-                          child: Text(
-                            widget.subtitle!,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w400,
-                                  height: 1.1,
-                                ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.subtitle!,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                height: 1.2,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ],
@@ -211,12 +234,13 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                 ),
               ),
 
-              // Modern badge count (top right)
+              // Modern badge count (top right corner)
               if (widget.badgeCount != null && widget.badgeCount! > 0)
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 8,
+                  right: 8,
                   child: Container(
+                    constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
@@ -224,18 +248,28 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: widget.hasUrgentItem
-                            ? [AppColors.error, AppColors.error.withValues(alpha: 0.8)]
-                            : [widget.color, widget.color.withValues(alpha: 0.8)],
+                            ? [
+                                AppColors.error,
+                                AppColors.error.withValues(alpha: 0.85)
+                              ]
+                            : [
+                                widget.color,
+                                widget.color.withValues(alpha: 0.85)
+                              ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: (widget.hasUrgentItem ? AppColors.error : widget.color)
-                              .withValues(alpha: 0.4),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
+                              .withValues(alpha: 0.5),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -244,8 +278,8 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                       style: const TextStyle(
                         color: AppColors.white,
                         fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.2,
                       ),
                     ),
                   ),

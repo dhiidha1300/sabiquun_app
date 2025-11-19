@@ -50,9 +50,16 @@ class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProv
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Leaderboard'),
+        title: const Text(
+          'Leaderboard',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         backgroundColor: AppColors.surface,
         elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -72,8 +79,17 @@ class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProv
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.primary,
+          indicatorWeight: 3,
           labelColor: AppColors.primary,
-          unselectedLabelColor: Colors.grey,
+          unselectedLabelColor: AppColors.textSecondary,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
           tabs: _periodLabels.map((label) => Tab(text: label)).toList(),
         ),
       ),

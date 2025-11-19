@@ -29,9 +29,52 @@ class SupervisorRemoteDataSource {
 
       if (response == null) return [];
 
-      return (response as List)
-          .map((json) => UserReportSummaryModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return (response as List).map((json) {
+        final data = Map<String, dynamic>.from(json);
+
+        // Parse member_since
+        DateTime? memberSince;
+        if (data['member_since'] != null) {
+          final dateValue = data['member_since'];
+          if (dateValue is String) {
+            memberSince = DateTime.parse(dateValue);
+          } else if (dateValue is DateTime) {
+            memberSince = dateValue;
+          }
+        }
+
+        // Parse last_report_time
+        DateTime? lastReportTime;
+        if (data['last_report_time'] != null) {
+          final dateValue = data['last_report_time'];
+          if (dateValue is String) {
+            lastReportTime = DateTime.parse(dateValue);
+          } else if (dateValue is DateTime) {
+            lastReportTime = dateValue;
+          }
+        }
+
+        // Map SQL function output to model fields
+        return UserReportSummaryModel.fromJson({
+          'userId': data['user_id'] ?? '',
+          'fullName': data['full_name'] ?? 'Unknown',
+          'email': data['email'] ?? 'no-email@example.com',
+          'phoneNumber': data['phone_number'],
+          'profilePhotoUrl': data['profile_photo_url'],
+          'membershipStatus': data['membership_status'] ?? 'new',
+          'memberSince': memberSince?.toIso8601String(),
+          'todayDeeds': data['today_deeds'] ?? 0,
+          'todayTarget': data['today_target'] ?? 10,
+          'hasSubmittedToday': data['has_submitted_today'] ?? false,
+          'lastReportTime': lastReportTime?.toIso8601String(),
+          'complianceRate': (data['compliance_rate'] as num?)?.toDouble() ?? 0.0,
+          'currentStreak': data['current_streak'] ?? 0,
+          'totalReports': data['total_reports'] ?? 0,
+          'currentBalance': (data['current_balance'] as num?)?.toDouble() ?? 0.0,
+          'isAtRisk': data['is_at_risk'] ?? false,
+          'daysWithoutReport': data['days_without_report'] ?? 999,
+        });
+      }).toList();
     } catch (e) {
       throw Exception('Failed to fetch user reports: $e');
     }
@@ -50,9 +93,23 @@ class SupervisorRemoteDataSource {
 
       if (response == null) return [];
 
-      return (response as List)
-          .map((json) => LeaderboardEntryModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return (response as List).map((json) {
+        final data = Map<String, dynamic>.from(json);
+
+        // Map SQL function output to model fields
+        return LeaderboardEntryModel.fromJson({
+          'rank': (data['rank'] as num).toInt(),
+          'userId': data['user_id'],
+          'fullName': data['user_name'],
+          'profilePhotoUrl': data['photo_url'],
+          'membershipStatus': data['membership_status'] ?? 'new',
+          'averageDeeds': (data['average_deeds'] as num?)?.toDouble() ?? 0.0,
+          'complianceRate': 0.0, // Not returned by function, calculate separately if needed
+          'achievementTags': (data['special_tags'] as List?)?.map((tag) => tag['name'] as String).toList() ?? [],
+          'hasFajrChampion': (data['special_tags'] as List?)?.any((tag) => tag['tag_key'] == 'fajr_champion') ?? false,
+          'currentStreak': 0, // Not returned by function, calculate separately if needed
+        });
+      }).toList();
     } catch (e) {
       throw Exception('Failed to fetch leaderboard: $e');
     }
@@ -69,9 +126,43 @@ class SupervisorRemoteDataSource {
 
       if (response == null) return [];
 
-      return (response as List)
-          .map((json) => UserReportSummaryModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      return (response as List).map((json) {
+        final data = Map<String, dynamic>.from(json);
+
+        // Parse last_report_date
+        DateTime? lastReportDate;
+        if (data['last_report_date'] != null) {
+          final dateValue = data['last_report_date'];
+          if (dateValue is String) {
+            lastReportDate = DateTime.parse(dateValue);
+          } else if (dateValue is DateTime) {
+            lastReportDate = dateValue;
+          }
+        }
+
+        // Map SQL function output to model fields
+        return UserReportSummaryModel.fromJson({
+          'userId': data['user_id'],
+          'fullName': data['user_name'],
+          'email': data['email'],
+          'phoneNumber': data['phone'],
+          'profilePhotoUrl': data['photo_url'],
+          'membershipStatus': data['membership_status'] ?? 'new',
+          'memberSince': null, // Not returned by function
+          'todayDeeds': ((data['total_deeds_today'] as num?)?.toDouble() ?? 0.0).toInt(),
+          'todayTarget': 10, // Default target
+          'hasSubmittedToday': data['submitted_today'] ?? false,
+          'lastReportTime': lastReportDate?.toIso8601String(),
+          'complianceRate': (data['compliance_rate'] as num?)?.toDouble() ?? 0.0,
+          'currentStreak': 0, // Not returned by function
+          'totalReports': 0, // Not returned by function
+          'currentBalance': (data['current_balance'] as num?)?.toDouble() ?? 0.0,
+          'isAtRisk': true, // All users in this list are at risk
+          'daysWithoutReport': lastReportDate != null
+              ? DateTime.now().difference(lastReportDate).inDays
+              : 999,
+        });
+      }).toList();
     } catch (e) {
       throw Exception('Failed to fetch users at risk: $e');
     }
@@ -94,18 +185,20 @@ class SupervisorRemoteDataSource {
     }
   }
 
-  /// Get all achievement tags
+  /// Get all achievement tags (special_tags)
   Future<List<AchievementTagModel>> getAchievementTags() async {
     try {
       final response = await supabaseClient
-          .from('achievement_tags')
-          .select('*, user_achievement_tags(count)')
+          .from('special_tags')
+          .select('*, user_tags(count)')
           .order('created_at', ascending: false);
 
       return (response as List).map((json) {
         final data = Map<String, dynamic>.from(json);
-        data['activeUserCount'] = (json['user_achievement_tags'] as List?)?.length ?? 0;
-        data.remove('user_achievement_tags');
+        data['activeUserCount'] = (json['user_tags'] as List?)?.length ?? 0;
+        data.remove('user_tags');
+        // Map special_tags fields to achievement tag fields
+        data['name'] = data['display_name'];
         return AchievementTagModel.fromJson(data);
       }).toList();
     } catch (e) {
@@ -120,7 +213,7 @@ class SupervisorRemoteDataSource {
     required String assignedBy,
   }) async {
     try {
-      await supabaseClient.from('user_achievement_tags').insert({
+      await supabaseClient.from('user_tags').insert({
         'user_id': userId,
         'tag_id': tagId,
         'awarded_by': assignedBy,
@@ -138,7 +231,7 @@ class SupervisorRemoteDataSource {
   }) async {
     try {
       await supabaseClient
-          .from('user_achievement_tags')
+          .from('user_tags')
           .delete()
           .eq('user_id', userId)
           .eq('tag_id', tagId);
@@ -156,16 +249,21 @@ class SupervisorRemoteDataSource {
     required bool autoAssign,
   }) async {
     try {
-      final response = await supabaseClient.from('achievement_tags').insert({
-        'name': name,
+      // Generate tag_key from name (lowercase, replace spaces with underscores)
+      final tagKey = name.toLowerCase().replaceAll(' ', '_');
+
+      final response = await supabaseClient.from('special_tags').insert({
+        'tag_key': tagKey,
+        'display_name': name,
         'description': description,
-        'icon': icon,
         'criteria': criteria,
         'auto_assign': autoAssign,
+        'is_active': true,
       }).select().single();
 
       final data = Map<String, dynamic>.from(response);
       data['activeUserCount'] = 0;
+      data['name'] = data['display_name'];
       return AchievementTagModel.fromJson(data);
     } catch (e) {
       throw Exception('Failed to create achievement tag: $e');
@@ -183,14 +281,16 @@ class SupervisorRemoteDataSource {
   }) async {
     try {
       final updates = <String, dynamic>{};
-      if (name != null) updates['name'] = name;
+      if (name != null) {
+        updates['display_name'] = name;
+        updates['tag_key'] = name.toLowerCase().replaceAll(' ', '_');
+      }
       if (description != null) updates['description'] = description;
-      if (icon != null) updates['icon'] = icon;
       if (criteria != null) updates['criteria'] = criteria;
       if (autoAssign != null) updates['auto_assign'] = autoAssign;
 
       final response = await supabaseClient
-          .from('achievement_tags')
+          .from('special_tags')
           .update(updates)
           .eq('id', tagId)
           .select()
@@ -198,6 +298,7 @@ class SupervisorRemoteDataSource {
 
       final data = Map<String, dynamic>.from(response);
       data['activeUserCount'] = 0; // Will be populated separately if needed
+      data['name'] = data['display_name'];
       return AchievementTagModel.fromJson(data);
     } catch (e) {
       throw Exception('Failed to update achievement tag: $e');
@@ -207,7 +308,7 @@ class SupervisorRemoteDataSource {
   /// Delete achievement tag
   Future<void> deleteAchievementTag(String tagId) async {
     try {
-      await supabaseClient.from('achievement_tags').delete().eq('id', tagId);
+      await supabaseClient.from('special_tags').delete().eq('id', tagId);
     } catch (e) {
       throw Exception('Failed to delete achievement tag: $e');
     }

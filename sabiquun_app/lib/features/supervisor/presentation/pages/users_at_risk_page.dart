@@ -92,9 +92,16 @@ class _UsersAtRiskPageState extends State<UsersAtRiskPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Users at Risk'),
+        title: const Text(
+          'Users at Risk',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         backgroundColor: AppColors.surface,
         elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
             icon: Badge(
