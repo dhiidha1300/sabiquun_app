@@ -40,7 +40,7 @@ import 'package:sabiquun_app/features/admin/presentation/pages/manual_notificati
 import 'package:sabiquun_app/features/admin/presentation/pages/report_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/rest_days_management_page.dart';
-import 'package:sabiquun_app/features/analytics/presentation/pages/analytics_dashboard_page.dart' as user_analytics;
+import 'package:sabiquun_app/features/analytics/presentation/pages/user_analytics_dashboard_page.dart' as user_analytics;
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/user_reports_page.dart';
@@ -336,7 +336,7 @@ class AppRouter {
       GoRoute(
         path: '/analytics',
         name: 'analytics',
-        builder: (context, state) => const user_analytics.AnalyticsDashboardPage(),
+        builder: (context, state) => const user_analytics.UserAnalyticsDashboardPage(),
       ),
 
       // Supervisor Routes

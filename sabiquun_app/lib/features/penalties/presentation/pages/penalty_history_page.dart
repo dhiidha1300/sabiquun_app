@@ -23,6 +23,8 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
   String? _selectedFilter;
   DateTime? _startDate;
   DateTime? _endDate;
+  List? _cachedPenalties;
+  bool _isLoadingPenalties = true;
 
   @override
   void initState() {
@@ -31,13 +33,23 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
   }
 
   void _loadData() {
+    setState(() {
+      _isLoadingPenalties = true;
+    });
+
     context.read<PenaltyBloc>().add(LoadPenaltyBalanceRequested(widget.userId));
-    context.read<PenaltyBloc>().add(LoadPenaltiesRequested(
-          userId: widget.userId,
-          statusFilter: _selectedFilter,
-          startDate: _startDate,
-          endDate: _endDate,
-        ));
+
+    // Small delay to ensure balance loads first
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) {
+        context.read<PenaltyBloc>().add(LoadPenaltiesRequested(
+              userId: widget.userId,
+              statusFilter: _selectedFilter,
+              startDate: _startDate,
+              endDate: _endDate,
+            ));
+      }
+    });
   }
 
   @override
@@ -56,34 +68,44 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
       body: BlocConsumer<PenaltyBloc, PenaltyState>(
         listener: (context, state) {
           if (state is PenaltyError) {
+            setState(() {
+              _isLoadingPenalties = false;
+            });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: Colors.red,
               ),
             );
+          } else if (state is PenaltiesLoaded) {
+            // Cache the penalties so they persist across state changes
+            setState(() {
+              _cachedPenalties = state.penalties;
+              _isLoadingPenalties = false;
+            });
           }
         },
         builder: (context, state) {
-          if (state is PenaltyLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+          // Determine what penalties to show - use cached if available
+          final penaltiesToShow = _cachedPenalties ??
+              (state is PenaltiesLoaded ? state.penalties : null);
 
           return RefreshIndicator(
             onRefresh: () async {
               _loadData();
+              // Wait for data to load
+              await Future.delayed(const Duration(milliseconds: 800));
             },
             child: CustomScrollView(
               slivers: [
                 // Balance Card
                 SliverToBoxAdapter(
                   child: BlocBuilder<PenaltyBloc, PenaltyState>(
-                    builder: (context, state) {
-                      if (state is PenaltyBalanceLoaded) {
+                    buildWhen: (previous, current) => current is PenaltyBalanceLoaded,
+                    builder: (context, balanceState) {
+                      if (balanceState is PenaltyBalanceLoaded) {
                         return PenaltyBalanceCard(
-                          balance: state.balance,
+                          balance: balanceState.balance,
                           onPayNow: () {
                             Navigator.pushNamed(context, '/payments');
                           },
@@ -98,7 +120,7 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                 if (_selectedFilter != null || _startDate != null)
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Wrap(
                         spacing: 8,
                         children: [
@@ -108,6 +130,7 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                               onDeleted: () {
                                 setState(() {
                                   _selectedFilter = null;
+                                  _cachedPenalties = null;
                                 });
                                 _loadData();
                               },
@@ -120,6 +143,7 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                               onDeleted: () {
                                 setState(() {
                                   _startDate = null;
+                                  _cachedPenalties = null;
                                 });
                                 _loadData();
                               },
@@ -132,6 +156,7 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                               onDeleted: () {
                                 setState(() {
                                   _endDate = null;
+                                  _cachedPenalties = null;
                                 });
                                 _loadData();
                               },
@@ -142,55 +167,64 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                   ),
 
                 // Penalties List
-                if (state is PenaltiesLoaded) ...[
-                  if (state.penalties.isEmpty)
-                    SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check_circle_outline,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No penalties found',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Keep up the good work!',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey[500],
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final penalty = state.penalties[index];
-                          return PenaltyCard(
-                            penalty: penalty,
-                            onTap: () {
-                              _showPenaltyDetails(penalty.id);
-                            },
-                          );
-                        },
-                        childCount: state.penalties.length,
+                if (_isLoadingPenalties && penaltiesToShow == null)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Loading penalty history...',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
                       ),
                     ),
-                ] else
-                  const SliverFillRemaining(
+                  )
+                else if (penaltiesToShow == null || penaltiesToShow.isEmpty)
+                  SliverFillRemaining(
                     child: Center(
-                      child: Text('Load penalties to view history'),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No penalties found',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Keep up the good work!',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey[500],
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final penalty = penaltiesToShow[index];
+                        return PenaltyCard(
+                          penalty: penalty,
+                          onTap: () {
+                            _showPenaltyDetails(penalty.id);
+                          },
+                        );
+                      },
+                      childCount: penaltiesToShow.length,
                     ),
                   ),
               ],

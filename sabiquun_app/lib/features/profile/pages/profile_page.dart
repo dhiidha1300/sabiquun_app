@@ -8,6 +8,9 @@ import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sabiquun_app/features/home/utils/membership_helper.dart';
 import 'package:sabiquun_app/features/home/widgets/main_scaffold.dart';
+import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_bloc.dart';
+import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_event.dart';
+import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_state.dart';
 
 /// Profile page with user information and settings
 class ProfilePage extends StatefulWidget {
@@ -18,6 +21,19 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  void _loadStats() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      context.read<AnalyticsBloc>().add(LoadUserStatsRequested(authState.user.id));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -174,73 +190,95 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildQuickStatsCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Quick Stats',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: () => context.push('/analytics'),
-                icon: const Icon(Icons.analytics, size: 18),
-                label: const Text('View All'),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                ),
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      builder: (context, state) {
+        String thisMonthValue = '--';
+        String streakValue = '-- days';
+        String totalValue = '--';
+
+        if (state is UserStatsLoaded) {
+          thisMonthValue = '${state.stats.thisMonthReports}';
+          streakValue = '${state.stats.currentStreak} days';
+          totalValue = '${state.stats.totalReportsSubmitted}';
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildStatItem(
-                  icon: Icons.check_circle,
-                  label: 'This Month',
-                  value: '--',
-                  color: AppColors.success,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Quick Stats',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => context.push('/analytics'),
+                    icon: const Icon(Icons.analytics, size: 18),
+                    label: const Text('View All'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                    ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: _buildStatItem(
-                  icon: Icons.trending_up,
-                  label: 'Streak',
-                  value: '-- days',
-                  color: AppColors.primary,
+              const SizedBox(height: 16),
+              if (state is AnalyticsLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatItem(
+                        icon: Icons.check_circle,
+                        label: 'This Month',
+                        value: thisMonthValue,
+                        color: AppColors.success,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildStatItem(
+                        icon: Icons.trending_up,
+                        label: 'Streak',
+                        value: streakValue,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildStatItem(
+                        icon: Icons.stars,
+                        label: 'Total',
+                        value: totalValue,
+                        color: AppColors.warning,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Expanded(
-                child: _buildStatItem(
-                  icon: Icons.stars,
-                  label: 'Total',
-                  value: '--',
-                  color: AppColors.warning,
-                ),
-              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

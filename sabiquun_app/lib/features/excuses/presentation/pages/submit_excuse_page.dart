@@ -118,7 +118,20 @@ class _SubmitExcusePageState extends State<SubmitExcusePage> {
                     backgroundColor: Colors.green,
                   ),
                 );
-                context.pop(true);
+
+                // Navigate back and trigger excuse history reload
+                context.pop();
+
+                // Reload excuses after successful submission
+                final authState = context.read<AuthBloc>().state;
+                if (authState is Authenticated) {
+                  context.read<ExcuseBloc>().add(
+                    LoadMyExcusesRequested(
+                      userId: authState.user.id,
+                      status: null,
+                    ),
+                  );
+                }
               } else if (state is ExcuseError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

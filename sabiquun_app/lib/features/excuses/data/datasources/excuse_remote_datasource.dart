@@ -80,7 +80,23 @@ class ExcuseRemoteDataSource {
   /// Delete an excuse (only if pending)
   Future<void> deleteExcuse(String excuseId) async {
     try {
-      await _supabase.from('excuses').delete().eq('id', excuseId);
+      // First, check if the excuse is pending
+      final excuse = await _supabase
+          .from('excuses')
+          .select('status')
+          .eq('id', excuseId)
+          .maybeSingle();
+
+      if (excuse == null) {
+        throw Exception('Excuse not found');
+      }
+
+      if (excuse['status'] != 'pending') {
+        throw Exception('Only pending excuses can be deleted');
+      }
+
+      // Delete the excuse
+      await _supabase.from('excuses').delete().eq('id', excuseId).eq('status', 'pending');
     } catch (e) {
       throw Exception('Failed to delete excuse: $e');
     }

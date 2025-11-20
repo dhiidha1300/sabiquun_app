@@ -64,6 +64,9 @@ dependencies:
   intl: ^0.19.0
   timeago: ^3.7.0
 
+  # Charts & Data Visualization
+  fl_chart: ^0.69.0
+
   # Images & Media
   image_picker: ^1.1.2
 
