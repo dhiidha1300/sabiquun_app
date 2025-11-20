@@ -44,6 +44,7 @@ import 'package:sabiquun_app/features/analytics/presentation/pages/analytics_das
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/user_reports_page.dart';
+import 'package:sabiquun_app/features/supervisor/presentation/pages/user_detail_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/leaderboard_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/users_at_risk_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/achievement_tags_page.dart';
@@ -343,6 +344,14 @@ class AppRouter {
         path: '/user-reports',
         name: 'user-reports',
         builder: (context, state) => const UserReportsPage(),
+      ),
+      GoRoute(
+        path: '/user-detail/:userId',
+        name: 'user-detail',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId']!;
+          return UserDetailPage(userId: userId);
+        },
       ),
       GoRoute(
         path: '/leaderboard',

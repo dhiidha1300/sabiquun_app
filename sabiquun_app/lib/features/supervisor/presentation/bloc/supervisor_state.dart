@@ -3,6 +3,7 @@ import '../../domain/entities/user_report_summary_entity.dart';
 import '../../domain/entities/leaderboard_entry_entity.dart';
 import '../../domain/entities/achievement_tag_entity.dart';
 import '../../domain/entities/user_detail_entity.dart';
+import '../../domain/entities/detailed_report_entity.dart';
 
 /// Supervisor states
 abstract class SupervisorState extends Equatable {
@@ -124,6 +125,37 @@ class AchievementTagDeleted extends SupervisorState {
 
   @override
   List<Object?> get props => [message];
+}
+
+/// Detailed user report loaded
+class DetailedUserReportLoaded extends SupervisorState {
+  final DetailedUserReportEntity detailedReport;
+
+  const DetailedUserReportLoaded({required this.detailedReport});
+
+  @override
+  List<Object?> get props => [detailedReport];
+}
+
+/// Export in progress
+class ReportExporting extends SupervisorState {
+  final String message;
+
+  const ReportExporting({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// Export completed
+class ReportExported extends SupervisorState {
+  final String filePath;
+  final String format;
+
+  const ReportExported({required this.filePath, required this.format});
+
+  @override
+  List<Object?> get props => [filePath, format];
 }
 
 /// Error state

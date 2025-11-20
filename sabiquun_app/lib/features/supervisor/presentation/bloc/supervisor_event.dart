@@ -154,3 +154,37 @@ class DeleteAchievementTagRequested extends SupervisorEvent {
   @override
   List<Object?> get props => [tagId];
 }
+
+/// Load detailed user report with date range
+class LoadDetailedUserReportRequested extends SupervisorEvent {
+  final String userId;
+  final DateTime startDate;
+  final DateTime endDate;
+
+  const LoadDetailedUserReportRequested({
+    required this.userId,
+    required this.startDate,
+    required this.endDate,
+  });
+
+  @override
+  List<Object?> get props => [userId, startDate, endDate];
+}
+
+/// Export user report
+class ExportUserReportRequested extends SupervisorEvent {
+  final String userId;
+  final DateTime startDate;
+  final DateTime endDate;
+  final String format; // 'pdf' or 'excel'
+
+  const ExportUserReportRequested({
+    required this.userId,
+    required this.startDate,
+    required this.endDate,
+    required this.format,
+  });
+
+  @override
+  List<Object?> get props => [userId, startDate, endDate, format];
+}

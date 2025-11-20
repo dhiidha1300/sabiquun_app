@@ -7,6 +7,7 @@ import '../bloc/supervisor_event.dart';
 import '../bloc/supervisor_state.dart';
 import '../widgets/user_report_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
+import '../widgets/users_table_view.dart';
 
 /// User Reports Dashboard Page
 class UserReportsPage extends StatefulWidget {
@@ -22,6 +23,7 @@ class _UserReportsPageState extends State<UserReportsPage> {
   String? _complianceFilter;
   String? _reportStatusFilter;
   String _sortBy = 'name';
+  bool _isTableView = false; // Toggle between card and table view
 
   @override
   void initState() {
@@ -87,6 +89,19 @@ class _UserReportsPageState extends State<UserReportsPage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
+          // View toggle button
+          IconButton(
+            icon: Icon(
+              _isTableView ? Icons.view_list : Icons.table_chart,
+              color: AppColors.textPrimary,
+            ),
+            tooltip: _isTableView ? 'Card View' : 'Table View',
+            onPressed: () {
+              setState(() {
+                _isTableView = !_isTableView;
+              });
+            },
+          ),
           IconButton(
             icon: Badge(
               isLabelVisible: _membershipFilter != null ||
@@ -211,6 +226,19 @@ class _UserReportsPageState extends State<UserReportsPage> {
                             ),
                           ],
                         ),
+                      );
+                    }
+
+                    // Show table or card view based on toggle
+                    if (_isTableView) {
+                      return UsersTableView(
+                        users: state.userReports,
+                        onExport: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Exporting table...')),
+                          );
+                          // TODO: Implement table export
+                        },
                       );
                     }
 

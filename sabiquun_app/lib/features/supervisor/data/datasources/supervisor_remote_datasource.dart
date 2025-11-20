@@ -3,6 +3,7 @@ import '../models/user_report_summary_model.dart';
 import '../models/leaderboard_entry_model.dart';
 import '../models/achievement_tag_model.dart';
 import '../models/user_detail_model.dart';
+import '../models/detailed_report_model.dart';
 
 /// Supervisor remote data source
 class SupervisorRemoteDataSource {
@@ -311,6 +312,88 @@ class SupervisorRemoteDataSource {
       await supabaseClient.from('special_tags').delete().eq('id', tagId);
     } catch (e) {
       throw Exception('Failed to delete achievement tag: $e');
+    }
+  }
+
+  /// Get detailed user report with date range
+  Future<DetailedUserReportModel> getDetailedUserReport({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final response = await supabaseClient.rpc(
+        'get_detailed_user_report',
+        params: {
+          'p_user_id': userId,
+          'p_start_date': startDate.toIso8601String().split('T')[0],
+          'p_end_date': endDate.toIso8601String().split('T')[0],
+        },
+      );
+
+      if (response == null) {
+        throw Exception('No data returned from Supabase');
+      }
+
+      // The response is already a JSON object, not wrapped
+      final data = response as Map<String, dynamic>;
+
+      // Parse daily reports
+      final dailyReportsJson = data['daily_reports'] as List?;
+      final dailyReports = dailyReportsJson?.map((reportJson) {
+        final reportData = reportJson as Map<String, dynamic>;
+        final deedEntriesJson = reportData['deed_entries'] as List?;
+        final deedEntries = deedEntriesJson?.map((entryJson) {
+          final entryData = entryJson as Map<String, dynamic>;
+          return DeedDetailModel(
+            deedName: entryData['deed_name']?.toString() ?? '',
+            deedKey: entryData['deed_key']?.toString() ?? '',
+            category: entryData['category']?.toString() ?? 'faraid',
+            valueType: entryData['value_type']?.toString() ?? 'binary',
+            deedValue: (entryData['deed_value'] as num?)?.toDouble() ?? 0.0,
+            sortOrder: (entryData['sort_order'] as num?)?.toInt() ?? 0,
+          );
+        }).toList() ?? [];
+
+        return DailyReportDetailModel(
+          reportDate: DateTime.parse(reportData['report_date']?.toString() ?? DateTime.now().toIso8601String()),
+          status: reportData['status']?.toString() ?? 'submitted',
+          totalDeeds: (reportData['total_deeds'] as num?)?.toDouble() ?? 0.0,
+          faraidCount: (reportData['faraid_count'] as num?)?.toDouble() ?? 0.0,
+          sunnahCount: (reportData['sunnah_count'] as num?)?.toDouble() ?? 0.0,
+          deedEntries: deedEntries,
+          submittedAt: reportData['submitted_at'] != null
+              ? DateTime.parse(reportData['submitted_at'].toString())
+              : null,
+        );
+      }).toList() ?? [];
+
+      // Build the complete model
+      return DetailedUserReportModel(
+        userId: data['user_id']?.toString() ?? userId,
+        fullName: data['full_name']?.toString() ?? '',
+        email: data['email']?.toString() ?? '',
+        phoneNumber: data['phone_number']?.toString(),
+        profilePhotoUrl: data['profile_photo_url']?.toString(),
+        membershipStatus: data['membership_status']?.toString() ?? 'new',
+        memberSince: data['member_since'] != null
+            ? DateTime.parse(data['member_since'].toString())
+            : null,
+        startDate: startDate,
+        endDate: endDate,
+        totalReportsInRange: (data['total_reports_in_range'] as num?)?.toInt() ?? 0,
+        averageDeeds: (data['average_deeds'] as num?)?.toDouble() ?? 0.0,
+        complianceRate: (data['compliance_rate'] as num?)?.toDouble() ?? 0.0,
+        faraidCompliance: (data['faraid_compliance'] as num?)?.toDouble() ?? 0.0,
+        sunnahCompliance: (data['sunnah_compliance'] as num?)?.toDouble() ?? 0.0,
+        currentBalance: (data['current_balance'] as num?)?.toDouble() ?? 0.0,
+        dailyReports: dailyReports,
+        achievementTags: data['achievement_tags'] != null
+            ? List<String>.from(data['achievement_tags'] as List)
+            : [],
+      );
+    } catch (e) {
+      throw Exception('Failed to fetch detailed user report: $e');
     }
   }
 }

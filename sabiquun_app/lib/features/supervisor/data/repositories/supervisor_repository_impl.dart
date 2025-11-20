@@ -4,6 +4,7 @@ import '../../domain/entities/user_report_summary_entity.dart';
 import '../../domain/entities/leaderboard_entry_entity.dart';
 import '../../domain/entities/achievement_tag_entity.dart';
 import '../../domain/entities/user_detail_entity.dart';
+import '../../domain/entities/detailed_report_entity.dart';
 import '../../domain/repositories/supervisor_repository.dart';
 import '../datasources/supervisor_remote_datasource.dart';
 
@@ -173,6 +174,24 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
     try {
       await remoteDataSource.deleteAchievementTag(tagId);
       return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, DetailedUserReportEntity>> getDetailedUserReport({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final model = await remoteDataSource.getDetailedUserReport(
+        userId: userId,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      return Right(model.toEntity());
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

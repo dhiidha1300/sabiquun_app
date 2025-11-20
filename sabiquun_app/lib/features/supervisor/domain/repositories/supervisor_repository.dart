@@ -4,6 +4,7 @@ import '../entities/user_report_summary_entity.dart';
 import '../entities/leaderboard_entry_entity.dart';
 import '../entities/achievement_tag_entity.dart';
 import '../entities/user_detail_entity.dart';
+import '../entities/detailed_report_entity.dart';
 
 /// Supervisor repository interface
 abstract class SupervisorRepository {
@@ -66,4 +67,11 @@ abstract class SupervisorRepository {
 
   /// Delete achievement tag
   Future<Either<Failure, void>> deleteAchievementTag(String tagId);
+
+  /// Get detailed user report with date range
+  Future<Either<Failure, DetailedUserReportEntity>> getDetailedUserReport({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  });
 }
