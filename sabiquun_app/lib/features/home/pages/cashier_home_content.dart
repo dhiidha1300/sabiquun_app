@@ -385,6 +385,10 @@ class CashierHomeContentState extends State<CashierHomeContent>
 
   Widget _buildModernQuickActions() {
     return BlocBuilder<PaymentBloc, PaymentState>(
+      buildWhen: (previous, current) {
+        // Only rebuild when pending payments state changes
+        return current is PendingPaymentsLoaded;
+      },
       builder: (context, state) {
         int pendingPaymentsCount = 0;
 
@@ -723,7 +727,10 @@ class CashierHomeContentState extends State<CashierHomeContent>
               ),
             ),
             TextButton(
-              onPressed: () => context.push('/payment-history'),
+              onPressed: () {
+                // Navigate to payment management page with history tab selected
+                context.push('/payment-review?tab=1');
+              },
               child: const Row(
                 children: [
                   Text('View All'),
@@ -741,6 +748,10 @@ class CashierHomeContentState extends State<CashierHomeContent>
 
   Widget _buildRecentPaymentsList() {
     return BlocBuilder<PaymentBloc, PaymentState>(
+      buildWhen: (previous, current) {
+        // Only rebuild when recent approved payments state changes
+        return current is RecentApprovedPaymentsLoaded;
+      },
       builder: (context, state) {
         if (state is RecentApprovedPaymentsLoaded) {
           final payments = state.payments;
@@ -777,7 +788,7 @@ class CashierHomeContentState extends State<CashierHomeContent>
           );
         }
 
-        // Loading or initial state
+        // Initial state - show loading placeholder
         return Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
@@ -1044,6 +1055,14 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
                   onTap: () {
                     _closeDrawer();
                     context.push('/payment-analytics');
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.add_card_rounded,
+                  title: 'Submit Payment',
+                  onTap: () {
+                    _closeDrawer();
+                    context.push('/submit-payment');
                   },
                 ),
 

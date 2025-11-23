@@ -19,6 +19,7 @@ class PaymentEntity extends Equatable {
   final String? reviewerName;
   final String? userName;
   final String? userEmail;
+  final double? userCurrentBalance;
 
   const PaymentEntity({
     required this.id,
@@ -36,6 +37,7 @@ class PaymentEntity extends Equatable {
     this.reviewerName,
     this.userName,
     this.userEmail,
+    this.userCurrentBalance,
   });
 
   /// Get formatted amount string
@@ -61,5 +63,6 @@ class PaymentEntity extends Equatable {
         reviewerName,
         userName,
         userEmail,
+        userCurrentBalance,
       ];
 }

@@ -30,9 +30,11 @@ class FifoPreviewPanel extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
           // Header
           Row(
             children: [
@@ -204,6 +206,7 @@ class FifoPreviewPanel extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

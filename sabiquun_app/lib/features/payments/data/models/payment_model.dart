@@ -25,6 +25,7 @@ class PaymentModel with _$PaymentModel {
     String? reviewerName,
     String? userName,
     String? userEmail,
+    double? userCurrentBalance,
   }) = _PaymentModel;
 
   factory PaymentModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +50,9 @@ class PaymentModel with _$PaymentModel {
       reviewerName: json['reviewer_name'] as String?,
       userName: json['user_name'] as String?,
       userEmail: json['user_email'] as String?,
+      userCurrentBalance: json['user_current_balance'] != null
+          ? (json['user_current_balance'] as num).toDouble()
+          : null,
     );
   }
 
@@ -69,6 +73,7 @@ class PaymentModel with _$PaymentModel {
       reviewerName: reviewerName,
       userName: userName,
       userEmail: userEmail,
+      userCurrentBalance: userCurrentBalance,
     );
   }
 }

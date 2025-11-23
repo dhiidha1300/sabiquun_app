@@ -18,13 +18,24 @@ class PaymentAnalyticsPage extends StatefulWidget {
   State<PaymentAnalyticsPage> createState() => _PaymentAnalyticsPageState();
 }
 
-class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
+class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   String _selectedPeriod = 'this_month';
+  DateTime? _customStartDate;
+  DateTime? _customEndDate;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _loadAnalytics();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _loadAnalytics() {
@@ -43,6 +54,42 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
+  Future<void> _showCustomDatePicker() async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDateRange: _customStartDate != null && _customEndDate != null
+          ? DateTimeRange(start: _customStartDate!, end: _customEndDate!)
+          : DateTimeRange(
+              start: DateTime.now().subtract(const Duration(days: 30)),
+              end: DateTime.now(),
+            ),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedPeriod = 'custom';
+        _customStartDate = picked.start;
+        _customEndDate = picked.end;
+      });
+      _loadAnalytics();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,36 +106,52 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
             tooltip: 'Refresh',
           ),
         ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Time Period Selector
-              _buildPeriodSelector(),
-              const SizedBox(height: 20),
-
-              // Overview Cards
-              _buildOverviewSection(),
-              const SizedBox(height: 24),
-
-              // Payment Method Distribution
-              _buildPaymentMethodSection(),
-              const SizedBox(height: 24),
-
-              // Outstanding Balances Summary
-              _buildOutstandingBalancesSection(),
-              const SizedBox(height: 24),
-
-              // Future: Charts section will go here
-              _buildPlaceholderChartsSection(),
-            ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
+          labelStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
           ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+          tabs: const [
+            Tab(
+              icon: Icon(Icons.analytics_outlined),
+              text: 'Summary',
+            ),
+            Tab(
+              icon: Icon(Icons.people_outline),
+              text: 'User Balances',
+            ),
+          ],
         ),
+      ),
+      body: Column(
+        children: [
+          // Time Period Selector (moved outside tab view for both tabs)
+          Container(
+            color: AppColors.surface,
+            padding: const EdgeInsets.all(16),
+            child: _buildPeriodSelector(),
+          ),
+
+          // Tab Views
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildSummaryTab(),
+                _buildUserBalancesTab(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -116,14 +179,15 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
 
     return Expanded(
       child: InkWell(
-        onTap: () {
+        onTap: () async {
           if (value == 'custom') {
-            // TODO: Show date range picker
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Custom date range coming soon')),
-            );
+            await _showCustomDatePicker();
           } else {
-            setState(() => _selectedPeriod = value);
+            setState(() {
+              _selectedPeriod = value;
+              _customStartDate = null;
+              _customEndDate = null;
+            });
             _loadAnalytics();
           }
         },
@@ -148,73 +212,180 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
     );
   }
 
-  Widget _buildOverviewSection() {
-    return BlocBuilder<PaymentBloc, PaymentState>(
-      builder: (context, paymentState) {
-        int pendingCount = 0;
-        double pendingAmount = 0;
-        int approvedCount = 0;
-        double approvedAmount = 0;
-        double averageAmount = 0;
-
-        // Calculate pending stats
-        if (paymentState is PendingPaymentsLoaded) {
-          pendingCount = paymentState.payments.length;
-          for (var payment in paymentState.payments) {
-            pendingAmount += payment.amount;
-          }
-        }
-
-        // Calculate approved stats from recent payments
-        if (paymentState is RecentApprovedPaymentsLoaded) {
-          approvedCount = paymentState.payments.length;
-          for (var payment in paymentState.payments) {
-            approvedAmount += payment.amount;
-          }
-          if (approvedCount > 0) {
-            averageAmount = approvedAmount / approvedCount;
-          }
-        }
-
-        return Column(
+  Widget _buildSummaryTab() {
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Overview - ${_selectedPeriod == 'this_week' ? 'This Week' : 'This Month'}',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
+            // Overview Cards
+            _buildOverviewSection(),
+            const SizedBox(height: 24),
+
+            // Payment Method Distribution
+            _buildPaymentMethodSection(),
+            const SizedBox(height: 24),
+
+            // Outstanding Balances Summary
+            _buildOutstandingBalancesSection(),
+            const SizedBox(height: 24),
+
+            // Future: Charts section will go here
+            _buildPlaceholderChartsSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserBalancesTab() {
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with export buttons
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: _buildStatCard(
+                Text(
+                  'User Balances Overview',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton.filled(
+                      onPressed: () => _exportUserBalances('pdf'),
+                      icon: const Icon(Icons.picture_as_pdf, size: 20),
+                      tooltip: 'Export as PDF',
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton.filled(
+                      onPressed: () => _exportUserBalances('excel'),
+                      icon: const Icon(Icons.table_chart, size: 20),
+                      tooltip: 'Export as Excel',
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.green.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // User balances table
+            _buildUserBalancesTable(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverviewSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Overview - ${_selectedPeriod == 'this_week' ? 'This Week' : 'This Month'}',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: BlocBuilder<PaymentBloc, PaymentState>(
+                buildWhen: (previous, current) => current is PendingPaymentsLoaded,
+                builder: (context, state) {
+                  int pendingCount = 0;
+                  double pendingAmount = 0;
+
+                  if (state is PendingPaymentsLoaded) {
+                    pendingCount = state.payments.length;
+                    for (var payment in state.payments) {
+                      pendingAmount += payment.amount;
+                    }
+                  }
+
+                  return _buildStatCard(
                     'Pending Review',
                     NumberFormat('#,###').format(pendingAmount),
                     'Sh',
                     '$pendingCount payments',
                     Colors.orange,
                     Icons.pending_actions,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: BlocBuilder<PaymentBloc, PaymentState>(
+                buildWhen: (previous, current) => current is RecentApprovedPaymentsLoaded,
+                builder: (context, state) {
+                  int approvedCount = 0;
+                  double approvedAmount = 0;
+
+                  if (state is RecentApprovedPaymentsLoaded) {
+                    approvedCount = state.payments.length;
+                    for (var payment in state.payments) {
+                      approvedAmount += payment.amount;
+                    }
+                  }
+
+                  return _buildStatCard(
                     'Total Approved',
                     NumberFormat('#,###').format(approvedAmount),
                     'Sh',
                     '$approvedCount payments',
                     Colors.green,
                     Icons.check_circle,
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
-            const SizedBox(height: 12),
-            _buildStatCard(
+          ],
+        ),
+        const SizedBox(height: 12),
+        BlocBuilder<PaymentBloc, PaymentState>(
+          buildWhen: (previous, current) => current is RecentApprovedPaymentsLoaded,
+          builder: (context, state) {
+            int approvedCount = 0;
+            double approvedAmount = 0;
+            double averageAmount = 0;
+
+            if (state is RecentApprovedPaymentsLoaded) {
+              approvedCount = state.payments.length;
+              for (var payment in state.payments) {
+                approvedAmount += payment.amount;
+              }
+              if (approvedCount > 0) {
+                averageAmount = approvedAmount / approvedCount;
+              }
+            }
+
+            return _buildStatCard(
               'Average Payment',
               NumberFormat('#,###').format(averageAmount),
               'Sh',
@@ -222,10 +393,10 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
               Colors.blue,
               Icons.trending_up,
               fullWidth: true,
-            ),
-          ],
-        );
-      },
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -618,5 +789,159 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage> {
       default:
         return Colors.grey;
     }
+  }
+
+  Widget _buildUserBalancesTable() {
+    return BlocBuilder<PenaltyBloc, PenaltyState>(
+      builder: (context, state) {
+        // This is a placeholder - in a real implementation, you would load
+        // all users with their balances from the backend
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+          ),
+          child: Column(
+            children: [
+              // Table Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Expanded(
+                      flex: 2,
+                      child: Text(
+                        'User Name',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Email',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Balance',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Table Body - Placeholder
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 48,
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'User Balances Table',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'This feature requires backend support to fetch all user balances for the selected date range. The table will display user names, emails, and their current balances with export functionality.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Date Range: ${_getDateRangeText()}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _getDateRangeText() {
+    if (_selectedPeriod == 'custom' && _customStartDate != null && _customEndDate != null) {
+      return '${DateFormat('MMM dd, yyyy').format(_customStartDate!)} - ${DateFormat('MMM dd, yyyy').format(_customEndDate!)}';
+    } else if (_selectedPeriod == 'this_week') {
+      return 'This Week';
+    } else {
+      return 'This Month';
+    }
+  }
+
+  Future<void> _exportUserBalances(String format) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Exporting user balances as ${format.toUpperCase()}...',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+
+    // TODO: Implement actual export functionality
+    // This would typically:
+    // 1. Fetch all user balances from backend for the selected date range
+    // 2. Generate PDF or Excel file
+    // 3. Save/share the file
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Export feature coming soon! Will export as ${format.toUpperCase()}',
+        ),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 }

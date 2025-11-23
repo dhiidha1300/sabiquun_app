@@ -48,7 +48,10 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 800),
+        constraints: BoxConstraints(
+          maxWidth: 600,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -300,7 +303,12 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
           const SizedBox(height: 20),
 
           // FIFO Payment Distribution Preview
-          FifoPreviewPanel(distribution: distribution),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.4,
+            ),
+            child: FifoPreviewPanel(distribution: distribution),
+          ),
 
           const SizedBox(height: 24),
 

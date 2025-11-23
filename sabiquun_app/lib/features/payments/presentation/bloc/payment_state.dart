@@ -74,6 +74,38 @@ class RecentApprovedPaymentsLoaded extends PaymentState {
   List<Object?> get props => [payments];
 }
 
+/// Cashier home data loaded (combines pending and recent approved)
+class CashierHomeDataLoaded extends PaymentState {
+  final List<PaymentEntity> pendingPayments;
+  final List<PaymentEntity> recentApprovedPayments;
+  final bool isLoadingPending;
+  final bool isLoadingRecent;
+
+  const CashierHomeDataLoaded({
+    required this.pendingPayments,
+    required this.recentApprovedPayments,
+    this.isLoadingPending = false,
+    this.isLoadingRecent = false,
+  });
+
+  CashierHomeDataLoaded copyWith({
+    List<PaymentEntity>? pendingPayments,
+    List<PaymentEntity>? recentApprovedPayments,
+    bool? isLoadingPending,
+    bool? isLoadingRecent,
+  }) {
+    return CashierHomeDataLoaded(
+      pendingPayments: pendingPayments ?? this.pendingPayments,
+      recentApprovedPayments: recentApprovedPayments ?? this.recentApprovedPayments,
+      isLoadingPending: isLoadingPending ?? this.isLoadingPending,
+      isLoadingRecent: isLoadingRecent ?? this.isLoadingRecent,
+    );
+  }
+
+  @override
+  List<Object?> get props => [pendingPayments, recentApprovedPayments, isLoadingPending, isLoadingRecent];
+}
+
 /// All reviewed payments loaded (approved/rejected) for Admin/Cashier
 class AllReviewedPaymentsLoaded extends PaymentState {
   final List<PaymentEntity> payments;

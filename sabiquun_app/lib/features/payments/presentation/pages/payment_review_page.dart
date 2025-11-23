@@ -20,7 +20,12 @@ import 'package:sabiquun_app/features/home/widgets/role_based_scaffold.dart';
 /// Payment Review Dashboard for Cashiers
 /// Allows cashiers to review, approve, and reject pending payments
 class PaymentReviewPage extends StatefulWidget {
-  const PaymentReviewPage({super.key});
+  final int initialTab;
+
+  const PaymentReviewPage({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<PaymentReviewPage> createState() => _PaymentReviewPageState();
@@ -37,7 +42,21 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTab);
+
+    // Add listener to reload data when tab changes
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        if (_tabController.index == 0) {
+          // Pending tab
+          context.read<PaymentBloc>().add(const LoadPendingPaymentsRequested());
+        } else {
+          // History tab
+          context.read<PaymentBloc>().add(const LoadAllReviewedPaymentsRequested());
+        }
+      }
+    });
+
     _loadData();
   }
 
@@ -284,7 +303,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
           'Payment Management',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 17,
             color: AppColors.textPrimary,
           ),
         ),
@@ -496,6 +515,12 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: BlocBuilder<PaymentBloc, PaymentState>(
+        buildWhen: (previous, current) {
+          // Only rebuild when we have pending payments data or loading/error states
+          return current is PaymentLoading ||
+                 current is PendingPaymentsLoaded ||
+                 current is PaymentError;
+        },
         builder: (context, state) {
           if (state is PaymentLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -504,7 +529,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
           if (state is PendingPaymentsLoaded) {
             final payments = _filterPayments(state.payments);
 
-            if (payments.isEmpty && _searchQuery.isEmpty) {
+            if (payments.isEmpty && _searchQuery.isEmpty && !_filterOptions.hasActiveFilters) {
               return _buildEmptyState(
                 icon: Icons.check_circle_outline,
                 title: 'No Pending Payments',
@@ -535,11 +560,22 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
             );
           }
 
-          return _buildEmptyState(
-            icon: Icons.pending_actions,
-            title: 'Payment Review',
-            subtitle: 'Pending payments will appear here',
-          );
+          if (state is PaymentError) {
+            return _buildEmptyState(
+              icon: Icons.error_outline,
+              title: 'Error',
+              subtitle: state.message,
+            );
+          }
+
+          // Initial state or other states - trigger load
+          Future.microtask(() {
+            if (mounted) {
+              context.read<PaymentBloc>().add(const LoadPendingPaymentsRequested());
+            }
+          });
+
+          return const Center(child: CircularProgressIndicator());
         },
       ),
     );
@@ -555,6 +591,12 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
         await Future.delayed(const Duration(milliseconds: 500));
       },
       child: BlocBuilder<PaymentBloc, PaymentState>(
+        buildWhen: (previous, current) {
+          // Only rebuild when we have history payments data or loading/error states
+          return current is PaymentLoading ||
+                 current is AllReviewedPaymentsLoaded ||
+                 current is PaymentError;
+        },
         builder: (context, state) {
           if (state is PaymentLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -593,11 +635,21 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
             );
           }
 
+          if (state is PaymentError) {
+            return _buildEmptyState(
+              icon: Icons.error_outline,
+              title: 'Error',
+              subtitle: state.message,
+            );
+          }
+
           // Initial state - load data
           Future.microtask(() {
-            context.read<PaymentBloc>().add(
-                  const LoadAllReviewedPaymentsRequested(),
-                );
+            if (mounted) {
+              context.read<PaymentBloc>().add(
+                    const LoadAllReviewedPaymentsRequested(),
+                  );
+            }
           });
 
           return const Center(child: CircularProgressIndicator());

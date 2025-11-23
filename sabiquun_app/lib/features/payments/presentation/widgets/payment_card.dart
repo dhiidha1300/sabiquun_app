@@ -211,11 +211,15 @@ class PaymentCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'N/A', // TODO: Get user balance from API
+                      payment.userCurrentBalance != null
+                        ? '${NumberFormat('#,###').format(payment.userCurrentBalance)} Sh'
+                        : 'N/A',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
+                        color: payment.userCurrentBalance != null && payment.userCurrentBalance! > 0
+                            ? Colors.red.shade700
+                            : Colors.grey.shade800,
                       ),
                     ),
                   ],
