@@ -193,7 +193,8 @@ class PaymentRemoteDataSource {
           .from('payments')
           .select('''
             *,
-            users!payments_user_id_fkey(name, email)
+            user:users!user_id(name, email),
+            user_stats:user_statistics!user_id(current_penalty_balance)
           ''')
           .eq('status', 'pending')
           .order('created_at', ascending: true); // Oldest first
@@ -202,11 +203,15 @@ class PaymentRemoteDataSource {
         final flatJson = Map<String, dynamic>.from(json);
         // payment_method is already a VARCHAR in the table, use it directly
         flatJson['payment_method_name'] = json['payment_method'];
-        if (json['users'] != null) {
-          flatJson['user_name'] = json['users']['name'];
-          flatJson['user_email'] = json['users']['email'];
+        if (json['user'] != null) {
+          flatJson['user_name'] = json['user']['name'];
+          flatJson['user_email'] = json['user']['email'];
         }
-        flatJson.remove('users');
+        if (json['user_stats'] != null) {
+          flatJson['user_current_balance'] = json['user_stats']['current_penalty_balance'];
+        }
+        flatJson.remove('user');
+        flatJson.remove('user_stats');
 
         return PaymentModel.fromJson(flatJson);
       }).toList();
@@ -260,6 +265,7 @@ class PaymentRemoteDataSource {
           .select('''
             *,
             user:users!user_id(name, email),
+            user_stats:user_statistics!user_id(current_penalty_balance),
             reviewed_by_user:users!reviewed_by(name)
           ''')
           .inFilter('status', ['approved', 'rejected'])
@@ -278,12 +284,18 @@ class PaymentRemoteDataSource {
           flatJson['user_email'] = json['user']['email'];
         }
 
+        // Add user statistics (current balance)
+        if (json['user_stats'] != null) {
+          flatJson['user_current_balance'] = json['user_stats']['current_penalty_balance'];
+        }
+
         // Add reviewer data
         if (json['reviewed_by_user'] != null) {
           flatJson['reviewer_name'] = json['reviewed_by_user']['name'];
         }
 
         flatJson.remove('user');
+        flatJson.remove('user_stats');
         flatJson.remove('reviewed_by_user');
 
         return PaymentModel.fromJson(flatJson);

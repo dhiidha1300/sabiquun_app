@@ -92,6 +92,16 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
         title: const Text('User Balance Management'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

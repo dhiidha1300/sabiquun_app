@@ -7,6 +7,7 @@ import 'package:sabiquun_app/features/payments/presentation/bloc/payment_bloc.da
 import 'package:sabiquun_app/features/payments/presentation/bloc/payment_event.dart';
 import 'package:sabiquun_app/features/payments/presentation/bloc/payment_state.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
+import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_event.dart';
 import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_state.dart';
 
 /// Balance Adjustment Dialog
@@ -196,8 +197,10 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
   }
 
   void _executeAdjustment(double amount, String reason) {
-    // Use the manual balance clear event from PaymentBloc
-    context.read<PaymentBloc>().add(
+    switch (_adjustmentType) {
+      case 'clear':
+        // Reduce balance (payment received)
+        context.read<PaymentBloc>().add(
           ManualBalanceClearRequested(
             userId: widget.userId,
             amount: amount,
@@ -205,6 +208,49 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
             clearedBy: widget.currentUserId,
           ),
         );
+        break;
+
+      case 'add':
+        // Add penalty (increase balance)
+        context.read<PenaltyBloc>().add(
+          CreateManualPenaltyRequested(
+            userId: widget.userId,
+            amount: amount,
+            dateIncurred: DateTime.now(),
+            reason: reason,
+            createdBy: widget.currentUserId,
+          ),
+        );
+        break;
+
+      case 'adjust':
+        // Direct balance modification
+        // Calculate the difference and use appropriate event
+        final difference = amount - _currentBalance;
+        if (difference > 0) {
+          // Need to add penalty
+          context.read<PenaltyBloc>().add(
+            CreateManualPenaltyRequested(
+              userId: widget.userId,
+              amount: difference,
+              dateIncurred: DateTime.now(),
+              reason: 'Balance adjustment: $reason',
+              createdBy: widget.currentUserId,
+            ),
+          );
+        } else if (difference < 0) {
+          // Need to clear balance
+          context.read<PaymentBloc>().add(
+            ManualBalanceClearRequested(
+              userId: widget.userId,
+              amount: difference.abs(),
+              reason: 'Balance adjustment: $reason',
+              clearedBy: widget.currentUserId,
+            ),
+          );
+        }
+        break;
+    }
   }
 
   Widget _buildActionItem(String text) {
@@ -240,32 +286,63 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PaymentBloc, PaymentState>(
-      listener: (context, state) {
-        if (state is BalanceCleared) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Balance adjusted successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PaymentBloc, PaymentState>(
+          listener: (context, state) {
+            if (state is BalanceCleared) {
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Balance adjusted successfully'),
+                  backgroundColor: Colors.green,
+                ),
+              );
 
-          // Call completion callback
-          widget.onAdjustmentComplete?.call();
+              // Call completion callback
+              widget.onAdjustmentComplete?.call();
 
-          // Close dialog
-          Navigator.pop(context);
-        } else if (state is PaymentError) {
-          // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${state.message}'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
-      },
+              // Close dialog
+              Navigator.pop(context);
+            } else if (state is PaymentError) {
+              // Show error message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error: ${state.message}'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+        ),
+        BlocListener<PenaltyBloc, PenaltyState>(
+          listener: (context, state) {
+            if (state is ManualPenaltyCreated) {
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Penalty added successfully'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+
+              // Call completion callback
+              widget.onAdjustmentComplete?.call();
+
+              // Close dialog
+              Navigator.pop(context);
+            } else if (state is PenaltyError) {
+              // Show error message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error: ${state.message}'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+        ),
+      ],
       child: Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SingleChildScrollView(

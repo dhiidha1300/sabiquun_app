@@ -7,7 +7,7 @@ import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:sabiquun_app/features/home/utils/membership_helper.dart';
-import 'package:sabiquun_app/features/home/widgets/main_scaffold.dart';
+import 'package:sabiquun_app/features/home/widgets/role_based_scaffold.dart';
 import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_bloc.dart';
 import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_event.dart';
 import 'package:sabiquun_app/features/analytics/presentation/bloc/analytics_state.dart';
@@ -47,8 +47,22 @@ class _ProfilePageState extends State<ProfilePage> {
         final user = state.user;
         final membershipBadge = MembershipHelper.getBadge(user.createdAt ?? DateTime.now());
 
-        return MainScaffold(
-          currentIndex: 3,
+        // Determine the current index based on role
+        // For users, supervisors, and admins, Profile is the last tab
+        // For cashiers, there's no Profile tab, so use -1 (no selection)
+        int currentIndex;
+        if (user.isCashier) {
+          currentIndex = -1; // No profile tab in cashier navbar
+        } else if (user.isAdmin) {
+          currentIndex = 4; // Profile is 5th tab for admins
+        } else if (user.isSupervisor) {
+          currentIndex = 4; // Profile is 5th tab for supervisors
+        } else {
+          currentIndex = 3; // Profile is 4th tab for regular users
+        }
+
+        return RoleBasedScaffold(
+          currentIndex: currentIndex,
           child: Scaffold(
             backgroundColor: const Color(0xFFF5F6FA),
             body: SafeArea(

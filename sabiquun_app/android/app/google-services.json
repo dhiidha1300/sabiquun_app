@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "287295827460",
+    "project_id": "sabiquun-65e5b",
+    "storage_bucket": "sabiquun-65e5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287295827460:android:5a38ddbeff677545518f51",
+        "android_client_info": {
+          "package_name": "com.negeeyedev.sabiquun"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287295827460-chjjsd2ncdqm74j4djq9csdt41rdqvcc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpWl4KP8JiyQpkhXAzGp85fW9N7UiEKbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287295827460-chjjsd2ncdqm74j4djq9csdt41rdqvcc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
