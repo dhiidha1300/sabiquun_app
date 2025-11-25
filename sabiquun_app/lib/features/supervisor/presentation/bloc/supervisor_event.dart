@@ -188,3 +188,19 @@ class ExportUserReportRequested extends SupervisorEvent {
   @override
   List<Object?> get props => [userId, startDate, endDate, format];
 }
+
+/// Load daily deeds for date range
+class LoadDailyDeedsRequested extends SupervisorEvent {
+  final DateTime startDate;
+  final DateTime endDate;
+  final List<String>? userIds;
+
+  const LoadDailyDeedsRequested({
+    required this.startDate,
+    required this.endDate,
+    this.userIds,
+  });
+
+  @override
+  List<Object?> get props => [startDate, endDate, userIds];
+}

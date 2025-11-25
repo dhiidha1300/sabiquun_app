@@ -410,8 +410,20 @@ class _ExcuseCard extends StatelessWidget {
     final userName = excuse['user_name'] as String? ?? 'Unknown User';
     final reportDate = DateTime.parse(excuse['report_date'] as String);
     final submittedAt = DateTime.parse(excuse['submitted_at'] as String);
-    final affectedDeeds = excuse['affected_deeds'] as Map<String, dynamic>;
     final description = excuse['description'] as String?;
+
+    // Handle affected_deeds which can be either Map or List from database
+    final affectedDeedsRaw = excuse['affected_deeds'];
+    Map<String, dynamic> affectedDeeds = {};
+
+    if (affectedDeedsRaw is Map<String, dynamic>) {
+      affectedDeeds = affectedDeedsRaw;
+    } else if (affectedDeedsRaw is Map) {
+      affectedDeeds = Map<String, dynamic>.from(affectedDeedsRaw);
+    } else if (affectedDeedsRaw is List) {
+      // If it's a list, convert it to the expected format
+      affectedDeeds = {'deed_ids': affectedDeedsRaw, 'all': false};
+    }
 
     final affectsAll = affectedDeeds['all'] == true;
 
@@ -619,13 +631,26 @@ class _ExcuseDetailDialog extends StatelessWidget {
     final reportDate = DateTime.parse(excuse['report_date'] as String);
     final submittedAt = DateTime.parse(excuse['submitted_at'] as String);
     final description = excuse['description'] as String?;
-    final affectedDeeds = excuse['affected_deeds'] as Map<String, dynamic>;
-    final affectsAll = affectedDeeds['all'] == true;
     final reviewerName = excuse['reviewer_name'] as String?;
     final reviewedAt = excuse['reviewed_at'] != null
         ? DateTime.parse(excuse['reviewed_at'] as String)
         : null;
     final rejectionReason = excuse['rejection_reason'] as String?;
+
+    // Handle affected_deeds which can be either Map or List from database
+    final affectedDeedsRaw = excuse['affected_deeds'];
+    Map<String, dynamic> affectedDeeds = {};
+
+    if (affectedDeedsRaw is Map<String, dynamic>) {
+      affectedDeeds = affectedDeedsRaw;
+    } else if (affectedDeedsRaw is Map) {
+      affectedDeeds = Map<String, dynamic>.from(affectedDeedsRaw);
+    } else if (affectedDeedsRaw is List) {
+      // If it's a list, convert it to the expected format
+      affectedDeeds = {'deed_ids': affectedDeedsRaw, 'all': false};
+    }
+
+    final affectsAll = affectedDeeds['all'] == true;
 
     return AlertDialog(
       title: Row(

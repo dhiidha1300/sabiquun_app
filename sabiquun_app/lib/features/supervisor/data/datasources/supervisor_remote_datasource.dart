@@ -396,4 +396,57 @@ class SupervisorRemoteDataSource {
       throw Exception('Failed to fetch detailed user report: $e');
     }
   }
+
+  /// Get daily deeds for all users in a date range
+  /// Returns a map of userId -> Map<dateString, {deeds, target}>
+  /// Uses Supabase RPC function that calculates target from active deed templates
+  Future<Map<String, Map<String, Map<String, int>>>> getUsersDailyDeeds({
+    required DateTime startDate,
+    required DateTime endDate,
+    List<String>? userIds,
+  }) async {
+    try {
+      final Map<String, dynamic> params = {
+        'p_start_date': startDate.toIso8601String().split('T')[0],
+        'p_end_date': endDate.toIso8601String().split('T')[0],
+      };
+
+      // Add user_ids parameter if provided
+      if (userIds != null && userIds.isNotEmpty) {
+        params['p_user_ids'] = userIds;
+      }
+
+      final response = await supabaseClient.rpc('get_users_daily_deeds', params: params);
+
+      if (response == null) {
+        return {};
+      }
+
+      // Convert the response to the expected format
+      final result = <String, Map<String, Map<String, int>>>{};
+
+      final jsonData = response as Map<String, dynamic>;
+
+      for (final entry in jsonData.entries) {
+        final userId = entry.key;
+        final userData = entry.value as Map<String, dynamic>;
+
+        result[userId] = {};
+
+        for (final dateEntry in userData.entries) {
+          final dateStr = dateEntry.key;
+          final dateData = dateEntry.value as Map<String, dynamic>;
+
+          result[userId]![dateStr] = {
+            'deeds': (dateData['deeds'] as num?)?.toInt() ?? 0,
+            'target': (dateData['target'] as num?)?.toInt() ?? 10,
+          };
+        }
+      }
+
+      return result;
+    } catch (e) {
+      throw Exception('Failed to fetch users daily deeds: $e');
+    }
+  }
 }

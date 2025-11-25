@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/rest_day_entity.dart';
 
 part 'rest_day_model.freezed.dart';
-part 'rest_day_model.g.dart';
 
 @freezed
 class RestDayModel with _$RestDayModel {
@@ -15,8 +14,16 @@ class RestDayModel with _$RestDayModel {
     @JsonKey(name: 'created_at') required DateTime createdAt,
   }) = _RestDayModel;
 
-  factory RestDayModel.fromJson(Map<String, dynamic> json) =>
-      _$RestDayModelFromJson(json);
+  factory RestDayModel.fromJson(Map<String, dynamic> json) {
+    return RestDayModel(
+      id: json['id'] as String,
+      date: DateTime.parse(json['date'] ?? json['rest_date'] as String),
+      endDate: json['end_date'] != null ? DateTime.parse(json['end_date'] as String) : null,
+      description: json['description'] as String,
+      isRecurring: json['is_recurring'] as bool,
+      createdAt: DateTime.parse(json['created_at'] as String),
+    );
+  }
 }
 
 extension RestDayModelX on RestDayModel {

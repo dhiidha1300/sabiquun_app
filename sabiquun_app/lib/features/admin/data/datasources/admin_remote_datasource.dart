@@ -670,12 +670,15 @@ class AdminRemoteDataSource {
 
       // Update each setting individually
       for (var entry in settingsMap.entries) {
-        await _supabase.from('settings').upsert({
-          'setting_key': entry.key,
-          'setting_value': entry.value.toString(),
-          'updated_at': DateTime.now().toIso8601String(),
-          'updated_by': updatedBy,
-        });
+        await _supabase.from('settings').upsert(
+          {
+            'setting_key': entry.key,
+            'setting_value': entry.value.toString(),
+            'updated_at': DateTime.now().toIso8601String(),
+            'updated_by': updatedBy,
+          },
+          onConflict: 'setting_key',
+        );
       }
 
       // Log audit trail
@@ -1851,8 +1854,8 @@ class AdminRemoteDataSource {
         final startDate = DateTime(year, 1, 1);
         final endDate = DateTime(year, 12, 31);
         query = query
-            .gte('date', startDate.toIso8601String().split('T')[0])
-            .lte('date', endDate.toIso8601String().split('T')[0]);
+            .gte('rest_date', startDate.toIso8601String().split('T')[0])
+            .lte('rest_date', endDate.toIso8601String().split('T')[0]);
       }
 
       // Filter by recurring if provided
@@ -1860,7 +1863,7 @@ class AdminRemoteDataSource {
         query = query.eq('is_recurring', isRecurring);
       }
 
-      final response = await query.order('date', ascending: true);
+      final response = await query.order('rest_date', ascending: true);
 
       return (response as List<dynamic>)
           .map((json) => RestDayModel.fromJson(json as Map<String, dynamic>))
@@ -1882,10 +1885,11 @@ class AdminRemoteDataSource {
       final response = await _supabase
           .from('rest_days')
           .insert({
-            'date': date.toIso8601String().split('T')[0],
+            'rest_date': date.toIso8601String().split('T')[0],
             'end_date': endDate?.toIso8601String().split('T')[0],
             'description': description,
             'is_recurring': isRecurring,
+            'created_by': createdBy,
             'created_at': DateTime.now().toIso8601String(),
           })
           .select()
@@ -1930,7 +1934,7 @@ class AdminRemoteDataSource {
           .single();
 
       final updateData = <String, dynamic>{};
-      if (date != null) updateData['date'] = date.toIso8601String().split('T')[0];
+      if (date != null) updateData['rest_date'] = date.toIso8601String().split('T')[0];
       if (endDate != null) updateData['end_date'] = endDate.toIso8601String().split('T')[0];
       if (description != null) updateData['description'] = description;
       if (isRecurring != null) updateData['is_recurring'] = isRecurring;

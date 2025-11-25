@@ -11,11 +11,17 @@ import '../../domain/entities/user_report_summary_entity.dart';
 class UsersTableView extends StatefulWidget {
   final List<UserReportSummaryEntity> users;
   final VoidCallback onExport;
+  final Map<String, Map<String, Map<String, int>>>? dailyDeeds;
+  final DateTime? dateRangeStart;
+  final DateTime? dateRangeEnd;
 
   const UsersTableView({
     super.key,
     required this.users,
     required this.onExport,
+    this.dailyDeeds,
+    this.dateRangeStart,
+    this.dateRangeEnd,
   });
 
   @override
@@ -129,12 +135,28 @@ class _UsersTableViewState extends State<UsersTableView> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Get last 7 days for columns
-    final dates = List.generate(7, (index) {
+  List<DateTime> _generateDateRange() {
+    if (widget.dateRangeStart != null && widget.dateRangeEnd != null) {
+      final dates = <DateTime>[];
+      var current = DateTime(widget.dateRangeStart!.year, widget.dateRangeStart!.month, widget.dateRangeStart!.day);
+      final end = DateTime(widget.dateRangeEnd!.year, widget.dateRangeEnd!.month, widget.dateRangeEnd!.day);
+
+      while (current.isBefore(end) || current.isAtSameMomentAs(end)) {
+        dates.add(current);
+        current = current.add(const Duration(days: 1));
+      }
+      return dates;
+    }
+
+    // Default to last 7 days
+    return List.generate(7, (index) {
       return DateTime.now().subtract(Duration(days: 6 - index));
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dates = _generateDateRange();
 
     return Column(
       children: [
@@ -154,26 +176,32 @@ class _UsersTableViewState extends State<UsersTableView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Last 7 Days Overview',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.dateRangeStart != null && widget.dateRangeEnd != null
+                          ? 'Date Range Overview'
+                          : 'Last 7 Days Overview',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${widget.users.length} users',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.dateRangeStart != null && widget.dateRangeEnd != null
+                          ? '${DateFormat('MMM dd').format(widget.dateRangeStart!)} - ${DateFormat('MMM dd, yyyy').format(widget.dateRangeEnd!)} • ${widget.users.length} users'
+                          : '${widget.users.length} users',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               ElevatedButton.icon(
                 onPressed: _isExporting ? null : _exportToExcel,
@@ -285,12 +313,12 @@ class _UsersTableViewState extends State<UsersTableView> {
                           ),
                         );
                       }),
-                      // Average column
+                      // Total column
                       const DataColumn(
                         label: SizedBox(
                           width: 80,
                           child: Text(
-                            'Avg',
+                            'Total',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -376,11 +404,27 @@ class _UsersTableViewState extends State<UsersTableView> {
                           ),
                           // Date cells
                           ...dates.map((date) {
-                            final isToday = DateFormat('yyyy-MM-dd').format(date) ==
-                                DateFormat('yyyy-MM-dd').format(DateTime.now());
-                            final deeds = isToday ? user.todayDeeds : 0;
-                            final target = isToday ? user.todayTarget : 10;
-                            final hasData = isToday;
+                            final dateStr = DateFormat('yyyy-MM-dd').format(date);
+                            final isToday = dateStr == DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+                            // Try to get data from dailyDeeds first, fall back to todayDeeds for today
+                            int deeds = 0;
+                            int target = 10;
+                            bool hasData = false;
+
+                            if (widget.dailyDeeds != null && widget.dailyDeeds!.containsKey(user.userId)) {
+                              final userDeeds = widget.dailyDeeds![user.userId]!;
+                              if (userDeeds.containsKey(dateStr)) {
+                                deeds = userDeeds[dateStr]!['deeds'] ?? 0;
+                                target = userDeeds[dateStr]!['target'] ?? 10;
+                                hasData = true;
+                              }
+                            } else if (isToday) {
+                              // Fallback to todayDeeds if no dailyDeeds data
+                              deeds = user.todayDeeds;
+                              target = user.todayTarget;
+                              hasData = true;
+                            }
 
                             return DataCell(
                               Container(
@@ -418,19 +462,33 @@ class _UsersTableViewState extends State<UsersTableView> {
                               ),
                             );
                           }),
-                          // Average cell
+                          // Total cell
                           DataCell(
                             Container(
                               width: 80,
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Center(
-                                child: Text(
-                                  user.complianceRate.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
+                                child: Builder(
+                                  builder: (context) {
+                                    // Calculate total deeds from dailyDeeds data
+                                    int totalDeeds = 0;
+                                    if (widget.dailyDeeds != null &&
+                                        widget.dailyDeeds!.containsKey(user.userId)) {
+                                      final userDeeds = widget.dailyDeeds![user.userId]!;
+                                      for (final dayData in userDeeds.values) {
+                                        totalDeeds += dayData['deeds'] ?? 0;
+                                      }
+                                    }
+
+                                    return Text(
+                                      totalDeeds.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ),

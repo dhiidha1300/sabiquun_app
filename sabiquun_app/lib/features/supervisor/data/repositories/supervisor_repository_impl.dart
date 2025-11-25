@@ -196,4 +196,22 @@ class SupervisorRepositoryImpl implements SupervisorRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Map<String, Map<String, Map<String, int>>>>> getUsersDailyDeeds({
+    required DateTime startDate,
+    required DateTime endDate,
+    List<String>? userIds,
+  }) async {
+    try {
+      final result = await remoteDataSource.getUsersDailyDeeds(
+        startDate: startDate,
+        endDate: endDate,
+        userIds: userIds,
+      );
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

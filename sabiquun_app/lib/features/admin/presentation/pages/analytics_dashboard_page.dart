@@ -4,6 +4,7 @@ import '../bloc/admin_bloc.dart';
 import '../bloc/admin_event.dart';
 import '../bloc/admin_state.dart';
 import '../widgets/analytics_metric_card.dart';
+import '../../data/services/analytics_export_service.dart';
 
 class AnalyticsDashboardPage extends StatefulWidget {
   const AnalyticsDashboardPage({super.key});
@@ -67,11 +68,78 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     _loadAnalytics();
   }
 
-  void _exportData() {
-    // TODO: Implement CSV/Excel export
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Export functionality coming soon')),
+  void _exportData() async {
+    final state = context.read<AdminBloc>().state;
+    if (state is! AnalyticsLoaded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No data to export')),
+      );
+      return;
+    }
+
+    // Show export options
+    final format = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export Analytics'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+              title: const Text('Export as PDF'),
+              onTap: () => Navigator.pop(context, 'pdf'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.table_chart, color: Colors.green),
+              title: const Text('Export as Excel'),
+              onTap: () => Navigator.pop(context, 'excel'),
+            ),
+          ],
+        ),
+      ),
     );
+
+    if (format == null || !mounted) return;
+
+    // Show loading
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Generating export...')),
+    );
+
+    try {
+      if (format == 'pdf') {
+        await AnalyticsExportService.exportToPdf(
+          analytics: state.analytics,
+          startDate: _startDate,
+          endDate: _endDate,
+        );
+      } else if (format == 'excel') {
+        await AnalyticsExportService.exportToExcel(
+          analytics: state.analytics,
+          startDate: _startDate,
+          endDate: _endDate,
+        );
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Export completed successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -80,7 +148,10 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         elevation: 0,
-        title: const Text('Analytics Dashboard'),
+        title: const Text(
+          'Analytics Dashboard',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download),
@@ -240,14 +311,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         _buildSectionHeader('Quick Overview', Icons.dashboard),
         const SizedBox(height: 16),
 
-        // Key metrics grid
+        // Key metrics grid - increased aspect ratio to prevent overflow
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.5,
+          childAspectRatio: 1.35,
           children: [
             _buildHighlightCard(
               'Active Users',
@@ -256,13 +327,13 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
               Colors.green,
             ),
             _buildHighlightCard(
-              'Pending Approvals',
+              'Pending',
               analytics.userMetrics.pendingUsers.toString(),
               Icons.hourglass_empty,
               Colors.orange,
             ),
             _buildHighlightCard(
-              'Compliance Rate',
+              'Compliance',
               '${(analytics.deedMetrics.complianceRateToday * 100).toStringAsFixed(0)}%',
               Icons.check_circle,
               Colors.blue,
@@ -277,52 +348,86 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         ),
 
         const SizedBox(height: 24),
-        _buildSectionHeader('All Sections', Icons.apps),
-        const SizedBox(height: 12),
 
         _buildUserMetricsSection(analytics.userMetrics),
         const SizedBox(height: 24),
         _buildDeedMetricsSection(analytics.deedMetrics),
         const SizedBox(height: 24),
         _buildFinancialMetricsSection(analytics.financialMetrics),
+        const SizedBox(height: 24),
+        _buildEngagementSection(analytics.engagementMetrics, analytics.excuseMetrics),
       ],
     );
   }
 
   Widget _buildHighlightCard(String title, String value, IconData icon, Color color) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      shadowColor: color.withValues(alpha: 0.2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.05)],
+            colors: [color.withValues(alpha: 0.12), color.withValues(alpha: 0.05)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 32),
-            const Spacer(),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
+              child: Icon(icon, color: color, size: 22),
             ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: color,
+                        letterSpacing: -0.5,
+                        height: 1.1,
+                      ),
+                      maxLines: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[700],
+                      letterSpacing: 0.1,
+                      height: 1.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           ],
@@ -332,24 +437,39 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).primaryColor.withValues(alpha: 0.08),
+            Theme.of(context).primaryColor.withValues(alpha: 0.03),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border(
+          left: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 3,
           ),
-          child: Icon(icon, size: 20, color: Theme.of(context).primaryColor),
         ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-      ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  letterSpacing: 0.2,
+                ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -509,7 +629,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Engagement & Activity', Icons.trending_up),
+        _buildSectionHeader('Engagement & Excuses', Icons.trending_up),
         const SizedBox(height: 16),
         GridView.count(
           crossAxisCount: 2,
@@ -529,7 +649,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
             AnalyticsMetricCard(
               title: 'Submission Rate',
               value: '${(engagementMetrics.reportSubmissionRate * 100).toStringAsFixed(0)}%',
-              subtitle: 'Avg time: ${engagementMetrics.averageSubmissionTime}',
+              subtitle: 'Time: ${engagementMetrics.averageSubmissionTime}',
               icon: Icons.send,
               color: Colors.green,
             ),
@@ -550,32 +670,56 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         if (excuseMetrics.mostCommonReason != null) ...[
           const SizedBox(height: 16),
           Card(
-            elevation: 2,
+            elevation: 3,
+            shadowColor: Colors.blue.withValues(alpha: 0.15),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Padding(
+            child: Container(
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.blue.withValues(alpha: 0.05),
+                    Colors.blue.withValues(alpha: 0.02),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, color: Colors.blue),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.info_outline, color: Colors.blue, size: 22),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Most Common Excuse Reason',
+                          'Most Common Excuse',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${excuseMetrics.mostCommonReason} (${excuseMetrics.mostCommonReasonCount} requests)',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
+                          '${excuseMetrics.mostCommonReason} (${excuseMetrics.mostCommonReasonCount})',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
                               ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

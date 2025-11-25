@@ -51,20 +51,34 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
 
   List<dynamic> _getRestDaysForDate(DateTime date) {
     return _allRestDays.where((restDay) {
-      final restDayDate = DateTime.parse(restDay.date.toString());
-      final checkDate = DateTime(date.year, date.month, date.day);
-      final restDate = DateTime(restDayDate.year, restDayDate.month, restDayDate.day);
+      try {
+        // Handle both entity and dynamic types safely
+        // Check for both 'rest_date' and 'date' keys for compatibility
+        final dateValue = restDay is Map
+            ? (restDay['date'] ?? restDay['rest_date'])
+            : restDay.date;
+        final endDateValue = restDay is Map ? restDay['end_date'] : restDay.endDate;
 
-      // Check if single date matches
-      if (restDay.endDate == null) {
-        return restDate.isAtSameMomentAs(checkDate);
+        if (dateValue == null) return false;
+
+        final restDayDate = dateValue is DateTime ? dateValue : DateTime.parse(dateValue.toString());
+        final checkDate = DateTime(date.year, date.month, date.day);
+        final restDate = DateTime(restDayDate.year, restDayDate.month, restDayDate.day);
+
+        // Check if single date matches
+        if (endDateValue == null) {
+          return restDate.isAtSameMomentAs(checkDate);
+        }
+
+        // Check if date falls within range
+        final endDayDate = endDateValue is DateTime ? endDateValue : DateTime.parse(endDateValue.toString());
+        final endDate = DateTime(endDayDate.year, endDayDate.month, endDayDate.day);
+        return (checkDate.isAtSameMomentAs(restDate) || checkDate.isAfter(restDate)) &&
+            (checkDate.isAtSameMomentAs(endDate) || checkDate.isBefore(endDate));
+      } catch (e) {
+        // Silently handle invalid rest day data
+        return false;
       }
-
-      // Check if date falls within range
-      final endDayDate = DateTime.parse(restDay.endDate.toString());
-      final endDate = DateTime(endDayDate.year, endDayDate.month, endDayDate.day);
-      return (checkDate.isAtSameMomentAs(restDate) || checkDate.isAfter(restDate)) &&
-          (checkDate.isAtSameMomentAs(endDate) || checkDate.isBefore(endDate));
     }).toList();
   }
 
@@ -104,8 +118,11 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
     );
 
     if (result != null && mounted) {
+      // Safely access id
+      final id = restDay is Map ? restDay['id'] : restDay.id;
+
       context.read<AdminBloc>().add(UpdateRestDayRequested(
-            restDayId: restDay.id,
+            restDayId: id,
             date: result['date'],
             endDate: result['endDate'],
             description: result['description'],
@@ -122,11 +139,14 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
       return;
     }
 
+    // Safely access description
+    final description = restDay is Map ? (restDay['description'] ?? 'this rest day') : restDay.description;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Rest Day'),
-        content: Text('Are you sure you want to delete "${restDay.description}"?'),
+        content: Text('Are you sure you want to delete "$description"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -142,8 +162,11 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
     );
 
     if (confirmed == true && mounted) {
+      // Safely access id
+      final id = restDay is Map ? restDay['id'] : restDay.id;
+
       context.read<AdminBloc>().add(DeleteRestDayRequested(
-            restDayId: restDay.id,
+            restDayId: id,
             deletedBy: currentUserId,
           ));
     }
@@ -161,6 +184,44 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
+  }
+
+  String _formatRestDayDate(Map<String, dynamic> restDay) {
+    try {
+      // Check for both 'rest_date' and 'date' keys for compatibility
+      final dateValue = restDay['date'] ?? restDay['rest_date'];
+      final endDateValue = restDay['end_date'];
+
+      final date = dateValue is DateTime ? dateValue : DateTime.parse(dateValue.toString());
+
+      if (endDateValue == null) {
+        return '${date.day}/${date.month}/${date.year}';
+      }
+
+      final endDate = endDateValue is DateTime ? endDateValue : DateTime.parse(endDateValue.toString());
+      return '${date.day}/${date.month}/${date.year} - ${endDate.day}/${endDate.month}/${endDate.year}';
+    } catch (e) {
+      return 'Invalid date';
+    }
+  }
+
+  int _calculateDayCount(dynamic restDay) {
+    try {
+      // Check for both 'rest_date' and 'date' keys for compatibility
+      final dateValue = restDay is Map
+          ? (restDay['date'] ?? restDay['rest_date'])
+          : restDay.date;
+      final endDateValue = restDay is Map ? restDay['end_date'] : restDay.endDate;
+
+      if (endDateValue == null) return 1;
+
+      final date = dateValue is DateTime ? dateValue : DateTime.parse(dateValue.toString());
+      final endDate = endDateValue is DateTime ? endDateValue : DateTime.parse(endDateValue.toString());
+
+      return endDate.difference(date).inDays + 1;
+    } catch (e) {
+      return 1;
+    }
   }
 
   @override
@@ -351,23 +412,33 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
                 child: Text('No rest days on this date'),
               )
             else
-              ...restDays.map((restDay) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(
-                      restDay.isRecurring ? Icons.loop : Icons.event_available,
-                      color: Colors.green,
-                    ),
-                    title: Text(restDay.description),
-                    subtitle: Text(
-                      restDay.isDateRange
-                          ? 'Range: ${restDay.formattedDate}'
-                          : 'Single day',
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.edit, size: 20),
-                      onPressed: () => _showEditRestDayDialog(restDay),
-                    ),
-                  )),
+              ...restDays.map((restDay) {
+                    // Safely access properties from dynamic object
+                    final isRecurring = restDay is Map ? (restDay['is_recurring'] ?? false) : restDay.isRecurring;
+                    final description = restDay is Map ? (restDay['description'] ?? '') : restDay.description;
+                    final isDateRange = restDay is Map ? (restDay['end_date'] != null) : restDay.isDateRange;
+                    final formattedDate = restDay is Map
+                        ? _formatRestDayDate(Map<String, dynamic>.from(restDay))
+                        : restDay.formattedDate;
+
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(
+                        isRecurring ? Icons.loop : Icons.event_available,
+                        color: Colors.green,
+                      ),
+                      title: Text(description),
+                      subtitle: Text(
+                        isDateRange
+                            ? 'Range: $formattedDate'
+                            : 'Single day',
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit, size: 20),
+                        onPressed: () => _showEditRestDayDialog(restDay),
+                      ),
+                    );
+                  }),
           ],
         ),
       ),
@@ -409,21 +480,31 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
         itemCount: _allRestDays.length,
         itemBuilder: (context, index) {
           final restDay = _allRestDays[index];
+
+          // Safely access properties from dynamic object
+          final isRecurring = restDay is Map ? (restDay['is_recurring'] ?? false) : restDay.isRecurring;
+          final description = restDay is Map ? (restDay['description'] ?? '') : restDay.description;
+          final isDateRange = restDay is Map ? (restDay['end_date'] != null) : restDay.isDateRange;
+          final formattedDate = restDay is Map
+              ? _formatRestDayDate(Map<String, dynamic>.from(restDay))
+              : restDay.formattedDate;
+          final dayCount = restDay is Map ? _calculateDayCount(restDay) : restDay.dayCount;
+
           return Card(
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
               contentPadding: const EdgeInsets.all(16),
               leading: CircleAvatar(
-                backgroundColor: restDay.isRecurring
+                backgroundColor: isRecurring
                     ? Colors.purple.withValues(alpha: 0.2)
                     : Colors.green.withValues(alpha: 0.2),
                 child: Icon(
-                  restDay.isRecurring ? Icons.loop : Icons.event,
-                  color: restDay.isRecurring ? Colors.purple : Colors.green,
+                  isRecurring ? Icons.loop : Icons.event,
+                  color: isRecurring ? Colors.purple : Colors.green,
                 ),
               ),
               title: Text(
-                restDay.description,
+                description,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(
@@ -434,10 +515,10 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
                     children: [
                       const Icon(Icons.calendar_today, size: 16),
                       const SizedBox(width: 4),
-                      Text(restDay.formattedDate),
+                      Text(formattedDate),
                     ],
                   ),
-                  if (restDay.isRecurring) ...[
+                  if (isRecurring) ...[
                     const SizedBox(height: 4),
                     const Row(
                       children: [
@@ -447,13 +528,13 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
                       ],
                     ),
                   ],
-                  if (restDay.isDateRange) ...[
+                  if (isDateRange) ...[
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.date_range, size: 16),
                         const SizedBox(width: 4),
-                        Text('${restDay.dayCount} days'),
+                        Text('$dayCount days'),
                       ],
                     ),
                   ],
@@ -519,13 +600,26 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
   void initState() {
     super.initState();
     if (widget.restDay != null) {
-      _descriptionController.text = widget.restDay.description;
-      _startDate = DateTime.parse(widget.restDay.date.toString());
-      if (widget.restDay.endDate != null) {
-        _endDate = DateTime.parse(widget.restDay.endDate.toString());
+      final restDay = widget.restDay;
+
+      // Safely access properties from dynamic object
+      final description = restDay is Map ? (restDay['description'] ?? '') : restDay.description;
+      // Check for both 'rest_date' and 'date' keys for compatibility
+      final dateValue = restDay is Map
+          ? (restDay['date'] ?? restDay['rest_date'])
+          : restDay.date;
+      final endDateValue = restDay is Map ? restDay['end_date'] : restDay.endDate;
+      final isRecurring = restDay is Map ? (restDay['is_recurring'] ?? false) : restDay.isRecurring;
+
+      _descriptionController.text = description;
+      _startDate = dateValue is DateTime ? dateValue : DateTime.parse(dateValue.toString());
+
+      if (endDateValue != null) {
+        _endDate = endDateValue is DateTime ? endDateValue : DateTime.parse(endDateValue.toString());
         _isDateRange = true;
       }
-      _isRecurring = widget.restDay.isRecurring;
+
+      _isRecurring = isRecurring;
     }
   }
 

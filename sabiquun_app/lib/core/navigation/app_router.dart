@@ -40,6 +40,8 @@ import 'package:sabiquun_app/features/admin/presentation/pages/manual_notificati
 import 'package:sabiquun_app/features/admin/presentation/pages/report_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/report_edit_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/rest_days_management_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/announcements_management_page.dart';
+import 'package:sabiquun_app/features/admin/presentation/pages/app_content_management_page.dart';
 import 'package:sabiquun_app/features/analytics/presentation/pages/user_analytics_dashboard_page.dart' as user_analytics;
 import 'package:sabiquun_app/features/profile/pages/profile_page.dart';
 import 'package:sabiquun_app/features/notifications/presentation/pages/notifications_page.dart';
@@ -330,6 +332,16 @@ class AppRouter {
           final reportId = state.uri.queryParameters['id'] ?? '';
           return ReportEditPage(reportId: reportId);
         },
+      ),
+      GoRoute(
+        path: '/admin/announcements',
+        name: 'admin-announcements',
+        builder: (context, state) => const AnnouncementsManagementPage(),
+      ),
+      GoRoute(
+        path: '/admin/app-content',
+        name: 'admin-app-content',
+        builder: (context, state) => const AppContentManagementPage(),
       ),
 
       // Analytics Routes

@@ -25,8 +25,9 @@ class AdminHomeContent extends StatefulWidget {
   State<AdminHomeContent> createState() => _AdminHomeContentState();
 }
 
-class _AdminHomeContentState extends State<AdminHomeContent> {
+class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
   final GlobalKey<AdminMenuGridState> _menuKey = GlobalKey<AdminMenuGridState>();
+  bool _isInitialized = false;
 
   @override
   void initState() {
@@ -34,7 +35,17 @@ class _AdminHomeContentState extends State<AdminHomeContent> {
     // Load data on initial mount
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
+      _isInitialized = true;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload data when coming back from another route, but not on initial build
+    if (_isInitialized && ModalRoute.of(context)?.isCurrent == true) {
+      _loadData();
+    }
   }
 
   void _loadData() {

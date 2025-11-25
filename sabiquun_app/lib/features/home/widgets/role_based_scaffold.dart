@@ -107,11 +107,6 @@ class RoleBasedScaffold extends StatelessWidget {
         activeIcon: Icon(Icons.account_balance_wallet),
         label: 'Payments',
       ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person_outline),
-        activeIcon: Icon(Icons.person),
-        label: 'Profile',
-      ),
     ];
   }
 
@@ -136,11 +131,6 @@ class RoleBasedScaffold extends StatelessWidget {
         icon: Icon(Icons.notifications_outlined),
         activeIcon: Icon(Icons.notifications),
         label: 'Notify',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person_outline),
-        activeIcon: Icon(Icons.person),
-        label: 'Profile',
       ),
     ];
   }
@@ -192,11 +182,6 @@ class RoleBasedScaffold extends StatelessWidget {
         activeIcon: Icon(Icons.settings),
         label: 'Settings',
       ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person_outline),
-        activeIcon: Icon(Icons.person),
-        label: 'Profile',
-      ),
     ];
   }
 
@@ -213,75 +198,86 @@ class RoleBasedScaffold extends StatelessWidget {
   }
 
   void _handleUserNavigation(BuildContext context, int index, user) {
+    // Don't navigate if already on the target page
+    final currentRoute = GoRouterState.of(context).uri.toString();
+
     switch (index) {
       case 0:
-        context.go('/home');
+        if (!currentRoute.startsWith('/home')) context.go('/home');
         break;
       case 1:
-        context.go('/my-reports');
+        if (!currentRoute.startsWith('/my-reports')) context.go('/my-reports');
         break;
       case 2:
-        context.go('/payment-history', extra: user.id);
-        break;
-      case 3:
-        context.go('/profile');
+        if (!currentRoute.startsWith('/payment-history')) {
+          context.go('/payment-history', extra: user.id);
+        }
         break;
     }
   }
 
   void _handleSupervisorNavigation(BuildContext context, int index, user) {
+    // Don't navigate if already on the target page
+    final currentRoute = GoRouterState.of(context).uri.toString();
+
     switch (index) {
       case 0:
-        context.go('/home');
+        if (!currentRoute.startsWith('/home')) context.go('/home');
         break;
       case 1:
-        context.go('/user-reports');
+        if (!currentRoute.startsWith('/user-reports')) context.go('/user-reports');
         break;
       case 2:
-        context.go('/leaderboard');
+        if (!currentRoute.startsWith('/leaderboard')) context.go('/leaderboard');
         break;
       case 3:
-        context.go('/send-notification');
-        break;
-      case 4:
-        context.go('/profile');
+        if (!currentRoute.startsWith('/send-notification')) context.go('/send-notification');
         break;
     }
   }
 
   void _handleCashierNavigation(BuildContext context, int index, user) {
+    // Don't navigate if already on the target page
+    final currentRoute = GoRouterState.of(context).uri.toString();
+
     switch (index) {
       case 0:
-        context.go('/home');
+        if (!currentRoute.startsWith('/home')) context.go('/home');
         break;
       case 1:
-        context.go('/payment-review');
+        if (!currentRoute.startsWith('/payment-review')) context.go('/payment-review');
         break;
       case 2:
-        context.go('/payment-history', extra: user.id);
+        if (!currentRoute.startsWith('/payment-history')) {
+          context.go('/payment-history', extra: user.id);
+        }
         break;
       case 3:
-        context.go('/user-balances');
+        if (!currentRoute.startsWith('/user-balances')) context.go('/user-balances');
         break;
     }
   }
 
   void _handleAdminNavigation(BuildContext context, int index, user) {
+    // Don't navigate if already on the target page
+    final currentRoute = GoRouterState.of(context).uri.toString();
+
     switch (index) {
       case 0:
-        context.go('/home');
+        if (!currentRoute.startsWith('/home')) context.go('/home');
         break;
       case 1:
-        context.go('/admin/user-management');
+        if (!currentRoute.startsWith('/admin/user-management')) {
+          context.go('/admin/user-management');
+        }
         break;
       case 2:
-        context.go('/admin/analytics');
+        if (!currentRoute.startsWith('/admin/analytics')) context.go('/admin/analytics');
         break;
       case 3:
-        context.go('/admin/system-settings');
-        break;
-      case 4:
-        context.go('/profile');
+        if (!currentRoute.startsWith('/admin/system-settings')) {
+          context.go('/admin/system-settings');
+        }
         break;
     }
   }

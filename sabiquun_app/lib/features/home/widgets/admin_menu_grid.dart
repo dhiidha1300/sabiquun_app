@@ -130,6 +130,12 @@ class AdminMenuGridState extends State<AdminMenuGrid>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildMenuCategory(
+                              'User Management & Insights',
+                              Icons.people_outline,
+                              _userManagementActions,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildMenuCategory(
                               'Personal Actions',
                               Icons.person_outline,
                               _personalActions,
@@ -399,6 +405,40 @@ class AdminMenuGridState extends State<AdminMenuGrid>
     );
   }
 
+  // User Management & Insights Menu Items
+  List<_MenuItem> get _userManagementActions => [
+        _MenuItem(
+          icon: Icons.people,
+          title: 'User Management',
+          route: '/admin/user-management',
+          color: Colors.blue,
+        ),
+        _MenuItem(
+          icon: Icons.leaderboard,
+          title: 'Leaderboard',
+          route: '/leaderboard',
+          color: Colors.amber,
+        ),
+        _MenuItem(
+          icon: Icons.warning_amber_rounded,
+          title: 'Users at Risk',
+          route: '/users-at-risk',
+          color: Colors.red,
+        ),
+        _MenuItem(
+          icon: Icons.assessment_outlined,
+          title: 'All User Reports',
+          route: '/user-reports',
+          color: Colors.indigo,
+        ),
+        _MenuItem(
+          icon: Icons.analytics_outlined,
+          title: 'Analytics Dashboard',
+          route: '/admin/analytics',
+          color: Colors.purple,
+        ),
+      ];
+
   // Personal Actions Menu Items
   List<_MenuItem> get _personalActions => [
         _MenuItem(
@@ -490,13 +530,13 @@ class AdminMenuGridState extends State<AdminMenuGrid>
         _MenuItem(
           icon: Icons.campaign,
           title: 'Announcements',
-          route: '/admin/system-settings',
+          route: '/admin/announcements',
           color: Colors.indigo,
         ),
         _MenuItem(
           icon: Icons.article_outlined,
           title: 'App Content',
-          route: '/admin/system-settings',
+          route: '/admin/app-content',
           color: Colors.cyan,
         ),
       ];

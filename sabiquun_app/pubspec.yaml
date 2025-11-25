@@ -1,5 +1,5 @@
 name: sabiquun_app
-description: "A new Flutter project."
+description: "Sabiqun - Track Your Daily Deeds"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -90,6 +90,9 @@ dependencies:
   path_provider: ^2.1.4
   excel: ^4.0.6
   share_plus: ^7.2.1
+  screenshot: ^3.0.0
+  syncfusion_flutter_xlsio: ^27.2.5
+  open_file: ^3.5.8
 
 dev_dependencies:
   flutter_test:
@@ -107,6 +110,10 @@ dev_dependencies:
   bloc_test: ^9.1.7
   mocktail: ^1.0.4
 
+  # App Icon & Splash Screen
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -121,6 +128,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - .env
+    - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -142,3 +150,35 @@ flutter:
           weight: 600
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700
+
+# App Icon Configuration
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/adaptive-icon.png"
+
+  # Android Adaptive Icon
+  adaptive_icon_foreground: "assets/icons/adaptive-icon.png"
+  adaptive_icon_background: "#ffffff"
+
+  # iOS Icons
+  ios_icon_tinted: "assets/icons/ios-tinted.png"
+  ios_icon_dark: "assets/icons/ios-dark.png"
+  ios_icon_light: "assets/icons/ios-light.png"
+
+# Splash Screen Configuration
+flutter_native_splash:
+  color: "#ffffff"
+  color_dark: "#000000"
+  image: "assets/icons/splash-icon-light.png"
+  image_dark: "assets/icons/splash-icon-dark.png"
+
+  android: true
+  ios: true
+  web: false
+
+  android_12:
+    image: "assets/icons/splash-icon-light.png"
+    image_dark: "assets/icons/splash-icon-dark.png"
+    color: "#ffffff"
+    color_dark: "#000000"

@@ -30,6 +30,11 @@ _$UserReportSummaryModelImpl _$$UserReportSummaryModelImplFromJson(
   currentBalance: (json['currentBalance'] as num).toDouble(),
   isAtRisk: json['isAtRisk'] as bool,
   daysWithoutReport: (json['daysWithoutReport'] as num).toInt(),
+  weeklyDeeds:
+      (json['weeklyDeeds'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, Map<String, int>.from(e as Map)),
+      ) ??
+      const {},
 );
 
 Map<String, dynamic> _$$UserReportSummaryModelImplToJson(
@@ -52,4 +57,5 @@ Map<String, dynamic> _$$UserReportSummaryModelImplToJson(
   'currentBalance': instance.currentBalance,
   'isAtRisk': instance.isAtRisk,
   'daysWithoutReport': instance.daysWithoutReport,
+  'weeklyDeeds': instance.weeklyDeeds,
 };

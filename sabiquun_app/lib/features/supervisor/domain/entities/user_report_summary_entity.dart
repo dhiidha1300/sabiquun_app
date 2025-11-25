@@ -26,6 +26,9 @@ class UserReportSummaryEntity extends Equatable {
   final bool isAtRisk;
   final int daysWithoutReport;
 
+  // Weekly deeds data (last 7 days) - Map<dateString, {deeds: int, target: int}>
+  final Map<String, Map<String, int>> weeklyDeeds;
+
   const UserReportSummaryEntity({
     required this.userId,
     required this.fullName,
@@ -44,6 +47,7 @@ class UserReportSummaryEntity extends Equatable {
     required this.currentBalance,
     required this.isAtRisk,
     required this.daysWithoutReport,
+    this.weeklyDeeds = const {},
   });
 
   @override
@@ -65,5 +69,6 @@ class UserReportSummaryEntity extends Equatable {
         currentBalance,
         isAtRisk,
         daysWithoutReport,
+        weeklyDeeds,
       ];
 }

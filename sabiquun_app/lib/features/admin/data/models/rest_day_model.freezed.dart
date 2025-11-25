@@ -15,10 +15,6 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-RestDayModel _$RestDayModelFromJson(Map<String, dynamic> json) {
-  return _RestDayModel.fromJson(json);
-}
-
 /// @nodoc
 mixin _$RestDayModel {
   String get id => throw _privateConstructorUsedError;
@@ -29,9 +25,6 @@ mixin _$RestDayModel {
   bool get isRecurring => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
-
-  /// Serializes this RestDayModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of RestDayModel
   /// with the given fields replaced by the non-null parameter values.
@@ -183,7 +176,7 @@ class __$$RestDayModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$RestDayModelImpl implements _RestDayModel {
   const _$RestDayModelImpl({
     required this.id,
@@ -193,9 +186,6 @@ class _$RestDayModelImpl implements _RestDayModel {
     @JsonKey(name: 'is_recurring') required this.isRecurring,
     @JsonKey(name: 'created_at') required this.createdAt,
   });
-
-  factory _$RestDayModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$RestDayModelImplFromJson(json);
 
   @override
   final String id;
@@ -233,7 +223,6 @@ class _$RestDayModelImpl implements _RestDayModel {
                 other.createdAt == createdAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
@@ -252,11 +241,6 @@ class _$RestDayModelImpl implements _RestDayModel {
   @pragma('vm:prefer-inline')
   _$$RestDayModelImplCopyWith<_$RestDayModelImpl> get copyWith =>
       __$$RestDayModelImplCopyWithImpl<_$RestDayModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$RestDayModelImplToJson(this);
-  }
 }
 
 abstract class _RestDayModel implements RestDayModel {
@@ -268,9 +252,6 @@ abstract class _RestDayModel implements RestDayModel {
     @JsonKey(name: 'is_recurring') required final bool isRecurring,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
   }) = _$RestDayModelImpl;
-
-  factory _RestDayModel.fromJson(Map<String, dynamic> json) =
-      _$RestDayModelImpl.fromJson;
 
   @override
   String get id;

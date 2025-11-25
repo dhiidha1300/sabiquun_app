@@ -24,11 +24,25 @@ class _UserReportsPageState extends State<UserReportsPage> {
   String? _reportStatusFilter;
   String _sortBy = 'name';
   bool _isTableView = false; // Toggle between card and table view
+  DateTime? _dateRangeStart;
+  DateTime? _dateRangeEnd;
 
   @override
   void initState() {
     super.initState();
+    // Initialize with last 7 days
+    _dateRangeEnd = DateTime.now();
+    _dateRangeStart = _dateRangeEnd!.subtract(const Duration(days: 6));
     _loadUserReports();
+  }
+
+  void _loadDailyDeeds() {
+    if (_dateRangeStart != null && _dateRangeEnd != null) {
+      context.read<SupervisorBloc>().add(LoadDailyDeedsRequested(
+            startDate: _dateRangeStart!,
+            endDate: _dateRangeEnd!,
+          ));
+    }
   }
 
   void _loadUserReports() {
@@ -166,7 +180,13 @@ class _UserReportsPageState extends State<UserReportsPage> {
               onRefresh: () async {
                 _loadUserReports();
               },
-              child: BlocBuilder<SupervisorBloc, SupervisorState>(
+              child: BlocConsumer<SupervisorBloc, SupervisorState>(
+                listener: (context, state) {
+                  // Load daily deeds when user reports are loaded
+                  if (state is UserReportsLoaded && state.dailyDeeds == null) {
+                    _loadDailyDeeds();
+                  }
+                },
                 builder: (context, state) {
                   if (state is SupervisorLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -233,6 +253,9 @@ class _UserReportsPageState extends State<UserReportsPage> {
                     if (_isTableView) {
                       return UsersTableView(
                         users: state.userReports,
+                        dailyDeeds: state.dailyDeeds,
+                        dateRangeStart: state.dateRangeStart ?? _dateRangeStart,
+                        dateRangeEnd: state.dateRangeEnd ?? _dateRangeEnd,
                         onExport: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Exporting table...')),

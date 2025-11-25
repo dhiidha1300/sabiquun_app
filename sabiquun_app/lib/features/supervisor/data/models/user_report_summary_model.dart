@@ -24,6 +24,7 @@ class UserReportSummaryModel with _$UserReportSummaryModel {
     required double currentBalance,
     required bool isAtRisk,
     required int daysWithoutReport,
+    @Default({}) Map<String, Map<String, int>> weeklyDeeds,
   }) = _UserReportSummaryModel;
 
   const UserReportSummaryModel._();
@@ -50,6 +51,7 @@ class UserReportSummaryModel with _$UserReportSummaryModel {
       currentBalance: currentBalance,
       isAtRisk: isAtRisk,
       daysWithoutReport: daysWithoutReport,
+      weeklyDeeds: weeklyDeeds,
     );
   }
 }

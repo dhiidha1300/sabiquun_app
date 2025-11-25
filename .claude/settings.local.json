@@ -10,7 +10,8 @@
       "Bash(nul)",
       "Bash(findstr:*)",
       "Bash(dir /s /b a:sabiquun_applib*.dart 2)",
-      "Bash(flutter pub run build_runner build:*)"
+      "Bash(flutter pub run build_runner build:*)",
+      "Bash(dart run:*)"
     ],
     "deny": [],
     "ask": []

@@ -74,4 +74,11 @@ abstract class SupervisorRepository {
     required DateTime startDate,
     required DateTime endDate,
   });
+
+  /// Get daily deeds for all users in a date range
+  Future<Either<Failure, Map<String, Map<String, Map<String, int>>>>> getUsersDailyDeeds({
+    required DateTime startDate,
+    required DateTime endDate,
+    List<String>? userIds,
+  });
 }

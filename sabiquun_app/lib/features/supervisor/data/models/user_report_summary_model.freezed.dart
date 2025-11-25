@@ -40,6 +40,8 @@ mixin _$UserReportSummaryModel {
   double get currentBalance => throw _privateConstructorUsedError;
   bool get isAtRisk => throw _privateConstructorUsedError;
   int get daysWithoutReport => throw _privateConstructorUsedError;
+  Map<String, Map<String, int>> get weeklyDeeds =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this UserReportSummaryModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -76,6 +78,7 @@ abstract class $UserReportSummaryModelCopyWith<$Res> {
     double currentBalance,
     bool isAtRisk,
     int daysWithoutReport,
+    Map<String, Map<String, int>> weeklyDeeds,
   });
 }
 
@@ -114,6 +117,7 @@ class _$UserReportSummaryModelCopyWithImpl<
     Object? currentBalance = null,
     Object? isAtRisk = null,
     Object? daysWithoutReport = null,
+    Object? weeklyDeeds = null,
   }) {
     return _then(
       _value.copyWith(
@@ -185,6 +189,10 @@ class _$UserReportSummaryModelCopyWithImpl<
                 ? _value.daysWithoutReport
                 : daysWithoutReport // ignore: cast_nullable_to_non_nullable
                       as int,
+            weeklyDeeds: null == weeklyDeeds
+                ? _value.weeklyDeeds
+                : weeklyDeeds // ignore: cast_nullable_to_non_nullable
+                      as Map<String, Map<String, int>>,
           )
           as $Val,
     );
@@ -218,6 +226,7 @@ abstract class _$$UserReportSummaryModelImplCopyWith<$Res>
     double currentBalance,
     bool isAtRisk,
     int daysWithoutReport,
+    Map<String, Map<String, int>> weeklyDeeds,
   });
 }
 
@@ -253,6 +262,7 @@ class __$$UserReportSummaryModelImplCopyWithImpl<$Res>
     Object? currentBalance = null,
     Object? isAtRisk = null,
     Object? daysWithoutReport = null,
+    Object? weeklyDeeds = null,
   }) {
     return _then(
       _$UserReportSummaryModelImpl(
@@ -324,6 +334,10 @@ class __$$UserReportSummaryModelImplCopyWithImpl<$Res>
             ? _value.daysWithoutReport
             : daysWithoutReport // ignore: cast_nullable_to_non_nullable
                   as int,
+        weeklyDeeds: null == weeklyDeeds
+            ? _value._weeklyDeeds
+            : weeklyDeeds // ignore: cast_nullable_to_non_nullable
+                  as Map<String, Map<String, int>>,
       ),
     );
   }
@@ -350,7 +364,9 @@ class _$UserReportSummaryModelImpl extends _UserReportSummaryModel {
     required this.currentBalance,
     required this.isAtRisk,
     required this.daysWithoutReport,
-  }) : super._();
+    final Map<String, Map<String, int>> weeklyDeeds = const {},
+  }) : _weeklyDeeds = weeklyDeeds,
+       super._();
 
   factory _$UserReportSummaryModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserReportSummaryModelImplFromJson(json);
@@ -389,10 +405,18 @@ class _$UserReportSummaryModelImpl extends _UserReportSummaryModel {
   final bool isAtRisk;
   @override
   final int daysWithoutReport;
+  final Map<String, Map<String, int>> _weeklyDeeds;
+  @override
+  @JsonKey()
+  Map<String, Map<String, int>> get weeklyDeeds {
+    if (_weeklyDeeds is EqualUnmodifiableMapView) return _weeklyDeeds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_weeklyDeeds);
+  }
 
   @override
   String toString() {
-    return 'UserReportSummaryModel(userId: $userId, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, profilePhotoUrl: $profilePhotoUrl, membershipStatus: $membershipStatus, memberSince: $memberSince, todayDeeds: $todayDeeds, todayTarget: $todayTarget, hasSubmittedToday: $hasSubmittedToday, lastReportTime: $lastReportTime, complianceRate: $complianceRate, currentStreak: $currentStreak, totalReports: $totalReports, currentBalance: $currentBalance, isAtRisk: $isAtRisk, daysWithoutReport: $daysWithoutReport)';
+    return 'UserReportSummaryModel(userId: $userId, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, profilePhotoUrl: $profilePhotoUrl, membershipStatus: $membershipStatus, memberSince: $memberSince, todayDeeds: $todayDeeds, todayTarget: $todayTarget, hasSubmittedToday: $hasSubmittedToday, lastReportTime: $lastReportTime, complianceRate: $complianceRate, currentStreak: $currentStreak, totalReports: $totalReports, currentBalance: $currentBalance, isAtRisk: $isAtRisk, daysWithoutReport: $daysWithoutReport, weeklyDeeds: $weeklyDeeds)';
   }
 
   @override
@@ -431,7 +455,11 @@ class _$UserReportSummaryModelImpl extends _UserReportSummaryModel {
             (identical(other.isAtRisk, isAtRisk) ||
                 other.isAtRisk == isAtRisk) &&
             (identical(other.daysWithoutReport, daysWithoutReport) ||
-                other.daysWithoutReport == daysWithoutReport));
+                other.daysWithoutReport == daysWithoutReport) &&
+            const DeepCollectionEquality().equals(
+              other._weeklyDeeds,
+              _weeklyDeeds,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -455,6 +483,7 @@ class _$UserReportSummaryModelImpl extends _UserReportSummaryModel {
     currentBalance,
     isAtRisk,
     daysWithoutReport,
+    const DeepCollectionEquality().hash(_weeklyDeeds),
   );
 
   /// Create a copy of UserReportSummaryModel
@@ -494,6 +523,7 @@ abstract class _UserReportSummaryModel extends UserReportSummaryModel {
     required final double currentBalance,
     required final bool isAtRisk,
     required final int daysWithoutReport,
+    final Map<String, Map<String, int>> weeklyDeeds,
   }) = _$UserReportSummaryModelImpl;
   const _UserReportSummaryModel._() : super._();
 
@@ -534,6 +564,8 @@ abstract class _UserReportSummaryModel extends UserReportSummaryModel {
   bool get isAtRisk;
   @override
   int get daysWithoutReport;
+  @override
+  Map<String, Map<String, int>> get weeklyDeeds;
 
   /// Create a copy of UserReportSummaryModel
   /// with the given fields replaced by the non-null parameter values.

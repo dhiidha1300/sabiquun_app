@@ -26,6 +26,7 @@ class SupervisorBloc extends Bloc<SupervisorEvent, SupervisorState> {
     on<DeleteAchievementTagRequested>(_onDeleteAchievementTag);
     on<LoadDetailedUserReportRequested>(_onLoadDetailedUserReportRequested);
     on<ExportUserReportRequested>(_onExportUserReportRequested);
+    on<LoadDailyDeedsRequested>(_onLoadDailyDeeds);
   }
 
   Future<void> _onLoadUserReports(
@@ -293,6 +294,36 @@ class SupervisorBloc extends Bloc<SupervisorEvent, SupervisorState> {
         );
       }).toList(),
       achievementTags: (entity.achievementTags as List).cast<String>(),
+    );
+  }
+
+  Future<void> _onLoadDailyDeeds(
+    LoadDailyDeedsRequested event,
+    Emitter<SupervisorState> emit,
+  ) async {
+    // Check if we have current user reports loaded
+    if (state is! UserReportsLoaded) {
+      emit(const SupervisorError(message: 'Please load user reports first'));
+      return;
+    }
+
+    final currentState = state as UserReportsLoaded;
+    // Don't emit loading state to avoid losing the UI
+
+    final result = await repository.getUsersDailyDeeds(
+      startDate: event.startDate,
+      endDate: event.endDate,
+      userIds: event.userIds,
+    );
+
+    result.fold(
+      (failure) => emit(SupervisorError(message: failure.message)),
+      (dailyDeeds) => emit(UserReportsLoaded(
+        userReports: currentState.userReports,
+        dailyDeeds: dailyDeeds,
+        dateRangeStart: event.startDate,
+        dateRangeEnd: event.endDate,
+      )),
     );
   }
 }

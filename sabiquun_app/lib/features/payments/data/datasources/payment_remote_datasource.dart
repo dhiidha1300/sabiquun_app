@@ -193,25 +193,44 @@ class PaymentRemoteDataSource {
           .from('payments')
           .select('''
             *,
-            user:users!user_id(name, email),
-            user_stats:user_statistics!user_id(current_penalty_balance)
+            user:users!user_id(name, email)
           ''')
           .eq('status', 'pending')
           .order('created_at', ascending: true); // Oldest first
 
-      return (response as List).map((json) {
+      final payments = response as List;
+
+      // Get unique user IDs
+      final userIds = payments.map((p) => p['user_id'] as String).toSet().toList();
+
+      // Fetch user statistics for all users in one query
+      final statsResponse = await _supabaseClient
+          .from('user_statistics')
+          .select('user_id, current_penalty_balance')
+          .inFilter('user_id', userIds);
+
+      // Create a map of user_id to balance
+      final balanceMap = <String, double>{};
+      for (var stat in statsResponse as List) {
+        balanceMap[stat['user_id'] as String] =
+            (stat['current_penalty_balance'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      return payments.map((json) {
         final flatJson = Map<String, dynamic>.from(json);
+        final userId = json['user_id'] as String;
+
         // payment_method is already a VARCHAR in the table, use it directly
         flatJson['payment_method_name'] = json['payment_method'];
         if (json['user'] != null) {
           flatJson['user_name'] = json['user']['name'];
           flatJson['user_email'] = json['user']['email'];
         }
-        if (json['user_stats'] != null) {
-          flatJson['user_current_balance'] = json['user_stats']['current_penalty_balance'];
-        }
+
+        // Add balance from the map
+        flatJson['user_current_balance'] = balanceMap[userId];
+
         flatJson.remove('user');
-        flatJson.remove('user_stats');
 
         return PaymentModel.fromJson(flatJson);
       }).toList();
@@ -265,7 +284,6 @@ class PaymentRemoteDataSource {
           .select('''
             *,
             user:users!user_id(name, email),
-            user_stats:user_statistics!user_id(current_penalty_balance),
             reviewed_by_user:users!reviewed_by(name)
           ''')
           .inFilter('status', ['approved', 'rejected'])
@@ -273,8 +291,28 @@ class PaymentRemoteDataSource {
 
       print('📦 All reviewed payments response: ${(response as List).length} payments found');
 
-      return (response as List).map((json) {
+      final payments = response as List;
+
+      // Get unique user IDs
+      final userIds = payments.map((p) => p['user_id'] as String).toSet().toList();
+
+      // Fetch user statistics for all users in one query
+      final statsResponse = await _supabaseClient
+          .from('user_statistics')
+          .select('user_id, current_penalty_balance')
+          .inFilter('user_id', userIds);
+
+      // Create a map of user_id to balance
+      final balanceMap = <String, double>{};
+      for (var stat in statsResponse as List) {
+        balanceMap[stat['user_id'] as String] =
+            (stat['current_penalty_balance'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      return payments.map((json) {
         final flatJson = Map<String, dynamic>.from(json);
+        final userId = json['user_id'] as String;
+
         // payment_method is already a VARCHAR in the table, use it directly
         flatJson['payment_method_name'] = json['payment_method'];
 
@@ -284,10 +322,8 @@ class PaymentRemoteDataSource {
           flatJson['user_email'] = json['user']['email'];
         }
 
-        // Add user statistics (current balance)
-        if (json['user_stats'] != null) {
-          flatJson['user_current_balance'] = json['user_stats']['current_penalty_balance'];
-        }
+        // Add balance from the map
+        flatJson['user_current_balance'] = balanceMap[userId];
 
         // Add reviewer data
         if (json['reviewed_by_user'] != null) {
@@ -295,7 +331,6 @@ class PaymentRemoteDataSource {
         }
 
         flatJson.remove('user');
-        flatJson.remove('user_stats');
         flatJson.remove('reviewed_by_user');
 
         return PaymentModel.fromJson(flatJson);

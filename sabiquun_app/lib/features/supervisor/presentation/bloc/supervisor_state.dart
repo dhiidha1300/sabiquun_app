@@ -26,11 +26,19 @@ class SupervisorLoading extends SupervisorState {
 /// User reports loaded
 class UserReportsLoaded extends SupervisorState {
   final List<UserReportSummaryEntity> userReports;
+  final Map<String, Map<String, Map<String, int>>>? dailyDeeds;
+  final DateTime? dateRangeStart;
+  final DateTime? dateRangeEnd;
 
-  const UserReportsLoaded({required this.userReports});
+  const UserReportsLoaded({
+    required this.userReports,
+    this.dailyDeeds,
+    this.dateRangeStart,
+    this.dateRangeEnd,
+  });
 
   @override
-  List<Object?> get props => [userReports];
+  List<Object?> get props => [userReports, dailyDeeds, dateRangeStart, dateRangeEnd];
 }
 
 /// Leaderboard loaded
