@@ -17,6 +17,7 @@ import 'package:sabiquun_app/features/home/utils/membership_helper.dart';
 import 'package:sabiquun_app/features/home/utils/time_helper.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.dart';
 import 'package:sabiquun_app/features/notifications/presentation/widgets/notification_bell.dart';
+import 'package:sabiquun_app/features/home/widgets/report_calendar_widget.dart';
 
 /// Normal User Home Content - Standard Dashboard
 class UserHomeContent extends StatefulWidget {
@@ -39,7 +40,6 @@ class UserHomeContent extends StatefulWidget {
 class _UserHomeContentState extends State<UserHomeContent> {
   // Cache data locally to persist across state changes
   DeedReportEntity? _todayReport;
-  List<DeedReportEntity> _recentReports = [];
 
   // Public method to get drawer widget
   Widget getDrawer() => _buildModernDrawer();
@@ -63,12 +63,6 @@ class _UserHomeContentState extends State<UserHomeContent> {
     // Load today's deeds report
     context.read<DeedBloc>().add(const LoadTodayReportRequested());
 
-    // Load recent reports (last 30 days)
-    context.read<DeedBloc>().add(LoadMyReportsRequested(
-      startDate: DateTime.now().subtract(const Duration(days: 30)),
-      endDate: DateTime.now(),
-    ));
-
     // Load penalty balance
     context.read<PenaltyBloc>().add(LoadPenaltyBalanceRequested(userId));
   }
@@ -89,10 +83,6 @@ class _UserHomeContentState extends State<UserHomeContent> {
             if (state is TodayReportLoaded) {
               setState(() {
                 _todayReport = state.report;
-              });
-            } else if (state is MyReportsLoaded) {
-              setState(() {
-                _recentReports = state.reports;
               });
             }
           },
@@ -172,7 +162,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
                             ),
                             const SizedBox(height: 16),
 
-                            // Recent Reports Section with animation
+                            // Report Calendar Section with animation
                             TweenAnimationBuilder<double>(
                               duration: const Duration(milliseconds: 700),
                               tween: Tween(begin: 0.0, end: 1.0),
@@ -186,9 +176,9 @@ class _UserHomeContentState extends State<UserHomeContent> {
                                   ),
                                 );
                               },
-                              child: _buildRecentReportsSection(),
+                              child: const ReportCalendarWidget(),
                             ),
-                            const SizedBox(height: 100), // Space for floating bottom nav
+                            const SizedBox(height: 24), // Bottom padding
                           ],
                         ),
                       ),
@@ -197,11 +187,11 @@ class _UserHomeContentState extends State<UserHomeContent> {
                 ),
               ),
             ),
-            // FAB positioned absolutely
+            // FAB positioned absolutely with better spacing from nav bar
             Positioned(
               right: 16,
-              bottom: 86, // Above bottom nav (70) + 16 padding
-              child: FloatingActionButton(
+              bottom: 80, // Tight spacing above bottom nav
+              child: FloatingActionButton.extended(
                 onPressed: () {
                   HapticFeedback.mediumImpact();
                   context.push('/today-deeds');
@@ -209,8 +199,14 @@ class _UserHomeContentState extends State<UserHomeContent> {
                 backgroundColor: AppColors.success,
                 elevation: 6,
                 highlightElevation: 12,
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add, size: 28),
+                icon: const Icon(Icons.add, size: 24),
+                label: const Text(
+                  'Submit Deeds',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],
@@ -683,200 +679,6 @@ class _UserHomeContentState extends State<UserHomeContent> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildRecentReportsSection() {
-    // Use cached data instead of BlocBuilder
-    final reports = _recentReports.take(3).toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Recent Reports',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton(
-              onPressed: () => context.push('/my-reports'),
-              child: const Row(
-                children: [
-                  Text('View All Reports'),
-                  Icon(Icons.arrow_forward_ios, size: 14),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        if (reports.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Center(
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.assignment_outlined,
-                      size: 48,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'No reports yet',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Start tracking your daily deeds',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      context.push('/today-deeds');
-                    },
-                    icon: const Icon(Icons.add, size: 20),
-                    label: const Text('Add Your First Deed'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        else
-          ...reports.map((report) => _buildReportItem(report)),
-      ],
-    );
-  }
-
-  Widget _buildReportItem(DeedReportEntity report) {
-    final date = DateFormat('MMM dd').format(report.reportDate);
-    final score = report.totalDeeds;
-
-    Color statusColor;
-    String statusText;
-
-    if (report.status.isSubmitted) {
-      statusColor = AppColors.success;
-      statusText = 'Submitted';
-    } else {
-      statusColor = Colors.grey;
-      statusText = 'Draft';
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        children: [
-          // Date
-          Container(
-            width: 50,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              children: [
-                Text(
-                  date.split(' ')[0],
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(
-                  date.split(' ')[1],
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // Score
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${score.toStringAsFixed(1)}/10',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.check_circle, size: 14, color: statusColor),
-                    const SizedBox(width: 4),
-                    Text(
-                      statusText,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Completion percentage
-          Text(
-            '${score >= 10 ? '100' : (score * 10).toStringAsFixed(0)}%',
-            style: TextStyle(
-              fontSize: 13,
-              color: score >= 8 ? AppColors.success : AppColors.accent,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sabiquun_app/core/theme/app_colors.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../bloc/admin_bloc.dart';
@@ -90,7 +91,6 @@ class _UserManagementPageState extends State<UserManagementPage>
       return;
     }
 
-    // Show confirmation dialog
     final confirmed = await _showConfirmDialog(
       title: 'Approve User',
       message: 'Are you sure you want to approve this user?',
@@ -111,7 +111,6 @@ class _UserManagementPageState extends State<UserManagementPage>
       return;
     }
 
-    // Show reason dialog
     final reason = await _showReasonDialog(
       title: 'Reject User',
       message: 'Please provide a reason for rejecting this user:',
@@ -133,7 +132,6 @@ class _UserManagementPageState extends State<UserManagementPage>
       return;
     }
 
-    // Show reason dialog
     final reason = await _showReasonDialog(
       title: 'Suspend User',
       message: 'Please provide a reason for suspending this user:',
@@ -155,7 +153,6 @@ class _UserManagementPageState extends State<UserManagementPage>
       return;
     }
 
-    // Show reason dialog
     final reason = await _showReasonDialog(
       title: 'Activate User',
       message: 'Please provide a reason for activating this user:',
@@ -270,23 +267,65 @@ class _UserManagementPageState extends State<UserManagementPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('User Management'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Pending'),
-            Tab(text: 'Active'),
-            Tab(text: 'Suspended'),
-            Tab(text: 'Deactivated'),
-          ],
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.textPrimary,
+        leading: IconButton(
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        title: Text(
+          'User Management',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            color: AppColors.background,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: AppColors.primary,
+              unselectedLabelColor: AppColors.textSecondary,
+              indicatorColor: AppColors.primary,
+              indicatorWeight: 3,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              tabs: const [
+                Tab(text: 'Pending'),
+                Tab(text: 'Active'),
+                Tab(text: 'Suspended'),
+                Tab(text: 'Deactivate'),
+              ],
+            ),
+          ),
         ),
       ),
       body: BlocConsumer<AdminBloc, AdminState>(
         listener: (context, state) {
           if (state is UserApproved) {
             _showSuccess('User approved successfully');
-            // Reload the current tab
             final status = _getStatusForTab(_tabController.index);
             _loadUsers(status);
           } else if (state is UserRejected) {
@@ -313,25 +352,32 @@ class _UserManagementPageState extends State<UserManagementPage>
           return Column(
             children: [
               // Search bar
-              Padding(
-                padding: const EdgeInsets.all(16),
+              Container(
+                color: AppColors.background,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                 child: TextField(
                   controller: _searchController,
+                  style: TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: 'Search by name or email...',
-                    prefixIcon: const Icon(Icons.search),
+                    hintStyle: TextStyle(color: AppColors.textSecondary),
+                    prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
                     suffixIcon: _searchQuery != null
                         ? IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: Icon(Icons.clear, color: AppColors.textSecondary),
                             onPressed: () {
                               _searchController.clear();
                               _onSearch('');
                             },
                           )
                         : null,
+                    filled: true,
+                    fillColor: AppColors.surface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
                   onChanged: _onSearch,
                 ),
@@ -350,8 +396,28 @@ class _UserManagementPageState extends State<UserManagementPage>
 
   Widget _buildContent(AdminState state) {
     if (state is AdminLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading users...',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -366,12 +432,14 @@ class _UserManagementPageState extends State<UserManagementPage>
           _loadUsers(status);
         },
         child: ListView.builder(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 16, top: 8),
           itemCount: state.users.length,
           itemBuilder: (context, index) {
             final user = state.users[index];
-            return UserCard(
+            return AnimatedUserCard(
+              key: ValueKey(user.id),
               user: user,
+              index: index,
               onTap: () => _onEditUser(user.id),
               actions: _buildActionsForUser(user),
             );
@@ -391,48 +459,45 @@ class _UserManagementPageState extends State<UserManagementPage>
     final actions = <UserAction>[];
     final tabIndex = _tabController.index;
 
-    // Pending tab actions
     if (tabIndex == 0 && user.isPending) {
       actions.addAll([
         UserAction(
           label: 'Approve',
-          icon: Icons.check_circle,
+          icon: Icons.check_circle_rounded,
           onPressed: () => _onApproveUser(user.id),
           color: Colors.green,
         ),
         UserAction(
           label: 'Reject',
-          icon: Icons.cancel,
+          icon: Icons.cancel_rounded,
           onPressed: () => _onRejectUser(user.id),
           color: Colors.red,
         ),
       ]);
     }
 
-    // Active tab actions
     if (tabIndex == 1 && user.isActive) {
       actions.addAll([
         UserAction(
           label: 'Edit',
-          icon: Icons.edit,
+          icon: Icons.edit_rounded,
           onPressed: () => _onEditUser(user.id),
           color: Colors.blue,
         ),
         UserAction(
           label: 'Suspend',
-          icon: Icons.block,
+          icon: Icons.block_rounded,
           onPressed: () => _onSuspendUser(user.id),
           color: Colors.orange,
         ),
       ]);
     }
 
-    // Suspended tab actions
     if (tabIndex == 2 && user.isSuspended) {
       actions.addAll([
         UserAction(
           label: 'Activate',
-          icon: Icons.check_circle,
+          icon: Icons.check_circle_rounded,
           onPressed: () => _onActivateUser(user.id),
           color: Colors.green,
         ),
@@ -445,7 +510,7 @@ class _UserManagementPageState extends State<UserManagementPage>
   Widget _buildEmptyState() {
     final tabIndex = _tabController.index;
     String message = 'No users found';
-    IconData icon = Icons.people_outline;
+    IconData icon = Icons.people_outline_rounded;
 
     switch (tabIndex) {
       case 0:
@@ -454,15 +519,15 @@ class _UserManagementPageState extends State<UserManagementPage>
         break;
       case 1:
         message = 'No active users';
-        icon = Icons.people;
+        icon = Icons.people_rounded;
         break;
       case 2:
         message = 'No suspended users';
-        icon = Icons.block;
+        icon = Icons.block_rounded;
         break;
       case 3:
         message = 'No deactivated users';
-        icon = Icons.person_off;
+        icon = Icons.person_off_rounded;
         break;
     }
 
@@ -470,13 +535,33 @@ class _UserManagementPageState extends State<UserManagementPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 64,
+              color: AppColors.primary.withValues(alpha: 0.5),
+            ),
+          ),
+          const SizedBox(height: 24),
           Text(
             message,
             style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Try adjusting your search or filters',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -489,32 +574,50 @@ class _UserManagementPageState extends State<UserManagementPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.error_outline_rounded,
+              size: 64,
+              color: Colors.red.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 24),
           Text(
             'Error loading users',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.red[700],
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           FilledButton.icon(
             onPressed: () {
               final status = _getStatusForTab(_tabController.index);
               _loadUsers(status);
             },
-            icon: const Icon(Icons.refresh),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            ),
+            icon: const Icon(Icons.refresh_rounded),
             label: const Text('Retry'),
           ),
         ],

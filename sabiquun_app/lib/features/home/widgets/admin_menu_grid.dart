@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
 
-/// Beautiful Sidebar Drawer with smooth animations
+/// Modern Interactive Sidebar Menu with hover effects and animations
 class AdminMenuGrid extends StatefulWidget {
   const AdminMenuGrid({Key? key}) : super(key: key);
 
   @override
   State<AdminMenuGrid> createState() => AdminMenuGridState();
 
-  /// Get the state to allow external toggling
   static AdminMenuGridState? of(BuildContext context) {
     return context.findAncestorStateOfType<AdminMenuGridState>();
   }
@@ -21,12 +20,13 @@ class AdminMenuGridState extends State<AdminMenuGrid>
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
+  String? _hoveredRoute;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 350),
       vsync: this,
     );
     _slideAnimation = Tween<Offset>(
@@ -39,7 +39,7 @@ class AdminMenuGridState extends State<AdminMenuGrid>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
-        curve: Curves.easeIn,
+        curve: Curves.easeInOut,
       ),
     );
   }
@@ -72,108 +72,84 @@ class AdminMenuGridState extends State<AdminMenuGrid>
 
   @override
   Widget build(BuildContext context) {
-    // Return nothing if drawer is closed (so it doesn't interfere)
     if (!_isDrawerOpen) return const SizedBox.shrink();
 
-    return Stack(
-      children: [
-        // Overlay (darkens background when drawer is open)
-        GestureDetector(
-          onTap: closeDrawer,
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.5),
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height,
+    return Positioned.fill(
+      child: Stack(
+        children: [
+          // Dark overlay
+          GestureDetector(
+            onTap: closeDrawer,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.6),
+              ),
             ),
           ),
-        ),
 
-        // Sliding Drawer
-        SlideTransition(
-          position: _slideAnimation,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: 280,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.surface,
-                    AppColors.surfaceVariant,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(4, 0),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Drawer Header
-                    _buildDrawerHeader(),
-
-                    // Scrollable Menu Content
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildMenuCategory(
-                              'User Management & Insights',
-                              Icons.people_outline,
-                              _userManagementActions,
-                            ),
-                            const SizedBox(height: 20),
-                            _buildMenuCategory(
-                              'Personal Actions',
-                              Icons.person_outline,
-                              _personalActions,
-                            ),
-                            const SizedBox(height: 20),
-                            _buildMenuCategory(
-                              'System Management',
-                              Icons.settings_outlined,
-                              _systemManagementActions,
-                            ),
-                            const SizedBox(height: 20),
-                            _buildMenuCategory(
-                              'Content & Communication',
-                              Icons.campaign_outlined,
-                              _contentActions,
-                            ),
-                          ],
-                        ),
-                      ),
+          // Sidebar
+          SlideTransition(
+            position: _slideAnimation,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Material(
+                elevation: 24,
+                shadowColor: Colors.black.withValues(alpha: 0.6),
+                child: Container(
+                  width: 300,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.surface,
+                        AppColors.surface.withValues(alpha: 0.98),
+                      ],
                     ),
-
-                    // Drawer Footer
-                    _buildDrawerFooter(),
-                  ],
+                  ),
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        _buildModernHeader(),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.only(top: 8, bottom: 20),
+                            child: Column(
+                              children: [
+                                _buildSection('User Management', Icons.people_rounded, _userManagementActions),
+                                _buildSection('Personal', Icons.person_rounded, _personalActions),
+                                _buildSection('System', Icons.settings_rounded, _systemManagementActions),
+                                _buildSection('Content', Icons.campaign_rounded, _contentActions),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildDrawerHeader() {
+  Widget _buildModernHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(18, 18, 14, 18),
       decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary,
+            AppColors.primary.withValues(alpha: 0.85),
+          ],
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.3),
@@ -187,13 +163,24 @@ class AdminMenuGridState extends State<AdminMenuGrid>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              gradient: AppColors.primaryGradient,
               borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  spreadRadius: 0,
+                ),
+              ],
             ),
-            child: const Icon(
-              Icons.dashboard_rounded,
-              color: Colors.white,
-              size: 28,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Image.asset(
+                'assets/icons/adaptive-icon.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: 14),
@@ -202,32 +189,49 @@ class AdminMenuGridState extends State<AdminMenuGrid>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Admin Menu',
+                  'Sabiquun',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
                     letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 2),
                 Text(
-                  'All Features',
+                  'Admin Portal',
                   style: TextStyle(
                     color: Colors.white70,
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: closeDrawer,
-            icon: const Icon(
-              Icons.close_rounded,
-              color: Colors.white,
-              size: 26,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: closeDrawer,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
             ),
           ),
         ],
@@ -235,169 +239,138 @@ class AdminMenuGridState extends State<AdminMenuGrid>
     );
   }
 
-  Widget _buildDrawerFooter() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.info_outline,
-            size: 18,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'Sabiquun v1.0',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMenuCategory(
-    String title,
-    IconData icon,
-    List<_MenuItem> items,
-  ) {
+  Widget _buildSection(String title, IconData icon, List<_MenuItem> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Category header
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
           child: Row(
             children: [
-              Container(
-                width: 4,
-                height: 20,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(2),
+              Icon(icon, size: 15, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 1.0,
                 ),
               ),
               const SizedBox(width: 10),
-              Icon(
-                icon,
-                size: 18,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                    letterSpacing: 0.3,
+                child: Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.3),
+                        Colors.transparent,
+                      ],
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
-
-        // Menu items list
-        ...items.map((item) => _buildMenuItem(item)),
+        ...items.map((item) => _buildInteractiveItem(item)),
       ],
     );
   }
 
-  Widget _buildMenuItem(_MenuItem item) {
+  Widget _buildInteractiveItem(_MenuItem item) {
+    final isHovered = _hoveredRoute == item.route;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            context.push(item.route);
-            closeDrawer();
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.surfaceVariant.withValues(alpha: 0.5),
-                  Colors.transparent,
-                ],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hoveredRoute = item.route),
+        onExit: (_) => setState(() => _hoveredRoute = null),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              closeDrawer();
+              context.push(item.route);
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+              decoration: BoxDecoration(
+                gradient: isHovered
+                    ? LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          item.color.withValues(alpha: 0.15),
+                          item.color.withValues(alpha: 0.05),
+                        ],
+                      )
+                    : null,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isHovered
+                      ? item.color.withValues(alpha: 0.4)
+                      : Colors.transparent,
+                  width: 1.5,
+                ),
               ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: item.color.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              children: [
-                // Icon with gradient background
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        item.color.withValues(alpha: 0.25),
-                        item.color.withValues(alpha: 0.15),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: item.color.withValues(alpha: 0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          item.color.withValues(alpha: isHovered ? 0.3 : 0.2),
+                          item.color.withValues(alpha: isHovered ? 0.2 : 0.12),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Icon(
-                    item.icon,
-                    size: 20,
-                    color: item.color,
-                  ),
-                ),
-                const SizedBox(width: 14),
-
-                // Title
-                Expanded(
-                  child: Text(
-                    item.title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                      height: 1.3,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: isHovered
+                          ? [
+                              BoxShadow(
+                                color: item.color.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                spreadRadius: 0,
+                              ),
+                            ]
+                          : [],
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    child: Icon(
+                      item.icon,
+                      size: 18,
+                      color: item.color,
+                    ),
                   ),
-                ),
-
-                // Arrow icon
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: AppColors.textSecondary.withValues(alpha: 0.5),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      item.title,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isHovered ? FontWeight.w700 : FontWeight.w600,
+                        color: isHovered ? item.color : AppColors.textPrimary,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: isHovered ? 0 : -0.125,
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 16,
+                      color: isHovered ? item.color : AppColors.textSecondary.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -405,144 +378,43 @@ class AdminMenuGridState extends State<AdminMenuGrid>
     );
   }
 
-  // User Management & Insights Menu Items
+  // Menu Items
   List<_MenuItem> get _userManagementActions => [
-        _MenuItem(
-          icon: Icons.people,
-          title: 'User Management',
-          route: '/admin/user-management',
-          color: Colors.blue,
-        ),
-        _MenuItem(
-          icon: Icons.leaderboard,
-          title: 'Leaderboard',
-          route: '/leaderboard',
-          color: Colors.amber,
-        ),
-        _MenuItem(
-          icon: Icons.warning_amber_rounded,
-          title: 'Users at Risk',
-          route: '/users-at-risk',
-          color: Colors.red,
-        ),
-        _MenuItem(
-          icon: Icons.assessment_outlined,
-          title: 'All User Reports',
-          route: '/user-reports',
-          color: Colors.indigo,
-        ),
-        _MenuItem(
-          icon: Icons.analytics_outlined,
-          title: 'Analytics Dashboard',
-          route: '/admin/analytics',
-          color: Colors.purple,
-        ),
+        _MenuItem(icon: Icons.people_rounded, title: 'User Management', route: '/admin/user-management', color: Colors.blue),
+        _MenuItem(icon: Icons.leaderboard_rounded, title: 'Leaderboard', route: '/leaderboard', color: Colors.amber),
+        _MenuItem(icon: Icons.warning_amber_rounded, title: 'Users at Risk', route: '/users-at-risk', color: Colors.red),
+        _MenuItem(icon: Icons.assessment_rounded, title: 'All User Reports', route: '/user-reports', color: Colors.indigo),
+        _MenuItem(icon: Icons.analytics_rounded, title: 'Analytics Dashboard', route: '/admin/analytics', color: Colors.purple),
       ];
 
-  // Personal Actions Menu Items
   List<_MenuItem> get _personalActions => [
-        _MenuItem(
-          icon: Icons.today,
-          title: 'Today\'s Deeds',
-          route: '/today-deeds',
-          color: Colors.blue,
-        ),
-        _MenuItem(
-          icon: Icons.assignment_outlined,
-          title: 'My Reports',
-          route: '/my-reports',
-          color: Colors.teal,
-        ),
-        _MenuItem(
-          icon: Icons.account_balance_wallet,
-          title: 'Penalty History',
-          route: '/penalty-history',
-          color: Colors.orange,
-        ),
-        _MenuItem(
-          icon: Icons.payment_outlined,
-          title: 'Submit Payment',
-          route: '/submit-payment',
-          color: Colors.green,
-        ),
-        _MenuItem(
-          icon: Icons.receipt_long,
-          title: 'Payment History',
-          route: '/payment-history',
-          color: Colors.indigo,
-        ),
-        _MenuItem(
-          icon: Icons.bar_chart_outlined,
-          title: 'My Analytics',
-          route: '/analytics',
-          color: Colors.purple,
-        ),
+        _MenuItem(icon: Icons.account_circle_rounded, title: 'Profile', route: '/profile', color: Colors.blueGrey),
+        _MenuItem(icon: Icons.today_rounded, title: 'Today\'s Deeds', route: '/today-deeds', color: Colors.blue),
+        _MenuItem(icon: Icons.assignment_rounded, title: 'My Reports', route: '/my-reports', color: Colors.teal),
+        _MenuItem(icon: Icons.account_balance_wallet_rounded, title: 'Penalty History', route: '/penalty-history', color: Colors.orange),
+        _MenuItem(icon: Icons.payment_rounded, title: 'Submit Payment', route: '/submit-payment', color: Colors.green),
+        _MenuItem(icon: Icons.receipt_long_rounded, title: 'Payment History', route: '/payment-history', color: Colors.indigo),
+        _MenuItem(icon: Icons.bar_chart_rounded, title: 'My Analytics', route: '/analytics', color: Colors.purple),
       ];
 
-  // System Management Menu Items
   List<_MenuItem> get _systemManagementActions => [
-        _MenuItem(
-          icon: Icons.assignment_turned_in,
-          title: 'Deed Management',
-          route: '/admin/deed-management',
-          color: Colors.teal,
-        ),
-        _MenuItem(
-          icon: Icons.event_busy,
-          title: 'Rest Days',
-          route: '/admin/rest-days',
-          color: Colors.amber,
-        ),
-        _MenuItem(
-          icon: Icons.settings,
-          title: 'System Settings',
-          route: '/admin/system-settings',
-          color: Colors.purple,
-        ),
-        _MenuItem(
-          icon: Icons.notifications_active,
-          title: 'Notifications',
-          route: '/admin/notification-templates',
-          color: Colors.deepOrange,
-        ),
-        _MenuItem(
-          icon: Icons.history,
-          title: 'Audit Logs',
-          route: '/admin/audit-logs',
-          color: Colors.blueGrey,
-        ),
+        _MenuItem(icon: Icons.assignment_turned_in_rounded, title: 'Deed Management', route: '/admin/deed-management', color: Colors.teal),
+        _MenuItem(icon: Icons.event_busy_rounded, title: 'Rest Days', route: '/admin/rest-days', color: Colors.amber),
+        _MenuItem(icon: Icons.event_available_rounded, title: 'Excuses', route: '/admin/excuses', color: Colors.orange),
+        _MenuItem(icon: Icons.payment_rounded, title: 'Payment Review', route: '/payment-review', color: Colors.green),
+        _MenuItem(icon: Icons.settings_rounded, title: 'System Settings', route: '/admin/system-settings', color: Colors.blueGrey),
+        _MenuItem(icon: Icons.notifications_active_rounded, title: 'Notification Templates', route: '/admin/notification-templates', color: Colors.deepOrange),
+        _MenuItem(icon: Icons.history_rounded, title: 'Audit Logs', route: '/admin/audit-logs', color: Colors.grey),
       ];
 
-  // Content & Communication Menu Items
   List<_MenuItem> get _contentActions => [
-        _MenuItem(
-          icon: Icons.description,
-          title: 'Reports',
-          route: '/admin/reports',
-          color: Colors.teal,
-        ),
-        _MenuItem(
-          icon: Icons.send_outlined,
-          title: 'Send Notification',
-          route: '/admin/manual-notification',
-          color: Colors.orange,
-        ),
-        _MenuItem(
-          icon: Icons.campaign,
-          title: 'Announcements',
-          route: '/admin/announcements',
-          color: Colors.indigo,
-        ),
-        _MenuItem(
-          icon: Icons.article_outlined,
-          title: 'App Content',
-          route: '/admin/app-content',
-          color: Colors.cyan,
-        ),
+        _MenuItem(icon: Icons.description_rounded, title: 'Reports', route: '/admin/reports', color: Colors.teal),
+        _MenuItem(icon: Icons.send_rounded, title: 'Send Notification', route: '/admin/manual-notification', color: Colors.orange),
+        _MenuItem(icon: Icons.campaign_rounded, title: 'Announcements', route: '/admin/announcements', color: Colors.indigo),
+        _MenuItem(icon: Icons.article_rounded, title: 'App Content', route: '/admin/app-content', color: Colors.cyan),
       ];
 }
 
-/// Menu Item Model
 class _MenuItem {
   final IconData icon;
   final String title;

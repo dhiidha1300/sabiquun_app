@@ -1,4 +1,4 @@
-package com.example.sabiquun_app
+package com.negeeyedev.sabiquun
 
 import io.flutter.embedding.android.FlutterActivity
 

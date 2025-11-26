@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sabiquun_app/core/di/injection.dart';
+import 'package:sabiquun_app/core/theme/app_colors.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_state.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_template_entity.dart';
+
+enum DateSelection { today, yesterday }
 
 class TodayDeedsPage extends StatefulWidget {
   const TodayDeedsPage({super.key});
@@ -17,10 +20,40 @@ class TodayDeedsPage extends StatefulWidget {
 class _TodayDeedsPageState extends State<TodayDeedsPage> {
   final Map<String, double> _deedValues = {};
   String? _existingReportId;
+  DateSelection _selectedDate = DateSelection.today;
+  DateTime _currentReportDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    context.read<DeedBloc>().add(const LoadTodayReportRequested());
+  }
+
+  bool _isYesterdayAvailable() {
+    // Check if within grace period (12 hours after midnight)
+    final now = DateTime.now();
+    final midnight = DateTime(now.year, now.month, now.day);
+    final gracePeriodEnd = midnight.add(const Duration(hours: 12));
+
+    return now.isBefore(gracePeriodEnd);
+  }
+
+  void _onDateSelectionChanged(DateSelection selection) {
+    if (_selectedDate == selection) return;
+
+    HapticFeedback.selectionClick();
+
+    setState(() {
+      _selectedDate = selection;
+      _currentReportDate = selection == DateSelection.today
+          ? DateTime.now()
+          : DateTime.now().subtract(const Duration(days: 1));
+      // Clear deed values when switching dates
+      _deedValues.clear();
+      _existingReportId = null;
+    });
+
+    // Reload data for new date
     context.read<DeedBloc>().add(const LoadTodayReportRequested());
   }
 
@@ -132,67 +165,141 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
   }
 
   Widget _buildDateCard() {
-    final today = DateTime.now();
     final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     final weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final yesterdayAvailable = _isYesterdayAvailable();
 
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF2E7D32), Color(0xFF388E3C)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF2E7D32).withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
+    return Column(
+      children: [
+        // Date selector toggle
+        if (yesterdayAvailable)
           Container(
-            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.calendar_today,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  weekdays[today.weekday - 1],
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: _buildDateSelectorButton(
+                    label: 'Today',
+                    selection: DateSelection.today,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '${months[today.month - 1]} ${today.day}, ${today.year}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                Expanded(
+                  child: _buildDateSelectorButton(
+                    label: 'Yesterday',
+                    selection: DateSelection.yesterday,
                   ),
                 ),
               ],
             ),
           ),
-        ],
+
+        // Date display card
+        Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF2E7D32), Color(0xFF388E3C)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF2E7D32).withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.calendar_today,
+                  color: Colors.white,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      weekdays[_currentReportDate.weekday - 1],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${months[_currentReportDate.month - 1]} ${_currentReportDate.day}, ${_currentReportDate.year}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateSelectorButton({
+    required String label,
+    required DateSelection selection,
+  }) {
+    final isSelected = _selectedDate == selection;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _onDateSelectionChanged(selection),
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.grey[700],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -317,7 +424,7 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
                     });
                   },
                   activeTrackColor: const Color(0xFF2E7D32).withValues(alpha: 0.5),
-                  activeColor: const Color(0xFF2E7D32),
+                  activeThumbColor: const Color(0xFF2E7D32),
                 )
               else if (!canEdit)
                 Container(
@@ -663,7 +770,7 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
       // Create new report - we need to wait for it to be created before submitting
       context.read<DeedBloc>().add(
             CreateDeedReportRequested(
-              reportDate: DateTime.now(),
+              reportDate: _currentReportDate,
               deedValues: _deedValues,
             ),
           );

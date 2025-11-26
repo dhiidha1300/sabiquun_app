@@ -11,7 +11,14 @@
       "Bash(findstr:*)",
       "Bash(dir /s /b a:sabiquun_applib*.dart 2)",
       "Bash(flutter pub run build_runner build:*)",
-      "Bash(dart run:*)"
+      "Bash(dart run:*)",
+      "Bash(dart analyze:*)",
+      "Bash(keytool:*)",
+      "Bash(where:*)",
+      "Bash(flutter doctor:*)",
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/keytool\" -genkey -v -keystore \"a:/sabiquun_app/sabiquun_app/android/app/sabiquun-release-key.jks\" -keyalg RSA -keysize 2048 -validity 10000 -alias sabiquun-key -storepass sabiquun2025 -keypass sabiquun2025 -dname \"CN=Negeeyedev, OU=Development, O=Negeeyedev, L=Unknown, ST=Unknown, C=US\")",
+      "Bash(flutter clean:*)",
+      "Bash(flutter build:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sabiquun_app/core/config/env_config.dart';
+import 'package:sabiquun_app/core/services/firebase_service.dart';
 import 'package:sabiquun_app/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:sabiquun_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:sabiquun_app/features/auth/domain/repositories/auth_repository.dart';
@@ -48,6 +49,7 @@ import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
 class Injection {
   static late SupabaseClient _supabase;
   static late SecureStorageService _secureStorage;
+  static late FirebaseService _firebaseService;
   static late AuthRemoteDataSource _authRemoteDataSource;
   static late AuthRepository _authRepository;
   static late AuthBloc _authBloc;
@@ -92,6 +94,9 @@ class Injection {
 
     // Initialize Secure Storage
     _secureStorage = SecureStorageService.instance();
+
+    // Initialize Firebase Service
+    _firebaseService = FirebaseService();
 
     // Initialize Data Sources
     _authRemoteDataSource = AuthRemoteDataSource(_supabase);
@@ -192,6 +197,9 @@ class Injection {
 
   /// Get Secure Storage service instance
   static SecureStorageService get secureStorage => _secureStorage;
+
+  /// Get Firebase service instance
+  static FirebaseService get firebaseService => _firebaseService;
 
   /// Get Auth Remote Data Source instance
   static AuthRemoteDataSource get authRemoteDataSource => _authRemoteDataSource;

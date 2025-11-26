@@ -50,6 +50,7 @@ import 'package:sabiquun_app/features/supervisor/presentation/pages/user_detail_
 import 'package:sabiquun_app/features/supervisor/presentation/pages/leaderboard_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/users_at_risk_page.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/pages/achievement_tags_page.dart';
+import 'package:sabiquun_app/features/user/presentation/pages/user_leaderboard_page.dart';
 
 /// Application router configuration
 class AppRouter {
@@ -369,6 +370,11 @@ class AppRouter {
         path: '/leaderboard',
         name: 'leaderboard',
         builder: (context, state) => const LeaderboardPage(),
+      ),
+      GoRoute(
+        path: '/user-leaderboard',
+        name: 'user-leaderboard',
+        builder: (context, state) => const UserLeaderboardPage(),
       ),
       GoRoute(
         path: '/users-at-risk',

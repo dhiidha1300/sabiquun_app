@@ -61,12 +61,12 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // Main content
-          SafeArea(
+    return Stack(
+      children: [
+        // Main Scaffold content
+        Scaffold(
+          backgroundColor: AppColors.background,
+          body: SafeArea(
             child: RefreshIndicator(
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
@@ -101,11 +101,11 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
               ),
             ),
           ),
+        ),
 
-          // Sidebar Drawer Overlay (full screen)
-          AdminMenuGrid(key: _menuKey),
-        ],
-      ),
+        // Sidebar Drawer Overlay (full screen - outside Scaffold)
+        AdminMenuGrid(key: _menuKey),
+      ],
     );
   }
 

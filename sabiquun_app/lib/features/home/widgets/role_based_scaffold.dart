@@ -47,8 +47,8 @@ class RoleBasedScaffold extends StatelessWidget {
             Scaffold(
               body: child,
               drawer: drawer,
-              extendBody: true,
-              bottomNavigationBar: _buildFloatingBottomNav(context, navItems, user),
+              extendBody: false,
+              bottomNavigationBar: _buildModernBottomNav(context, navItems, user),
             ),
             // Render overlay on top of everything (including bottom nav)
             if (overlay != null) overlay!,
@@ -58,32 +58,45 @@ class RoleBasedScaffold extends StatelessWidget {
     );
   }
 
-  Widget _buildFloatingBottomNav(BuildContext context, List<BottomNavigationBarItem> items, user) {
+  Widget _buildModernBottomNav(BuildContext context, List<BottomNavigationBarItem> items, user) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
           ),
         ],
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.withValues(alpha: 0.1),
+            width: 1,
+          ),
+        ),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+      child: SafeArea(
         child: BottomNavigationBar(
           currentIndex: currentIndex.clamp(0, items.length - 1),
           onTap: (index) => _onItemTapped(context, index, user),
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.grey[600],
           elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           selectedFontSize: 12,
           unselectedFontSize: 11,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          selectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.5,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            height: 1.5,
+          ),
           items: items,
         ),
       ),
@@ -101,6 +114,11 @@ class RoleBasedScaffold extends StatelessWidget {
         icon: Icon(Icons.description_outlined),
         activeIcon: Icon(Icons.description),
         label: 'Reports',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.emoji_events_outlined),
+        activeIcon: Icon(Icons.emoji_events),
+        label: 'Leaderboard',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.account_balance_wallet_outlined),
@@ -209,6 +227,9 @@ class RoleBasedScaffold extends StatelessWidget {
         if (!currentRoute.startsWith('/my-reports')) context.go('/my-reports');
         break;
       case 2:
+        if (!currentRoute.startsWith('/user-leaderboard')) context.go('/user-leaderboard');
+        break;
+      case 3:
         if (!currentRoute.startsWith('/payment-history')) {
           context.go('/payment-history', extra: user.id);
         }
