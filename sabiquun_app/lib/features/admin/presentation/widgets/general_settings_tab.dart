@@ -169,6 +169,11 @@ class _GeneralSettingsTabState extends State<GeneralSettingsTab> {
       emailSenderEmail: widget.settings.emailSenderEmail,
       emailSenderName: widget.settings.emailSenderName,
       fcmServerKey: widget.settings.fcmServerKey,
+      whatsappEnabled: widget.settings.whatsappEnabled,
+      whatsappPhoneNumberId: widget.settings.whatsappPhoneNumberId,
+      whatsappBusinessAccountId: widget.settings.whatsappBusinessAccountId,
+      whatsappAccessToken: widget.settings.whatsappAccessToken,
+      whatsappApiVersion: widget.settings.whatsappApiVersion,
       appVersion: widget.settings.appVersion,
       minimumRequiredVersion: widget.settings.minimumRequiredVersion,
       forceUpdate: widget.settings.forceUpdate,
@@ -203,7 +208,7 @@ class _GeneralSettingsTabState extends State<GeneralSettingsTab> {
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -305,7 +310,7 @@ class _GeneralSettingsTabState extends State<GeneralSettingsTab> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               Text(
                 'Auto-Deactivation & Warnings',
@@ -386,7 +391,7 @@ class _GeneralSettingsTabState extends State<GeneralSettingsTab> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Reason field (only show if changes detected)
               if (_hasChanges()) ...[

@@ -70,7 +70,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('User Balance Detail'),
         backgroundColor: AppColors.primary,
@@ -91,19 +91,19 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.error_outline, size: 64, color: AppColors.error),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       'Error loading user',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       adminState.message,
-                      style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
@@ -173,7 +173,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -194,15 +194,15 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Name
           Text(
             user.fullName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               letterSpacing: 0.3,
             ),
             textAlign: TextAlign.center,
@@ -212,25 +212,25 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
           // Membership Badge
           if (user.membershipStatus != null)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 _getMembershipLabel(user.membershipStatus),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
             ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Contact Info
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
@@ -239,45 +239,45 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.email, color: Colors.white70, size: 18),
-                    const SizedBox(width: 8),
+                    Icon(Icons.email, color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7), size: 18),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         user.email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                         ),
                       ),
                     ),
                   ],
                 ),
                 if (user.phoneNumber != null) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.phone, color: Colors.white70, size: 18),
-                      const SizedBox(width: 8),
+                      Icon(Icons.phone, color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7), size: 18),
+                      SizedBox(width: 8),
                       Text(
                         user.phoneNumber!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                         ),
                       ),
                     ],
                   ),
                 ],
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today, color: Colors.white70, size: 18),
-                    const SizedBox(width: 8),
+                    Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7), size: 18),
+                    SizedBox(width: 8),
                     Text(
                       'Member since ${DateFormat('MMM dd, yyyy').format(user.createdAt)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                     ),
                   ],
@@ -295,7 +295,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
       builder: (context, state) {
         String balanceText = 'Loading...';
         String lastUpdatedText = '';
-        Color balanceColor = AppColors.textPrimary;
+        Color balanceColor = Theme.of(context).colorScheme.onSurface;
 
         // Extract balance from either PenaltyBalanceLoaded or UnpaidPenaltiesLoaded
         double? balanceAmount;
@@ -383,12 +383,12 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                 ),
               ),
               if (lastUpdatedText.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   lastUpdatedText,
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -410,24 +410,24 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
               color: AppColors.primary,
               size: 22,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'Unpaid Penalties (FIFO)',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 letterSpacing: 0.3,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           'Oldest penalties are paid first',
           style: TextStyle(
             fontSize: 13,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 16),
@@ -493,10 +493,10 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                   final remainingAmount = penalty.amount - penalty.paidAmount;
 
                   return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
+                    margin: EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isPaidFull
@@ -516,14 +516,14 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                               color: isPaidFull ? Colors.green : AppColors.error,
                               size: 20,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 DateFormat('MMM dd, yyyy').format(penalty.dateIncurred),
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -549,7 +549,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -560,16 +560,16 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                                   'Amount',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Text(
                                   '${NumberFormat('#,###').format(penalty.amount)} Sh',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               ],
@@ -582,7 +582,7 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                                     'Remaining',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textSecondary,
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -599,12 +599,12 @@ class _UserBalanceDetailPageState extends State<UserBalanceDetailPage> {
                           ],
                         ),
                         if (penalty.waivedReason != null && penalty.waivedReason!.isNotEmpty) ...[
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'Waived: ${penalty.waivedReason!}',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               fontStyle: FontStyle.italic,
                             ),
                           ),

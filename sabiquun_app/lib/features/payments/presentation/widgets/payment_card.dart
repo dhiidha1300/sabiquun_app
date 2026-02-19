@@ -25,9 +25,9 @@ class PaymentCard extends StatelessWidget {
     final isOld = DateTime.now().difference(payment.createdAt).inHours > 24;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isOld ? Colors.orange.shade200 : Colors.grey.shade200,
@@ -62,10 +62,10 @@ class PaymentCard extends StatelessWidget {
                         gradient: AppColors.primaryGradient,
                         shape: BoxShape.circle,
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.person,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           size: 24,
                         ),
                       ),

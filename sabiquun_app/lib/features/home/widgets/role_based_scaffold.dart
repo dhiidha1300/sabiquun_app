@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sabiquun_app/core/theme/app_colors.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_state.dart';
 
@@ -59,19 +58,22 @@ class RoleBasedScaffold extends StatelessWidget {
   }
 
   Widget _buildModernBottomNav(BuildContext context, List<BottomNavigationBarItem> items, user) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
         border: Border(
           top: BorderSide(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: theme.dividerColor,
             width: 1,
           ),
         ),
@@ -81,10 +83,10 @@ class RoleBasedScaffold extends StatelessWidget {
           currentIndex: currentIndex.clamp(0, items.length - 1),
           onTap: (index) => _onItemTapped(context, index, user),
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.grey[600],
+          selectedItemColor: theme.colorScheme.primary,
+          unselectedItemColor: theme.textTheme.bodySmall?.color,
           elevation: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: theme.colorScheme.surface,
           selectedFontSize: 12,
           unselectedFontSize: 11,
           showSelectedLabels: true,

@@ -7,9 +7,11 @@ abstract class DeedRepository {
 
   /// Create a new deed report for the current user
   /// deedValues: Map of templateId to deedValue (0.0-1.0)
+  /// submitImmediately: If true, the report will be saved as 'submitted' instead of 'draft'
   Future<DeedReportEntity> createDeedReport({
     required DateTime reportDate,
     required Map<String, double> deedValues,
+    bool submitImmediately = false,
   });
 
   /// Get all reports for the current user

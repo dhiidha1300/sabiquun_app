@@ -169,7 +169,7 @@ class CashierHomeContentState extends State<CashierHomeContent>
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: RefreshIndicator(
             onRefresh: _onRefresh,
@@ -259,11 +259,11 @@ class CashierHomeContentState extends State<CashierHomeContent>
               },
               backgroundColor: AppColors.primary,
               elevation: 6,
-              icon: const Icon(Icons.add_task, color: Colors.white),
-              label: const Text(
+              icon: Icon(Icons.add_task, color: Theme.of(context).colorScheme.surface),
+              label: Text(
                 'Log Deeds',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
                 ),
@@ -283,9 +283,9 @@ class CashierHomeContentState extends State<CashierHomeContent>
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: Row(
         children: [
@@ -338,12 +338,12 @@ class CashierHomeContentState extends State<CashierHomeContent>
                     color: Colors.green.shade700,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 // Profile name
                 Text(
                   widget.user.fullName,
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.3,
@@ -367,13 +367,13 @@ class CashierHomeContentState extends State<CashierHomeContent>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.only(bottom: 16),
           child: Text(
             'Quick Actions',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: 0.3,
             ),
           ),
@@ -438,16 +438,16 @@ class CashierHomeContentState extends State<CashierHomeContent>
 
   Widget _buildModernActionItem(_QuickAction action) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => context.push(action.route),
           borderRadius: BorderRadius.circular(16),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: action.color.withValues(alpha: 0.1),
@@ -476,7 +476,7 @@ class CashierHomeContentState extends State<CashierHomeContent>
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
 
                 // Title and subtitle
                 Expanded(
@@ -488,18 +488,18 @@ class CashierHomeContentState extends State<CashierHomeContent>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: 0.2,
                         ),
                       ),
                       if (action.subtitle != null) ...[
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2),
                         Text(
                           action.subtitle!,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -531,8 +531,8 @@ class CashierHomeContentState extends State<CashierHomeContent>
                     ),
                     child: Text(
                       action.badgeCount > 99 ? '99+' : '${action.badgeCount}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.3,
@@ -543,7 +543,7 @@ class CashierHomeContentState extends State<CashierHomeContent>
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 16,
-                    color: AppColors.textSecondary.withValues(alpha: 0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
               ],
             ),
@@ -758,24 +758,24 @@ class CashierHomeContentState extends State<CashierHomeContent>
 
           if (payments.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.receipt_long, size: 48, color: Colors.grey[400]),
-                    const SizedBox(height: 8),
+                    Icon(Icons.receipt_long, size: 48, color: Theme.of(context).colorScheme.surfaceVariant),
+                    SizedBox(height: 8),
                     Text(
                       'No recent payments',
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       'Approved payments will appear here',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                      style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant, fontSize: 12),
                     ),
                   ],
                 ),
@@ -790,9 +790,9 @@ class CashierHomeContentState extends State<CashierHomeContent>
 
         // Initial state - show loading placeholder
         return Container(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: const Center(
@@ -808,12 +808,12 @@ class CashierHomeContentState extends State<CashierHomeContent>
     final time = DateFormat('HH:mm').format(payment.createdAt);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Theme.of(context).colorScheme.surfaceVariant!),
       ),
       child: Row(
         children: [
@@ -844,21 +844,21 @@ class CashierHomeContentState extends State<CashierHomeContent>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   '$date at $time',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
                 if (payment.paymentMethodName != null) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     payment.paymentMethodName!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                   ),
                 ],
@@ -923,7 +923,7 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
             offset: Offset(_drawerSlideAnimation.value * 280, 0),
             child: Material(
               elevation: 16,
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               shadowColor: Colors.black.withValues(alpha: 0.3),
               child: SizedBox(
                 width: 280,
@@ -942,7 +942,7 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
           // Drawer Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+            padding: EdgeInsets.fromLTRB(24, 60, 24, 24),
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
@@ -953,7 +953,7 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -975,11 +975,11 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   widget.user.fullName,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -1001,17 +1001,17 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
           // Menu Items
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: 8),
               children: [
                 // Cashier Features Section
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                  padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
                   child: Text(
                     'CASHIER FEATURES',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       letterSpacing: 1,
                     ),
                   ),
@@ -1069,13 +1069,13 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
                 // Personal Features Section
                 const Divider(height: 24, thickness: 1),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                  padding: EdgeInsets.fromLTRB(24, 8, 24, 8),
                   child: Text(
                     'MY FEATURES',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       letterSpacing: 1,
                     ),
                   ),
@@ -1131,6 +1131,14 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Settings page coming soon')),
                     );
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.palette_rounded,
+                  title: 'Theme',
+                  onTap: () {
+                    _closeDrawer();
+                    context.push('/theme-settings');
                   },
                 ),
               ],
@@ -1232,7 +1240,7 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
           ),
           child: Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
             size: 22,
           ),
         ),
@@ -1241,7 +1249,7 @@ extension _CashierHomeContentDrawer on CashierHomeContentState {
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             fontSize: 15,
-            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
           ),
         ),
         onTap: onTap,

@@ -240,14 +240,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 12),
+                          padding: EdgeInsets.only(top: 12),
                           child: GestureDetector(
                             onTap: () {
                               // Navigate to terms & conditions
                             },
                             child: RichText(
-                              text: const TextSpan(
-                                style: TextStyle(color: AppColors.textPrimary),
+                              text: TextSpan(
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                 children: [
                                   TextSpan(text: 'I agree to '),
                                   TextSpan(

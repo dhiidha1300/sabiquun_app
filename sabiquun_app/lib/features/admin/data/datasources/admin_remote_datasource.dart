@@ -646,12 +646,25 @@ class AdminRemoteDataSource {
   /// Get all system settings
   Future<SystemSettingsModel> getSystemSettings() async {
     try {
-      final response = await _supabase.from('settings').select('setting_key, setting_value');
+      final response = await _supabase.from('settings').select('setting_key, setting_value') as List;
+
+      if (response.isEmpty) {
+        throw Exception('No settings found in database. Please run fix_whatsapp_settings.sql in Supabase SQL Editor.');
+      }
 
       // Convert list of key-value pairs to map
       final Map<String, dynamic> settingsMap = {};
-      for (var setting in response as List) {
-        settingsMap[setting['setting_key']] = setting['setting_value'];
+      for (var setting in response) {
+        final settingMap = setting as Map<String, dynamic>;
+        final key = settingMap['setting_key'];
+        final value = settingMap['setting_value'];
+        if (key != null) {
+          settingsMap[key.toString()] = value;
+        }
+      }
+
+      if (settingsMap.isEmpty) {
+        throw Exception('Failed to parse settings from database');
       }
 
       return SystemSettingsModel.fromSettingsMap(settingsMap);
@@ -668,17 +681,64 @@ class AdminRemoteDataSource {
     try {
       final settingsMap = settings.toSettingsMap();
 
-      // Update each setting individually
+      // Define data types and descriptions for settings
+      // This ensures that new settings can be inserted with all required fields
+      final settingMetadata = <String, Map<String, String>>{
+        // General settings
+        'daily_deed_target': {'data_type': 'integer', 'description': 'Daily deed submission target'},
+        'penalty_per_deed': {'data_type': 'decimal', 'description': 'Penalty amount per missed deed'},
+        'grace_period_hours': {'data_type': 'integer', 'description': 'Grace period for submissions (hours)'},
+        'training_period_days': {'data_type': 'integer', 'description': 'Training period duration (days)'},
+        'auto_deactivation_threshold': {'data_type': 'decimal', 'description': 'Auto-deactivation threshold amount'},
+        'warning_thresholds': {'data_type': 'json', 'description': 'Warning threshold amounts'},
+        'organization_name': {'data_type': 'string', 'description': 'Organization name'},
+        'receipt_footer_text': {'data_type': 'string', 'description': 'Receipt footer text'},
+        // Email settings
+        'email_api_key': {'data_type': 'string', 'description': 'Email API key (Mailgun)'},
+        'email_domain': {'data_type': 'string', 'description': 'Email domain'},
+        'email_sender_email': {'data_type': 'string', 'description': 'Sender email address'},
+        'email_sender_name': {'data_type': 'string', 'description': 'Sender name'},
+        // Push notification settings
+        'fcm_server_key': {'data_type': 'string', 'description': 'Firebase Cloud Messaging server key'},
+        // WhatsApp settings
+        'whatsapp_enabled': {'data_type': 'boolean', 'description': 'Enable/disable WhatsApp notifications globally'},
+        'whatsapp_phone_number_id': {'data_type': 'string', 'description': 'WhatsApp Business Phone Number ID from Meta'},
+        'whatsapp_business_account_id': {'data_type': 'string', 'description': 'WhatsApp Business Account ID from Meta'},
+        'whatsapp_access_token': {'data_type': 'string', 'description': 'WhatsApp Cloud API Access Token (permanent token)'},
+        'whatsapp_api_version': {'data_type': 'string', 'description': 'WhatsApp Cloud API version'},
+        // App version settings
+        'app_version': {'data_type': 'string', 'description': 'Current app version'},
+        'minimum_required_version': {'data_type': 'string', 'description': 'Minimum required app version'},
+        'force_update': {'data_type': 'boolean', 'description': 'Force app update'},
+        'update_title': {'data_type': 'string', 'description': 'Update notification title'},
+        'update_message': {'data_type': 'string', 'description': 'Update notification message'},
+        'ios_min_version': {'data_type': 'string', 'description': 'Minimum iOS version'},
+        'android_min_version': {'data_type': 'string', 'description': 'Minimum Android version'},
+      };
+
+      // Update or insert each setting individually
       for (var entry in settingsMap.entries) {
-        await _supabase.from('settings').upsert(
-          {
+        try {
+          final metadata = settingMetadata[entry.key];
+
+          final dataToUpsert = {
             'setting_key': entry.key,
             'setting_value': entry.value.toString(),
             'updated_at': DateTime.now().toIso8601String(),
             'updated_by': updatedBy,
-          },
-          onConflict: 'setting_key',
-        );
+            if (metadata != null) ...{
+              'data_type': metadata['data_type'],
+              'description': metadata['description'],
+            },
+          };
+
+          await _supabase.from('settings').upsert(
+            dataToUpsert,
+            onConflict: 'setting_key',
+          );
+        } catch (e) {
+          rethrow; // Rethrow to stop the whole process
+        }
       }
 
       // Log audit trail
@@ -1404,6 +1464,9 @@ class AdminRemoteDataSource {
     String? emailSubject,
     String? emailBody,
     required String notificationType,
+    String? whatsappTemplateName,
+    String? whatsappTemplateLanguage,
+    bool whatsappEnabled = false,
   }) async {
     try {
       final response = await _supabase
@@ -1417,6 +1480,9 @@ class AdminRemoteDataSource {
             'notification_type': notificationType,
             'is_enabled': true,
             'is_system_default': false,
+            'whatsapp_template_name': whatsappTemplateName,
+            'whatsapp_template_language': whatsappTemplateLanguage ?? 'en',
+            'whatsapp_enabled': whatsappEnabled,
           })
           .select()
           .single();
@@ -1435,6 +1501,9 @@ class AdminRemoteDataSource {
     String? emailSubject,
     String? emailBody,
     bool? isEnabled,
+    String? whatsappTemplateName,
+    String? whatsappTemplateLanguage,
+    bool? whatsappEnabled,
   }) async {
     try {
       final updateData = <String, dynamic>{};
@@ -1443,6 +1512,9 @@ class AdminRemoteDataSource {
       if (emailSubject != null) updateData['email_subject'] = emailSubject;
       if (emailBody != null) updateData['email_body'] = emailBody;
       if (isEnabled != null) updateData['is_enabled'] = isEnabled;
+      if (whatsappTemplateName != null) updateData['whatsapp_template_name'] = whatsappTemplateName;
+      if (whatsappTemplateLanguage != null) updateData['whatsapp_template_language'] = whatsappTemplateLanguage;
+      if (whatsappEnabled != null) updateData['whatsapp_enabled'] = whatsappEnabled;
       updateData['updated_at'] = DateTime.now().toIso8601String();
 
       final response = await _supabase

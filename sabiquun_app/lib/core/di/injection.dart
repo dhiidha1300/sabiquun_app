@@ -41,7 +41,16 @@ import 'package:sabiquun_app/features/supervisor/data/datasources/supervisor_rem
 import 'package:sabiquun_app/features/supervisor/data/repositories/supervisor_repository_impl.dart';
 import 'package:sabiquun_app/features/supervisor/domain/repositories/supervisor_repository.dart';
 import 'package:sabiquun_app/features/supervisor/presentation/bloc/supervisor_bloc.dart';
+import 'package:sabiquun_app/features/theme/data/datasources/theme_local_datasource.dart';
+import 'package:sabiquun_app/features/theme/data/repositories/theme_repository_impl.dart';
+import 'package:sabiquun_app/features/theme/domain/repositories/theme_repository.dart';
+import 'package:sabiquun_app/features/theme/presentation/bloc/theme_bloc.dart';
+import 'package:sabiquun_app/features/calendar/data/datasources/calendar_local_datasource.dart';
+import 'package:sabiquun_app/features/calendar/data/repositories/calendar_repository_impl.dart';
+import 'package:sabiquun_app/features/calendar/domain/repositories/calendar_repository.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_bloc.dart';
 import 'package:sabiquun_app/shared/services/secure_storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Dependency injection container
 /// This is a simple service locator pattern
@@ -80,6 +89,13 @@ class Injection {
   static late SupervisorRemoteDataSource _supervisorRemoteDataSource;
   static late SupervisorRepository _supervisorRepository;
   static late SupervisorBloc _supervisorBloc;
+  static late SharedPreferences _sharedPreferences;
+  static late ThemeLocalDataSource _themeLocalDataSource;
+  static late ThemeRepository _themeRepository;
+  static late ThemeBloc _themeBloc;
+  static late CalendarLocalDataSource _calendarLocalDataSource;
+  static late CalendarRepository _calendarRepository;
+  static late CalendarBloc _calendarBloc;
 
   /// Initialize all dependencies
   static Future<void> init() async {
@@ -190,6 +206,27 @@ class Injection {
 
     // Initialize Supervisor Blocs
     _supervisorBloc = SupervisorBloc(repository: _supervisorRepository);
+
+    // Initialize Shared Preferences
+    _sharedPreferences = await SharedPreferences.getInstance();
+
+    // Initialize Theme Data Sources
+    _themeLocalDataSource = ThemeLocalDataSource(_sharedPreferences);
+
+    // Initialize Theme Repositories
+    _themeRepository = ThemeRepositoryImpl(_themeLocalDataSource);
+
+    // Initialize Theme Blocs
+    _themeBloc = ThemeBloc(_themeRepository);
+
+    // Initialize Calendar Data Sources
+    _calendarLocalDataSource = CalendarLocalDataSource(_sharedPreferences);
+
+    // Initialize Calendar Repositories
+    _calendarRepository = CalendarRepositoryImpl(_calendarLocalDataSource);
+
+    // Initialize Calendar Blocs
+    _calendarBloc = CalendarBloc(_calendarRepository);
   }
 
   /// Get Supabase client instance
@@ -291,6 +328,27 @@ class Injection {
   /// Get Supervisor Bloc instance
   static SupervisorBloc get supervisorBloc => _supervisorBloc;
 
+  /// Get Shared Preferences instance
+  static SharedPreferences get sharedPreferences => _sharedPreferences;
+
+  /// Get Theme Local Data Source instance
+  static ThemeLocalDataSource get themeLocalDataSource => _themeLocalDataSource;
+
+  /// Get Theme Repository instance
+  static ThemeRepository get themeRepository => _themeRepository;
+
+  /// Get Theme Bloc instance
+  static ThemeBloc get themeBloc => _themeBloc;
+
+  /// Get Calendar Local Data Source instance
+  static CalendarLocalDataSource get calendarLocalDataSource => _calendarLocalDataSource;
+
+  /// Get Calendar Repository instance
+  static CalendarRepository get calendarRepository => _calendarRepository;
+
+  /// Get Calendar Bloc instance
+  static CalendarBloc get calendarBloc => _calendarBloc;
+
   /// Reset/dispose all dependencies (useful for testing)
   static Future<void> reset() async {
     await _authBloc.close();
@@ -303,6 +361,8 @@ class Injection {
     await _analyticsBloc.close();
     await _appContentBloc.close();
     await _supervisorBloc.close();
+    await _themeBloc.close();
+    await _calendarBloc.close();
     // Add any other cleanup needed
   }
 }

@@ -30,7 +30,7 @@ class HomeStatisticsCard extends StatelessWidget {
     return Card(
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -151,7 +151,7 @@ class _TodayProgressWidget extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               'Today\'s Deeds',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -167,7 +167,7 @@ class _TodayProgressWidget extends StatelessWidget {
             ),
             if (!isSubmitted)
               Padding(
-                padding: const EdgeInsets.only(top: 4),
+                padding: EdgeInsets.only(top: 4),
                 child: Text(
                   'Not submitted',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -234,14 +234,14 @@ class _GracePeriodTimerWidgetState extends State<_GracePeriodTimerWidget> {
             size: 32,
             color: color,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Grace Period',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             TimeHelper.formatDuration(_remaining),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -290,14 +290,14 @@ class _MonthlyScoreWidget extends StatelessWidget {
             size: 32,
             color: color,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'This Month',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             '$percentage%',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -358,7 +358,7 @@ class _PenaltyBalanceWidget extends StatelessWidget {
                 size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
 
             // Balance info
             Expanded(
@@ -371,7 +371,7 @@ class _PenaltyBalanceWidget extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${formatter.format(balance)} Shillings',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -381,7 +381,7 @@ class _PenaltyBalanceWidget extends StatelessWidget {
                   ),
                   if (warningLevel != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: EdgeInsets.only(top: 4),
                       child: Text(
                         warningLevel,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -399,7 +399,7 @@ class _PenaltyBalanceWidget extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ],
         ),

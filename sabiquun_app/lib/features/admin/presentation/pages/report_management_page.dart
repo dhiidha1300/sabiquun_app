@@ -65,8 +65,8 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
 
   Widget _buildSearchPanel() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.grey[100],
+      padding: EdgeInsets.all(16),
+      color: Theme.of(context).colorScheme.surfaceVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -216,13 +216,13 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.search, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
+                Icon(Icons.search, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                SizedBox(height: 16),
                 Text(
                   'Use the search panel above to find reports',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
               ],
@@ -235,21 +235,21 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.inbox, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
+                Icon(Icons.inbox, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                SizedBox(height: 16),
                 Text(
                   'No reports found',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Try adjusting your search criteria',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[500],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
               ],
@@ -301,12 +301,12 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           'User ID: ${report.userId.substring(0, 8)}...',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                           ),
                         ),
                       ],
@@ -341,7 +341,7 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -349,19 +349,19 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
                     'Completion: ${report.completionPercentage.toStringAsFixed(0)}%',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Row(
                     children: [
-                      Icon(Icons.edit, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
+                      Icon(Icons.edit, size: 16, color: Theme.of(context).colorScheme.surfaceVariant),
+                      SizedBox(width: 4),
                       Text(
                         'Tap to edit',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                         ),
                       ),
                     ],
@@ -421,12 +421,12 @@ class _ReportManagementPageState extends State<ReportManagementPage> {
             color: color,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           label,
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[600],
+            color: Theme.of(context).colorScheme.surfaceVariant,
           ),
         ),
       ],

@@ -246,26 +246,26 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
   void _showExportOptions(List<PaymentEntity> payments) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Export Payment Data',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               '${payments.length} payment(s) will be exported',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
             ),
             const SizedBox(height: 20),
             ListTile(
@@ -278,9 +278,9 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
               },
             ),
             ListTile(
-              leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-              title: const Text('Export to PDF'),
-              subtitle: const Text('Formatted report with summary statistics'),
+              leading: Icon(Icons.picture_as_pdf, color: Colors.red),
+              title: Text('Export to PDF'),
+              subtitle: Text('Formatted report with summary statistics'),
               onTap: () {
                 Navigator.pop(context);
                 _exportToPdf(payments);
@@ -297,19 +297,19 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
     return RoleBasedScaffold(
       currentIndex: 1, // Pending tab in cashier nav
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Payment Management',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 17,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/home'),
@@ -319,7 +319,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.filter_list),
+                icon: Icon(Icons.filter_list),
                 onPressed: _showFilterDialog,
                 tooltip: 'Filter Payments',
               ),
@@ -328,15 +328,15 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
                   right: 8,
                   top: 8,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
                       '${_filterOptions.activeFilterCount}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -408,7 +408,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
                 controller: _tabController,
                 indicatorColor: AppColors.primary,
                 labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.textSecondary,
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -424,11 +424,11 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Pending'),
+                            Text('Pending'),
                             if (count > 0) ...[
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 2,
                                 ),
@@ -438,8 +438,8 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
                                 ),
                                 child: Text(
                                   '$count',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.surface,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -652,7 +652,7 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
             }
           });
 
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         },
       ),
     );
@@ -667,20 +667,20 @@ class _PaymentReviewPageState extends State<PaymentReviewPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
+          Icon(icon, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+          SizedBox(height: 16),
           Text(
             title,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             subtitle,
-            style: TextStyle(color: Colors.grey[500]),
+            style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
           ),
         ],
       ),

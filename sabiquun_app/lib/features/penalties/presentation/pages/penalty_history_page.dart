@@ -174,10 +174,10 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const CircularProgressIndicator(),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
                             'Loading penalty history...',
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                           ),
                         ],
                       ),
@@ -192,20 +192,20 @@ class _PenaltyHistoryPageState extends State<PenaltyHistoryPage> {
                           Icon(
                             Icons.check_circle_outline,
                             size: 64,
-                            color: Colors.grey[400],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
                             'No penalties found',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.surfaceVariant,
                                 ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'Keep up the good work!',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[500],
+                                  color: Theme.of(context).colorScheme.surfaceVariant,
                                 ),
                           ),
                         ],

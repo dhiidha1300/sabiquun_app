@@ -30,7 +30,9 @@ class _ProfilePageState extends State<ProfilePage> {
   void _loadStats() {
     final authState = context.read<AuthBloc>().state;
     if (authState is Authenticated) {
-      context.read<AnalyticsBloc>().add(LoadUserStatsRequested(authState.user.id));
+      context.read<AnalyticsBloc>().add(
+        LoadUserStatsRequested(authState.user.id),
+      );
     }
   }
 
@@ -45,7 +47,9 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
         final user = state.user;
-        final membershipBadge = MembershipHelper.getBadge(user.createdAt ?? DateTime.now());
+        final membershipBadge = MembershipHelper.getBadge(
+          user.createdAt ?? DateTime.now(),
+        );
 
         // Determine the current index based on role
         // For users, supervisors, and admins, Profile is the last tab
@@ -67,41 +71,41 @@ class _ProfilePageState extends State<ProfilePage> {
             backgroundColor: const Color(0xFFF5F6FA),
             body: SafeArea(
               child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Header
-                  _buildHeader(user, membershipBadge),
+                child: Column(
+                  children: [
+                    // Header
+                    _buildHeader(user, membershipBadge),
 
-                  // Profile Information
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        // Quick Stats Card
-                        _buildQuickStatsCard(),
-                        const SizedBox(height: 16),
+                    // Profile Information
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          // Quick Stats Card
+                          _buildQuickStatsCard(),
+                          const SizedBox(height: 16),
 
-                        // Feature Management Card
-                        _buildFeatureManagementCard(),
-                        const SizedBox(height: 16),
+                          // Feature Management Card
+                          _buildFeatureManagementCard(),
+                          const SizedBox(height: 16),
 
-                        // Account Information Card
-                        _buildAccountInfoCard(user),
-                        const SizedBox(height: 16),
+                          // Account Information Card
+                          _buildAccountInfoCard(user),
+                          const SizedBox(height: 16),
 
-                        // Settings Options
-                        _buildSettingsCard(user),
-                        const SizedBox(height: 16),
+                          // Settings Options
+                          _buildSettingsCard(user),
+                          const SizedBox(height: 16),
 
-                        // Logout Button
-                        _buildLogoutButton(context),
-                        const SizedBox(height: 100), // Space for bottom nav
-                      ],
+                          // Logout Button
+                          _buildLogoutButton(context),
+                          const SizedBox(height: 100), // Space for bottom nav
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             ),
           ),
         );
@@ -116,13 +120,10 @@ class _ProfilePageState extends State<ProfilePage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary,
-            AppColors.primary.withValues(alpha: 0.8),
-          ],
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
         ),
       ),
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(32),
       child: Column(
         children: [
           // Avatar
@@ -130,9 +131,12 @@ class _ProfilePageState extends State<ProfilePage> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 4),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.surface,
+                width: 4,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -144,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Center(
               child: Text(
                 user.fullName.substring(0, 1).toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
@@ -152,13 +156,13 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Name
           Text(
             user.fullName,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -173,11 +177,11 @@ class _ProfilePageState extends State<ProfilePage> {
               fontSize: 14,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Membership Badge
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: badge.color.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(20),
@@ -185,12 +189,16 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(badge.icon, size: 18, color: Colors.white),
-                const SizedBox(width: 8),
+                Icon(
+                  badge.icon,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                SizedBox(width: 8),
                 Text(
                   badge.label,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
@@ -218,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -237,10 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   const Text(
                     'Quick Stats',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   TextButton.icon(
                     onPressed: () => context.push('/analytics'),
@@ -311,7 +316,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             value,
             style: TextStyle(
@@ -320,12 +325,12 @@ class _ProfilePageState extends State<ProfilePage> {
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 11,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
             textAlign: TextAlign.center,
           ),
@@ -337,7 +342,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildFeatureManagementCard() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -355,10 +360,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 const Text(
                   'Feature Management',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -401,7 +403,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       leading: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
@@ -410,19 +412,20 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
       ),
       subtitle: Text(
         subtitle,
         style: TextStyle(
           fontSize: 13,
-          color: Colors.grey[600],
+          color: Theme.of(context).colorScheme.surfaceVariant,
         ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Theme.of(context).colorScheme.surfaceVariant,
+      ),
       onTap: onTap,
     );
   }
@@ -430,7 +433,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildAccountInfoCard(UserEntity user) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -446,25 +449,22 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           const Text(
             'Account Information',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           _buildInfoRow(Icons.badge, 'Full Name', user.fullName),
           const Divider(height: 24),
           _buildInfoRow(Icons.email, 'Email', user.email),
           const Divider(height: 24),
-          _buildInfoRow(Icons.phone, 'Phone', user.phoneNumber ?? 'Not provided'),
-          const Divider(height: 24),
           _buildInfoRow(
-            Icons.admin_panel_settings,
-            'Role',
-            _getUserRole(user),
+            Icons.phone,
+            'Phone',
+            user.phoneNumber ?? 'Not provided',
           ),
+          const Divider(height: 24),
+          _buildInfoRow(Icons.admin_panel_settings, 'Role', _getUserRole(user)),
           if (user.createdAt != null) ...[
-            const Divider(height: 24),
+            Divider(height: 24),
             _buildInfoRow(
               Icons.calendar_today,
               'Member Since',
@@ -479,7 +479,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildSettingsCard(UserEntity user) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -519,6 +519,15 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const Divider(height: 1),
           _buildSettingTile(
+            icon: Icons.calendar_month,
+            title: 'Calendar Settings',
+            subtitle: 'Choose Hijri or Gregorian calendar',
+            onTap: () {
+              context.push('/calendar-settings');
+            },
+          ),
+          const Divider(height: 1),
+          _buildSettingTile(
             icon: Icons.rule,
             title: 'Rules & Policies',
             subtitle: 'View app rules and guidelines',
@@ -553,7 +562,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Row(
       children: [
         Icon(icon, size: 20, color: AppColors.primary),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,7 +571,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                 ),
               ),
               const SizedBox(height: 4),
@@ -589,7 +598,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       leading: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
@@ -598,19 +607,20 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
       ),
       subtitle: Text(
         subtitle,
         style: TextStyle(
           fontSize: 13,
-          color: Colors.grey[600],
+          color: Theme.of(context).colorScheme.surfaceVariant,
         ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Theme.of(context).colorScheme.surfaceVariant,
+      ),
       onTap: onTap,
     );
   }
@@ -636,10 +646,7 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(width: 8),
             Text(
               'Logout',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -656,8 +663,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String _formatDate(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
@@ -708,7 +725,11 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 12),
               _buildContactRow(Icons.phone, 'Phone', '+252 XX XXX XXXX'),
               const SizedBox(height: 12),
-              _buildContactRow(Icons.access_time, 'Hours', '9 AM - 5 PM (Mon-Fri)'),
+              _buildContactRow(
+                Icons.access_time,
+                'Hours',
+                '9 AM - 5 PM (Mon-Fri)',
+              ),
             ],
           ),
         ),
@@ -727,17 +748,14 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('About Sabiquun'),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Sabiquun - Good Deeds Tracker',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               SizedBox(height: 8),
               Text('Version 1.0.0'),
@@ -750,7 +768,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 '© 2025 Sabiquun. All rights reserved.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -782,10 +800,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                value,
-                style: const TextStyle(fontSize: 14),
-              ),
+              Text(value, style: const TextStyle(fontSize: 14)),
             ],
           ),
         ),

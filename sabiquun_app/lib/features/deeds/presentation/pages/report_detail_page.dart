@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
+import 'package:sabiquun_app/core/utils/date_formatter.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_state.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_template_entity.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
@@ -36,13 +38,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
   Future<void> _onRefresh() async {
     HapticFeedback.lightImpact();
     _loadReport();
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 500));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocConsumer<DeedBloc, DeedState>(
         listener: (context, state) {
           if (state is DeedError) {
@@ -180,11 +182,11 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
           children: [
             _buildSkeletonHeader(),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 children: [
                   _buildSkeletonBox(width: double.infinity, height: 200),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   ...List.generate(5, (index) => _buildSkeletonCard()),
                 ],
               ),
@@ -197,8 +199,8 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
 
   Widget _buildSkeletonHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-      color: AppColors.background,
+      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
         children: [
           _buildSkeletonBox(width: 40, height: 40, borderRadius: 20),
@@ -208,7 +210,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSkeletonBox(width: 200, height: 20),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildSkeletonBox(width: 150, height: 14),
               ],
             ),
@@ -220,10 +222,10 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
 
   Widget _buildSkeletonCard() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -237,7 +239,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSkeletonBox(width: 180, height: 16),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _buildSkeletonBox(width: 100, height: 12),
         ],
       ),
@@ -253,19 +255,17 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
   }
 
   Widget _buildHeader(DeedReportEntity report) {
-    final dateFormat = DateFormat('EEEE, MMM dd, yyyy');
-
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,13 +275,13 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
@@ -290,49 +290,61 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                     HapticFeedback.lightImpact();
                     context.pop();
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_back_rounded,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
-              const Spacer(),
+              Spacer(),
               _buildStatusChip(report.status),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
-          // Date
-          Text(
-            dateFormat.format(report.reportDate),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-              letterSpacing: -0.5,
-            ),
+          // Date with Hijri support
+          BlocBuilder<CalendarBloc, CalendarState>(
+            builder: (context, calendarState) {
+              return Text(
+                DateFormatter.format(
+                  report.reportDate,
+                  preference: calendarState.preference,
+                  fullFormat: true,
+                ),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  letterSpacing: -0.5,
+                ),
+              );
+            },
           ),
 
           // Submission timestamp
           if (report.submittedAt != null) ...[
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  size: 16,
-                  color: AppColors.success,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Submitted ${DateFormat('MMM dd, HH:mm').format(report.submittedAt!)}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+            SizedBox(height: 8),
+            BlocBuilder<CalendarBloc, CalendarState>(
+              builder: (context, calendarState) {
+                return Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_rounded,
+                      size: 16,
+                      color: AppColors.success,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'Submitted ${DateFormatter.format(report.submittedAt!, preference: calendarState.preference, showTime: true)}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ],
@@ -416,7 +428,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                             'Complete',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.surfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -479,12 +491,12 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     return Row(
       children: [
         Icon(icon, size: 18, color: color),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           label,
           style: TextStyle(
             fontSize: 13,
-            color: Colors.grey[700],
+            color: Theme.of(context).colorScheme.surfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -508,12 +520,12 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Deeds Breakdown',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -572,9 +584,9 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             : 0.0;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border(
           left: BorderSide(
@@ -609,17 +621,17 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                     color: borderColor,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         template.deedName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -680,7 +692,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                         ),
                       ),
                     ],
@@ -691,7 +703,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
 
             // Progress bar for partial completion
             if (isPartial && isFractional) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
@@ -701,12 +713,12 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                   valueColor: AlwaysStoppedAnimation<Color>(borderColor),
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 '${(deedValue * 100).toStringAsFixed(0)}% completed',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -846,7 +858,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: AppColors.error.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -857,22 +869,22 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                   color: AppColors.error,
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 'Unable to Load Report',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 'Something went wrong while loading this report.\nPlease try again.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -888,7 +900,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                     icon: const Icon(Icons.arrow_back, size: 20),
                     label: const Text('Go Back'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,

@@ -191,10 +191,10 @@ class _AuditLogPageState extends State<AuditLogPage> {
                 ),
             ],
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             'Date Range: ${dateFormatter.format(_startDate!)} - ${dateFormatter.format(_endDate!)}',
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
+            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
           ),
           if (_selectedAction != null || _selectedEntityType != null) ...[
             const SizedBox(height: 8),
@@ -324,7 +324,7 @@ class _AuditLogPageState extends State<AuditLogPage> {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey),
+        Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
         const SizedBox(width: 8),
         Text(
           '$label: ',
@@ -656,15 +656,16 @@ class _DetailDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow('Performed by', log.performedByName),
-            _buildInfoRow('Entity Type', log.entityType),
-            _buildInfoRow('Entity ID', log.entityId),
+            _buildInfoRow(context, 'Performed by', log.performedByName),
+            _buildInfoRow(context, 'Entity Type', log.entityType),
+            _buildInfoRow(context, 'Entity ID', log.entityId),
             _buildInfoRow(
+              context,
               'Timestamp',
               DateFormat('MMM dd, yyyy HH:mm:ss').format(log.timestamp),
             ),
             if (log.reason != null)
-              _buildInfoRow('Reason', log.reason!),
+              _buildInfoRow(context, 'Reason', log.reason!),
 
             if (log.oldValue != null || log.newValue != null) ...[
               const SizedBox(height: 16),
@@ -742,9 +743,9 @@ class _DetailDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -752,9 +753,9 @@ class _DetailDialog extends StatelessWidget {
             width: 100,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Colors.grey,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ),

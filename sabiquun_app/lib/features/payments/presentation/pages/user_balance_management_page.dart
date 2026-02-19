@@ -90,7 +90,7 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -112,9 +112,9 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
           children: [
             // Search Section
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -160,13 +160,13 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
 
                   // Recent Searches
                   if (_recentSearches.isNotEmpty) ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       'Recent Searches:',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -224,21 +224,21 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                             size: 64,
                             color: AppColors.error,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
                             'Error loading users',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             state.message,
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -267,23 +267,23 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                             Icon(
                               Icons.people_outline,
                               size: 64,
-                              color: Colors.grey[400],
+                              color: Theme.of(context).colorScheme.surfaceVariant,
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16),
                             Text(
                               'No users found',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               'Try a different search query',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -367,7 +367,7 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 24),
+                            SizedBox(height: 24),
                           ],
 
                           // All Users Section
@@ -377,7 +377,7 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -416,9 +416,9 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isHighBalance
@@ -444,15 +444,15 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                   child: Center(
                     child: Text(
                       user.initials,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
 
                 // User Info
                 Expanded(
@@ -464,15 +464,15 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         user.email,
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                       if (user.membershipStatus != null) ...[
@@ -504,7 +504,7 @@ class _UserBalanceManagementPageState extends State<UserBalanceManagementPage>
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 18,
-                  color: AppColors.textSecondary.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ],
             ),

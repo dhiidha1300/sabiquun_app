@@ -43,7 +43,7 @@ class FifoPreviewPanel extends StatelessWidget {
                 color: Colors.blue[700],
                 size: 24,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'PAYMENT DISTRIBUTION PREVIEW',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -79,7 +79,7 @@ class FifoPreviewPanel extends StatelessWidget {
             isBold: true,
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // Divider
           Container(
@@ -87,7 +87,7 @@ class FifoPreviewPanel extends StatelessWidget {
             color: Colors.blue[200],
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // Distribution details
           Text(
@@ -97,16 +97,16 @@ class FifoPreviewPanel extends StatelessWidget {
                   color: Colors.blue[900],
                 ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // List of applications
           if (distribution.applications.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
                 'No penalties to apply payment to.',
                 style: TextStyle(
-                  color: Colors.grey[700],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
                 ),
@@ -157,14 +157,14 @@ class FifoPreviewPanel extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Padding(
-              padding: const EdgeInsets.only(left: 28),
+              padding: EdgeInsets.only(left: 28),
               child: Text(
                 'All penalties covered! Excess will reduce balance.',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -172,11 +172,11 @@ class FifoPreviewPanel extends StatelessWidget {
           ],
 
           // Summary
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Colors.blue[300]!,
@@ -190,7 +190,7 @@ class FifoPreviewPanel extends StatelessWidget {
                   'Total Applied:',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: Colors.grey[800],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                     fontSize: 14,
                   ),
                 ),
@@ -226,7 +226,7 @@ class FifoPreviewPanel extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: isBold ? FontWeight.w600 : FontWeight.w500,
-            color: Colors.grey[800],
+            color: Theme.of(context).colorScheme.surfaceVariant,
           ),
         ),
         Text(
@@ -247,10 +247,10 @@ class FifoPreviewPanel extends StatelessWidget {
     int position,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: application.isFullyPaid

@@ -63,7 +63,7 @@ class NotificationItem extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -72,9 +72,9 @@ class NotificationItem extends StatelessWidget {
             ],
           ),
         ),
-        child: const Icon(
+        child: Icon(
           Icons.delete_outline,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           size: 28,
         ),
       ),
@@ -150,7 +150,7 @@ class NotificationItem extends StatelessWidget {
                                   ? FontWeight.w600
                                   : FontWeight.w700,
                               color: notification.isRead
-                                  ? AppColors.textPrimary
+                                  ? Theme.of(context).colorScheme.onSurface
                                   : AppColors.primary,
                             ),
                           ),
@@ -174,23 +174,23 @@ class NotificationItem extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       notification.body,
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         height: 1.4,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
                       notification.getRelativeTime(),
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textHint,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

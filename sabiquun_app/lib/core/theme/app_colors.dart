@@ -93,3 +93,97 @@ class AppColors {
   static const Color passwordStrong = Color(0xFF4CAF50);
   static const Color passwordVeryStrong = Color(0xFF2E7D32);
 }
+
+/// Dark theme color palette
+class AppColorsDark {
+  // Primary Colors - Adjusted for Dark Mode
+  static const Color primary = Color(0xFF1ED760); // Bright Green for dark backgrounds
+  static const Color primaryDark = Color(0xFF169B45);
+  static const Color primaryLight = Color(0xFF4EE17E);
+
+  // Secondary Colors
+  static const Color secondary = Color(0xFF4EE17E); // Lighter green for better contrast
+  static const Color secondaryDark = Color(0xFF1ED760);
+  static const Color secondaryLight = Color(0xFF6FE598);
+
+  // Accent Colors - Gold (same as light, good contrast on dark)
+  static const Color accent = Color(0xFFFFD700);
+  static const Color accentDark = Color(0xFFD4AF37);
+  static const Color accentLight = Color(0xFFFFE55C);
+
+  // Background Colors - Dark Theme
+  static const Color background = Color(0xFF121212); // Pure dark background
+  static const Color surface = Color(0xFF1E1E1E); // Elevated surface
+  static const Color surfaceVariant = Color(0xFF2C2C2C); // Alternative surface
+
+  // Text Colors - Light on dark
+  static const Color textPrimary = Color(0xFFE0E0E0); // Light grey
+  static const Color textSecondary = Color(0xFFB0B0B0); // Medium grey
+  static const Color textHint = Color(0xFF757575); // Darker grey for hints
+
+  // Status Colors - Adjusted brightness for dark backgrounds
+  static const Color success = Color(0xFF66BB6A); // Lighter green
+  static const Color error = Color(0xFFEF5350); // Lighter red
+  static const Color warning = Color(0xFFFFB74D); // Lighter orange
+  static const Color info = Color(0xFF42A5F5); // Lighter blue
+
+  // Role Colors - Slightly brighter for dark mode
+  static const Color adminColor = Color(0xFFAB47BC); // Lighter purple
+  static const Color supervisorColor = Color(0xFF42A5F5); // Lighter blue
+  static const Color cashierColor = Color(0xFFFFB74D); // Lighter orange
+  static const Color userColor = Color(0xFF66BB6A); // Lighter green
+
+  // Account Status Colors - Adjusted for dark backgrounds
+  static const Color pendingColor = Color(0xFFFFB74D);
+  static const Color activeColor = Color(0xFF66BB6A);
+  static const Color suspendedColor = Color(0xFFEF5350);
+  static const Color deactivatedColor = Color(0xFF757575);
+
+  // Neutral Colors
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
+  static const Color grey = Color(0xFF757575);
+  static const Color greyLight = Color(0xFF424242); // Inverted for dark mode
+  static const Color greyDark = Color(0xFFE0E0E0); // Inverted for dark mode
+
+  // Border Colors
+  static const Color border = Color(0xFF404040); // Dark border
+  static const Color borderFocused = Color(0xFF4EE17E); // Bright green
+  static const Color borderError = Color(0xFFEF5350);
+
+  // Shadow Colors
+  static const Color shadow = Color(0x33000000); // Slightly stronger shadow
+  static const Color shadowDark = Color(0x4D000000);
+
+  // Gradient Colors
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [primary, secondary],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient secondaryGradient = LinearGradient(
+    colors: [secondary, secondaryLight],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient accentGradient = LinearGradient(
+    colors: [accentDark, accent],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Surface Gradients for Cards
+  static const LinearGradient surfaceGradient = LinearGradient(
+    colors: [surface, surfaceVariant],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Password Strength Colors (same as light theme, good contrast)
+  static const Color passwordWeak = Color(0xFFEF5350);
+  static const Color passwordMedium = Color(0xFFFFB74D);
+  static const Color passwordStrong = Color(0xFF66BB6A);
+  static const Color passwordVeryStrong = Color(0xFF4EE17E);
+}

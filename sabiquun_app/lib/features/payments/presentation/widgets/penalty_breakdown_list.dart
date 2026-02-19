@@ -18,11 +18,11 @@ class PenaltyBreakdownList extends StatelessWidget {
     if (penalties.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Text(
             'No penalties found',
             style: TextStyle(
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
               fontSize: 14,
             ),
           ),
@@ -34,12 +34,12 @@ class PenaltyBreakdownList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
             'PENALTY BREAKDOWN (FIFO ORDER)',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: Colors.grey[700],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   letterSpacing: 0.5,
                 ),
           ),
@@ -106,7 +106,7 @@ class PenaltyBreakdownList extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
 
           // Penalty details
           Expanded(
@@ -120,7 +120,7 @@ class PenaltyBreakdownList extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
 
                 // Amount information
                 if (isWaived) ...[
@@ -128,16 +128,16 @@ class PenaltyBreakdownList extends StatelessWidget {
                     penalty.formattedAmount,
                     style: TextStyle(
                       decoration: TextDecoration.lineThrough,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     'Waived: ${penalty.waivedReason ?? "No reason provided"}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -166,12 +166,12 @@ class PenaltyBreakdownList extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     'Paid: ${penalty.formattedPaidAmount}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -204,12 +204,12 @@ class PenaltyBreakdownList extends StatelessWidget {
 
                 // Missing deeds
                 if (penalty.missedDeeds != null && penalty.missedDeeds! > 0) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Missing: ${penalty.missedDeeds!.toStringAsFixed(1)} deed${penalty.missedDeeds! > 1 ? 's' : ''}',
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                   ),
                 ],
@@ -218,18 +218,18 @@ class PenaltyBreakdownList extends StatelessWidget {
           ),
 
           // Status badge
-          _buildStatusBadge(penalty),
+          _buildStatusBadge(context, penalty),
         ],
       ),
     );
   }
 
-  Widget _buildStatusBadge(PenaltyEntity penalty) {
+  Widget _buildStatusBadge(BuildContext context, PenaltyEntity penalty) {
     if (penalty.status.isWaived) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: Theme.of(context).colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
@@ -237,7 +237,7 @@ class PenaltyBreakdownList extends StatelessWidget {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w700,
-            color: Colors.grey[700],
+            color: Theme.of(context).colorScheme.surfaceVariant,
             letterSpacing: 0.5,
           ),
         ),

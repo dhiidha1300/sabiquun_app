@@ -177,9 +177,9 @@ class _ManualNotificationPageState extends State<ManualNotificationPage> {
             children: [
               // Notification Form
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -281,11 +281,11 @@ class _ManualNotificationPageState extends State<ManualNotificationPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
-                            const SizedBox(height: 16),
+                            Icon(Icons.people_outline, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                            SizedBox(height: 16),
                             Text(
                               'No users found',
-                              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                              style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                             ),
                           ],
                         ),
@@ -310,11 +310,11 @@ class _ManualNotificationPageState extends State<ManualNotificationPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(user.email),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Row(
                                     children: [
                                       _StatusBadge(status: user.accountStatus.value),
-                                      const SizedBox(width: 8),
+                                      SizedBox(width: 8),
                                       _RoleBadge(role: user.role.value),
                                     ],
                                   ),
@@ -324,7 +324,7 @@ class _ManualNotificationPageState extends State<ManualNotificationPage> {
                                 backgroundColor: AppColors.primary,
                                 child: Text(
                                   user.name.substring(0, 1).toUpperCase(),
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 ),
                               ),
                             ),

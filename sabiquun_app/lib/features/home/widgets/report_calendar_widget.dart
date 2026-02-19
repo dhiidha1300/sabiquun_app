@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:sabiquun_app/core/constants/date_constants.dart';
+import 'package:sabiquun_app/core/services/hijri_date_service.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
+import 'package:sabiquun_app/core/utils/date_formatter.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_state.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
@@ -103,8 +107,6 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
   }
 
   void _showNoReportDialog(DateTime date) {
-    final formattedDate = DateFormat('EEEE, MMMM d, y').format(date);
-
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -129,7 +131,7 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
             children: [
               // Icon
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.warning.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -140,37 +142,45 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                   color: AppColors.warning,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Title
-              const Text(
+              Text(
                 'No Report Found',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Message
               Text(
                 'You haven\'t submitted a report for',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
-              Text(
-                formattedDate,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-                textAlign: TextAlign.center,
+              BlocBuilder<CalendarBloc, CalendarState>(
+                builder: (context, calendarState) {
+                  return Text(
+                    DateFormatter.format(
+                      date,
+                      preference: calendarState.preference,
+                      fullFormat: true,
+                    ),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    textAlign: TextAlign.center,
+                  );
+                },
               ),
               const SizedBox(height: 24),
 
@@ -267,30 +277,30 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Report Calendar',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 TextButton.icon(
                   onPressed: () => context.push('/my-reports'),
-                  icon: const Icon(Icons.list_rounded, size: 18),
-                  label: const Text('List View'),
+                  icon: Icon(Icons.list_rounded, size: 18),
+                  label: Text('List View'),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Calendar card
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -331,7 +341,7 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                             width: 2,
                           ),
                         ),
-                        todayTextStyle: const TextStyle(
+                        todayTextStyle: TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
@@ -344,51 +354,51 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                             BoxShadow(
                               color: AppColors.primary.withValues(alpha: 0.3),
                               blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
-                        selectedTextStyle: const TextStyle(
-                          color: Colors.white,
+                        selectedTextStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
                           fontWeight: FontWeight.bold,
                         ),
 
                         // Default day styling
-                        defaultTextStyle: const TextStyle(
-                          color: AppColors.textPrimary,
+                        defaultTextStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
 
                         // Weekend styling
                         weekendTextStyle: TextStyle(
-                          color: AppColors.textPrimary.withValues(alpha: 0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w500,
                         ),
 
                         // Outside month styling
                         outsideTextStyle: TextStyle(
-                          color: Colors.grey[400],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
 
                         // Marker styling
                         markersMaxCount: 1,
-                        markerDecoration: const BoxDecoration(
+                        markerDecoration: BoxDecoration(
                           color: Colors.transparent,
                         ),
                       ),
                       headerStyle: HeaderStyle(
                         formatButtonVisible: false,
                         titleCentered: true,
-                        titleTextStyle: const TextStyle(
+                        titleTextStyle: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
-                        leftChevronIcon: const Icon(
+                        leftChevronIcon: Icon(
                           Icons.chevron_left,
                           color: AppColors.primary,
                         ),
-                        rightChevronIcon: const Icon(
+                        rightChevronIcon: Icon(
                           Icons.chevron_right,
                           color: AppColors.primary,
                         ),
@@ -396,17 +406,69 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                       ),
                       daysOfWeekStyle: DaysOfWeekStyle(
                         weekdayStyle: TextStyle(
-                          color: Colors.grey[700],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                         ),
                         weekendStyle: TextStyle(
-                          color: Colors.grey[700],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                         ),
                       ),
                       calendarBuilders: CalendarBuilders(
+                        headerTitleBuilder: (context, day) {
+                          return BlocBuilder<CalendarBloc, CalendarState>(
+                            builder: (context, calendarState) {
+                              // Get Hijri date for the focused month
+                              final hijri = HijriDateService.instance.toHijri(day);
+                              final hijriMonthName = DateConstants.hijriMonthsEnglish[hijri.hMonth - 1];
+
+                              // Gregorian month name
+                              final gregorianMonths = ['January', 'February', 'March', 'April', 'May', 'June',
+                                'July', 'August', 'September', 'October', 'November', 'December'];
+                              final gregorianMonthName = gregorianMonths[day.month - 1];
+
+                              // Show based on preference (Google Calendar style: primary on top, secondary below)
+                              final pref = calendarState.preference;
+                              final showHijriPrimary = pref == CalendarPreference.hijriPrimary || pref == CalendarPreference.hijriOnly;
+                              final showBoth = pref == CalendarPreference.hijriPrimary || pref == CalendarPreference.gregorianPrimary;
+
+                              return Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Primary date (larger)
+                                    Text(
+                                      showHijriPrimary
+                                        ? '$hijriMonthName ${hijri.hYear}'
+                                        : '$gregorianMonthName ${day.year}',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    // Secondary date (smaller, only if showing both)
+                                    if (showBoth)
+                                      Text(
+                                        showHijriPrimary
+                                          ? '$gregorianMonthName ${day.year}'
+                                          : '$hijriMonthName ${hijri.hYear}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
                         defaultBuilder: (context, day, focusedDay) {
                           return _buildCalendarDay(day, false, false);
                         },
@@ -421,7 +483,7 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                             child: Text(
                               '${day.day}',
                               style: TextStyle(
-                                color: Colors.grey[300],
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -432,14 +494,14 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
 
                     // Legend
                     Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey[50],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         border: Border(
-                          top: BorderSide(color: Colors.grey[200]!),
+                          top: BorderSide(color: Theme.of(context).colorScheme.surfaceVariant!),
                         ),
                       ),
                       child: Row(
@@ -450,7 +512,7 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                             label: 'Submitted',
                           ),
                           _buildLegendItem(
-                            color: const Color(0xFFFFB300),
+                            color: Color(0xFFFFB300),
                             label: 'Draft',
                           ),
                           _buildLegendItem(
@@ -458,7 +520,7 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
                             label: 'Missed',
                           ),
                           _buildLegendItem(
-                            color: Colors.grey[300]!,
+                            color: Theme.of(context).colorScheme.surfaceVariant!,
                             label: 'Future',
                           ),
                         ],
@@ -505,7 +567,7 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
               style: TextStyle(
                 color: isSelected
                     ? Colors.white
-                    : (isToday ? AppColors.primary : AppColors.textPrimary),
+                    : (isToday ? AppColors.primary : Theme.of(context).colorScheme.onSurface),
                 fontWeight: isSelected || isToday
                     ? FontWeight.bold
                     : FontWeight.w500,
@@ -551,13 +613,13 @@ class _ReportCalendarWidgetState extends State<ReportCalendarWidget>
             border: Border.all(color: color, width: 2),
           ),
         ),
-        const SizedBox(width: 6),
+        SizedBox(width: 6),
         Text(
           label,
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
       ],

@@ -200,6 +200,7 @@ class AdminRepositoryImpl implements AdminRepository {
     try {
       // Convert entity to model
       final model = _entityToModel(settings);
+
       await _remoteDataSource.updateSystemSettings(
         settings: model,
         updatedBy: updatedBy,
@@ -251,6 +252,11 @@ class AdminRepositoryImpl implements AdminRepository {
       emailSenderEmail: entity.emailSenderEmail,
       emailSenderName: entity.emailSenderName,
       fcmServerKey: entity.fcmServerKey,
+      whatsappEnabled: entity.whatsappEnabled,
+      whatsappPhoneNumberId: entity.whatsappPhoneNumberId,
+      whatsappBusinessAccountId: entity.whatsappBusinessAccountId,
+      whatsappAccessToken: entity.whatsappAccessToken,
+      whatsappApiVersion: entity.whatsappApiVersion,
       appVersion: entity.appVersion,
       minimumRequiredVersion: entity.minimumRequiredVersion,
       forceUpdate: entity.forceUpdate,
@@ -580,6 +586,9 @@ class AdminRepositoryImpl implements AdminRepository {
     String? emailSubject,
     String? emailBody,
     required String notificationType,
+    String? whatsappTemplateName,
+    String? whatsappTemplateLanguage,
+    bool whatsappEnabled = false,
   }) async {
     try {
       final model = await _remoteDataSource.createNotificationTemplate(
@@ -589,6 +598,9 @@ class AdminRepositoryImpl implements AdminRepository {
         emailSubject: emailSubject,
         emailBody: emailBody,
         notificationType: notificationType,
+        whatsappTemplateName: whatsappTemplateName,
+        whatsappTemplateLanguage: whatsappTemplateLanguage,
+        whatsappEnabled: whatsappEnabled,
       );
       return _mapNotificationTemplateToEntity(model);
     } catch (e) {
@@ -604,6 +616,9 @@ class AdminRepositoryImpl implements AdminRepository {
     String? emailSubject,
     String? emailBody,
     bool? isEnabled,
+    String? whatsappTemplateName,
+    String? whatsappTemplateLanguage,
+    bool? whatsappEnabled,
   }) async {
     try {
       final model = await _remoteDataSource.updateNotificationTemplate(
@@ -613,6 +628,9 @@ class AdminRepositoryImpl implements AdminRepository {
         emailSubject: emailSubject,
         emailBody: emailBody,
         isEnabled: isEnabled,
+        whatsappTemplateName: whatsappTemplateName,
+        whatsappTemplateLanguage: whatsappTemplateLanguage,
+        whatsappEnabled: whatsappEnabled,
       );
       return _mapNotificationTemplateToEntity(model);
     } catch (e) {
@@ -774,6 +792,9 @@ class AdminRepositoryImpl implements AdminRepository {
       notificationType: model.notificationType,
       isEnabled: model.isEnabled,
       isSystemDefault: model.isSystemDefault,
+      whatsappTemplateName: model.whatsappTemplateName,
+      whatsappTemplateLanguage: model.whatsappTemplateLanguage,
+      whatsappEnabled: model.whatsappEnabled ?? false,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
     );

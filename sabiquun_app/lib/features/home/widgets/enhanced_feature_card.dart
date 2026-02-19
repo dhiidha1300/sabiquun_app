@@ -181,7 +181,7 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                                   color: AppColors.error,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.surface,
                                     width: 2.5,
                                   ),
                                   boxShadow: [
@@ -196,7 +196,7 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                             ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       // Title with better typography
                       Text(
@@ -207,7 +207,7 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
                               fontSize: 13,
                               letterSpacing: 0.1,
                               height: 1.2,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -215,12 +215,12 @@ class _EnhancedFeatureCardState extends State<EnhancedFeatureCard>
 
                       // Subtitle
                       if (widget.subtitle != null) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           widget.subtitle!,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 height: 1.2,

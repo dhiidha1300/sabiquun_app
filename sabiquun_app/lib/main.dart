@@ -9,6 +9,11 @@ import 'package:sabiquun_app/core/navigation/app_router.dart';
 import 'package:sabiquun_app/core/theme/app_theme.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:sabiquun_app/features/theme/presentation/bloc/theme_bloc.dart';
+import 'package:sabiquun_app/features/theme/presentation/bloc/theme_event.dart';
+import 'package:sabiquun_app/features/theme/presentation/bloc/theme_state.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_event.dart';
 // import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 // import 'package:sabiquun_app/features/penalties/presentation/bloc/penalty_bloc.dart';
 // import 'package:sabiquun_app/features/payments/presentation/bloc/payment_bloc.dart';
@@ -69,6 +74,12 @@ void main() async {
   // Check if user is already authenticated
   Injection.authBloc.add(const AuthCheckRequested());
 
+  // Initialize theme
+  Injection.themeBloc.add(const ThemeInitialized());
+
+  // Initialize calendar preference
+  Injection.calendarBloc.add(const CalendarPreferenceInitialized());
+
   // Run the app
   runApp(const SabiquunApp());
 }
@@ -91,15 +102,19 @@ class SabiquunApp extends StatelessWidget {
         BlocProvider.value(value: Injection.analyticsBloc),
         BlocProvider.value(value: Injection.appContentBloc),
         BlocProvider.value(value: Injection.supervisorBloc),
+        BlocProvider.value(value: Injection.themeBloc),
+        BlocProvider.value(value: Injection.calendarBloc),
       ],
-      child: Builder(
-        builder: (context) {
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, themeState) {
           final router = AppRouter(context.read<AuthBloc>()).router;
 
           return MaterialApp.router(
             title: 'Sabiquun',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeState.themeMode,
             routerConfig: router,
           );
         },
@@ -139,13 +154,13 @@ class ErrorApp extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   error,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 24),

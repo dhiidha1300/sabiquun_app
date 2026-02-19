@@ -24,14 +24,17 @@ class DeedRemoteDataSource {
     }
   }
 
-  /// Create a new deed report with entries
+  /// Create a new deed report with entries (or update if one already exists for the date)
+  /// If [submitImmediately] is true, the report will be saved as 'submitted' instead of 'draft'
   Future<DeedReportModel> createDeedReport({
     required String userId,
     required DateTime reportDate,
     required Map<String, double> deedValues,
+    bool submitImmediately = false,
   }) async {
     try {
       final templates = await getDeedTemplates();
+      final dateStr = reportDate.toIso8601String().split('T')[0];
 
       // Calculate totals
       double totalDeeds = 0.0;
@@ -49,35 +52,79 @@ class DeedRemoteDataSource {
         }
       }
 
-      // Create the report as 'draft' initially
-      final reportData = {
-        'user_id': userId,
-        'report_date': reportDate.toIso8601String().split('T')[0],
-        'total_deeds': totalDeeds,
-        'sunnah_count': sunnahCount,
-        'faraid_count': faraidCount,
-        'status': 'draft',
-      };
-
-      final reportResponse = await _supabase
+      // Check if a report already exists for this user and date
+      final existingReport = await _supabase
           .from('deeds_reports')
-          .insert(reportData)
-          .select()
-          .single();
+          .select('id, status')
+          .eq('user_id', userId)
+          .eq('report_date', dateStr)
+          .maybeSingle();
 
-      final reportId = reportResponse['id'] as String;
+      String reportId;
+      final now = DateTime.now().toIso8601String();
 
-      // Create deed entries with correct column names
-      final entries = <Map<String, dynamic>>[];
-      for (var template in templates) {
-        entries.add({
-          'report_id': reportId,
-          'deed_template_id': template.id,
-          'deed_value': deedValues[template.id] ?? 0.0,
-        });
+      if (existingReport != null) {
+        // Update existing report
+        reportId = existingReport['id'] as String;
+        final updateData = {
+          'total_deeds': totalDeeds,
+          'sunnah_count': sunnahCount,
+          'faraid_count': faraidCount,
+          'updated_at': now,
+        };
+
+        // If submitting immediately, update status and submitted_at
+        if (submitImmediately) {
+          updateData['status'] = 'submitted';
+          updateData['submitted_at'] = now;
+        }
+
+        await _supabase.from('deeds_reports').update(updateData).eq('id', reportId);
+
+        // Update deed entries
+        for (var template in templates) {
+          await _supabase.from('deed_entries').upsert({
+            'report_id': reportId,
+            'deed_template_id': template.id,
+            'deed_value': deedValues[template.id] ?? 0.0,
+          }, onConflict: 'report_id,deed_template_id');
+        }
+      } else {
+        // Create new report
+        final reportData = {
+          'user_id': userId,
+          'report_date': dateStr,
+          'total_deeds': totalDeeds,
+          'sunnah_count': sunnahCount,
+          'faraid_count': faraidCount,
+          'status': submitImmediately ? 'submitted' : 'draft',
+        };
+
+        // Add submitted_at if submitting immediately
+        if (submitImmediately) {
+          reportData['submitted_at'] = now;
+        }
+
+        final reportResponse = await _supabase
+            .from('deeds_reports')
+            .insert(reportData)
+            .select()
+            .single();
+
+        reportId = reportResponse['id'] as String;
+
+        // Create deed entries with correct column names
+        final entries = <Map<String, dynamic>>[];
+        for (var template in templates) {
+          entries.add({
+            'report_id': reportId,
+            'deed_template_id': template.id,
+            'deed_value': deedValues[template.id] ?? 0.0,
+          });
+        }
+
+        await _supabase.from('deed_entries').insert(entries);
       }
-
-      await _supabase.from('deed_entries').insert(entries);
 
       // Fetch the complete report with entries
       return await getReportById(reportId);

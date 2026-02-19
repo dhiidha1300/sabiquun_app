@@ -58,14 +58,16 @@ class LoadReportByIdRequested extends DeedEvent {
 class CreateDeedReportRequested extends DeedEvent {
   final DateTime reportDate;
   final Map<String, double> deedValues; // 0.0-1.0 for each deed
+  final bool submitImmediately; // If true, report is saved as 'submitted'
 
   const CreateDeedReportRequested({
     required this.reportDate,
     required this.deedValues,
+    this.submitImmediately = false,
   });
 
   @override
-  List<Object?> get props => [reportDate, deedValues];
+  List<Object?> get props => [reportDate, deedValues, submitImmediately];
 }
 
 /// Update an existing deed report

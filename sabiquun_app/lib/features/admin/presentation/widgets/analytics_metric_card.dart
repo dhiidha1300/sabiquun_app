@@ -83,7 +83,7 @@ class AnalyticsMetricCard extends StatelessWidget {
                     size: 26,
                   ),
                 ),
-                const SizedBox(width: 14),
+                SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,13 +92,13 @@ class AnalyticsMetricCard extends StatelessWidget {
                       Text(
                         title,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                               letterSpacing: 0.3,
                             ),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       // Value with modern styling
                       Text(
                         value,
@@ -115,10 +115,10 @@ class AnalyticsMetricCard extends StatelessWidget {
               ],
             ),
             // Subtitle with subtle styling - always reserve space for equal heights
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             if (subtitle != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
@@ -126,7 +126,7 @@ class AnalyticsMetricCard extends StatelessWidget {
                 child: Text(
                   subtitle!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         fontWeight: FontWeight.w500,
                         fontSize: 11,
                       ),

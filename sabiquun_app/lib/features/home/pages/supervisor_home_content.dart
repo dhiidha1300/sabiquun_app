@@ -53,7 +53,7 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: _buildModernDrawer(),
       body: SafeArea(
         child: RefreshIndicator(
@@ -99,9 +99,9 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           bottom: BorderSide(
             color: AppColors.primary.withValues(alpha: 0.1),
@@ -163,17 +163,17 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
               child: Center(
                 child: Text(
                   widget.user.initials,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     letterSpacing: 0.5,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
 
           // User info
           Expanded(
@@ -182,8 +182,8 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
               children: [
                 Text(
                   widget.user.fullName,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
@@ -393,9 +393,9 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -548,16 +548,16 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
           );
         }
 
-        return const SizedBox.shrink();
+        return SizedBox.shrink();
       },
     );
   }
 
   Widget _buildUserMetricCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -591,12 +591,12 @@ class _SupervisorHomeContentState extends State<SupervisorHomeContent> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -647,13 +647,13 @@ class _QuickAction {
 extension _SupervisorHomeContentDrawer on _SupervisorHomeContentState {
   Widget _buildModernDrawer() {
     return Drawer(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       child: Column(
         children: [
           // Drawer Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+            padding: EdgeInsets.fromLTRB(24, 60, 24, 24),
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
@@ -664,7 +664,7 @@ extension _SupervisorHomeContentDrawer on _SupervisorHomeContentState {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -686,11 +686,11 @@ extension _SupervisorHomeContentDrawer on _SupervisorHomeContentState {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   widget.user.fullName,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -770,6 +770,14 @@ extension _SupervisorHomeContentDrawer on _SupervisorHomeContentState {
                   onTap: () {
                     Navigator.pop(context);
                     // TODO: Navigate to settings
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.palette_rounded,
+                  title: 'Theme',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/theme-settings');
                   },
                 ),
               ],
@@ -872,7 +880,7 @@ extension _SupervisorHomeContentDrawer on _SupervisorHomeContentState {
           ),
           child: Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
             size: 22,
           ),
         ),
@@ -881,7 +889,7 @@ extension _SupervisorHomeContentDrawer on _SupervisorHomeContentState {
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             fontSize: 15,
-            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
           ),
         ),
         onTap: onTap,

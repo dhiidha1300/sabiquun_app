@@ -358,14 +358,14 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           gradient: AppColors.primaryGradient,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.edit,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           size: 24,
                         ),
                       ),
@@ -410,7 +410,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               ),
                             ),
                             Text(
@@ -426,7 +426,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                       );
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Adjustment Type
                   Text(
@@ -434,7 +434,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -465,7 +465,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Amount Input
                   Text(
@@ -473,7 +473,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -506,7 +506,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                     },
                     onChanged: (value) => setState(() {}), // Update preview
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Payment Method (only for clear penalty)
                   if (_adjustmentType == 'clear') ...[
@@ -515,7 +515,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -538,7 +538,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                       ],
                       onChanged: (value) => setState(() => _paymentMethod = value!),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                   ],
 
                   // Reason/Notes
@@ -547,7 +547,7 @@ class _BalanceAdjustmentDialogState extends State<BalanceAdjustmentDialog> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),

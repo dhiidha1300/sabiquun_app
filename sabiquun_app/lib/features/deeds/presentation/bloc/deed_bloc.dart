@@ -102,8 +102,14 @@ class DeedBloc extends Bloc<DeedEvent, DeedState> {
       final report = await _repository.createDeedReport(
         reportDate: event.reportDate,
         deedValues: event.deedValues,
+        submitImmediately: event.submitImmediately,
       );
-      emit(DeedReportCreated(report));
+      // Emit different state based on whether it was submitted or just saved as draft
+      if (event.submitImmediately) {
+        emit(DeedReportSubmitted(report));
+      } else {
+        emit(DeedReportCreated(report));
+      }
     } catch (e) {
       emit(DeedError(e.toString()));
     }

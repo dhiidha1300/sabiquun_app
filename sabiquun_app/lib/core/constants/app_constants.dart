@@ -48,11 +48,15 @@ class AppConstants {
   // Cache Configuration
   static const Duration cacheExpiry = Duration(hours: 1);
 
-  // Date Formats
+  // Date Formats (Gregorian)
+  // For Hijri formats, see DateConstants in date_constants.dart
   static const String dateFormat = 'yyyy-MM-dd';
   static const String dateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
   static const String displayDateFormat = 'MMM dd, yyyy';
   static const String displayDateTimeFormat = 'MMM dd, yyyy HH:mm';
+
+  // Calendar Preferences
+  static const String calendarPreferenceKey = 'calendar_preference';
 
   // Support
   static const String supportEmail = 'support@sabiquun.app';

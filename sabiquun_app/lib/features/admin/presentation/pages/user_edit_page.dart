@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../../core/constants/user_role.dart';
@@ -26,13 +27,17 @@ class _UserEditPageState extends State<UserEditPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _whatsappPhoneController = TextEditingController();
   final _reasonController = TextEditingController();
 
   UserRole? _selectedRole;
   String? _selectedMembershipStatus;
   AccountStatus? _selectedAccountStatus;
+  bool _whatsappVerified = false;
 
   UserManagementEntity? _originalUser;
+  String? _originalWhatsappPhone;
+  bool _originalWhatsappVerified = false;
   bool _isLoading = false;
 
   @override
@@ -44,6 +49,7 @@ class _UserEditPageState extends State<UserEditPage> {
     _nameController.addListener(() => setState(() {}));
     _emailController.addListener(() => setState(() {}));
     _phoneController.addListener(() => setState(() {}));
+    _whatsappPhoneController.addListener(() => setState(() {}));
   }
 
   @override
@@ -51,12 +57,37 @@ class _UserEditPageState extends State<UserEditPage> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _whatsappPhoneController.dispose();
     _reasonController.dispose();
     super.dispose();
   }
 
   void _loadUserData() {
     context.read<AdminBloc>().add(LoadUserByIdRequested(widget.userId));
+    _loadWhatsAppPreferences();
+  }
+
+  Future<void> _loadWhatsAppPreferences() async {
+    try {
+      final supabase = Supabase.instance.client;
+      final response = await supabase
+          .from('user_notification_preferences')
+          .select('whatsapp_phone, whatsapp_verified')
+          .eq('user_id', widget.userId)
+          .maybeSingle();
+
+      if (response != null && mounted) {
+        setState(() {
+          _whatsappPhoneController.text = response['whatsapp_phone'] ?? '';
+          _whatsappVerified = response['whatsapp_verified'] ?? false;
+          _originalWhatsappPhone = response['whatsapp_phone'];
+          _originalWhatsappVerified = response['whatsapp_verified'] ?? false;
+        });
+      }
+    } catch (e) {
+      // Silently fail - preferences might not exist yet
+      debugPrint('Error loading WhatsApp preferences: $e');
+    }
   }
 
   String? _getCurrentUserId() {
@@ -80,15 +111,20 @@ class _UserEditPageState extends State<UserEditPage> {
   bool _hasChanges() {
     if (_originalUser == null) return false;
 
-    return _nameController.text != _originalUser!.name ||
+    final hasUserChanges = _nameController.text != _originalUser!.name ||
         _emailController.text != _originalUser!.email ||
         _phoneController.text != (_originalUser!.phone ?? '') ||
         _selectedRole != _originalUser!.role ||
         _selectedMembershipStatus != _originalUser!.membershipStatus ||
         _selectedAccountStatus != _originalUser!.accountStatus;
+
+    final hasWhatsAppChanges = _whatsappPhoneController.text != (_originalWhatsappPhone ?? '') ||
+        _whatsappVerified != _originalWhatsappVerified;
+
+    return hasUserChanges || hasWhatsAppChanges;
   }
 
-  void _saveChanges() {
+  void _saveChanges() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -119,7 +155,17 @@ class _UserEditPageState extends State<UserEditPage> {
       return;
     }
 
-    // Prepare update data
+    setState(() => _isLoading = true);
+
+    // Save WhatsApp preferences if changed
+    final hasWhatsAppChanges = _whatsappPhoneController.text != (_originalWhatsappPhone ?? '') ||
+        _whatsappVerified != _originalWhatsappVerified;
+
+    if (hasWhatsAppChanges) {
+      await _saveWhatsAppPreferences();
+    }
+
+    // Prepare update data for user
     String? name;
     String? email;
     String? phone;
@@ -146,17 +192,80 @@ class _UserEditPageState extends State<UserEditPage> {
       accountStatus = _selectedAccountStatus!.name;
     }
 
-    context.read<AdminBloc>().add(UpdateUserRequested(
-          userId: widget.userId,
-          name: name,
-          email: email,
-          phone: phone,
-          role: role,
-          membershipStatus: membershipStatus,
-          accountStatus: accountStatus,
-          updatedBy: currentUserId,
-          reason: reason,
-        ));
+    // Only send UpdateUserRequested if there are user data changes
+    if (name != null || email != null || phone != null || role != null ||
+        membershipStatus != null || accountStatus != null) {
+      context.read<AdminBloc>().add(UpdateUserRequested(
+            userId: widget.userId,
+            name: name,
+            email: email,
+            phone: phone,
+            role: role,
+            membershipStatus: membershipStatus,
+            accountStatus: accountStatus,
+            updatedBy: currentUserId,
+            reason: reason,
+          ));
+    } else {
+      // Only WhatsApp changes, show success
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('WhatsApp preferences updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadUserData();
+        _reasonController.clear();
+      }
+    }
+  }
+
+  Future<void> _saveWhatsAppPreferences() async {
+    try {
+      final supabase = Supabase.instance.client;
+      final whatsappPhone = _whatsappPhoneController.text.trim().isEmpty
+          ? null
+          : _whatsappPhoneController.text.trim();
+
+      // Check if preferences exist
+      final existing = await supabase
+          .from('user_notification_preferences')
+          .select('user_id')
+          .eq('user_id', widget.userId)
+          .maybeSingle();
+
+      if (existing != null) {
+        // Update existing
+        await supabase
+            .from('user_notification_preferences')
+            .update({
+              'whatsapp_phone': whatsappPhone,
+              'whatsapp_verified': _whatsappVerified,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('user_id', widget.userId);
+      } else {
+        // Insert new
+        await supabase
+            .from('user_notification_preferences')
+            .insert({
+              'user_id': widget.userId,
+              'whatsapp_phone': whatsappPhone,
+              'whatsapp_verified': _whatsappVerified,
+            });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save WhatsApp preferences: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _changeRole() async {
@@ -371,7 +480,7 @@ class _UserEditPageState extends State<UserEditPage> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: Form(
               key: _formKey,
               child: Column(
@@ -379,7 +488,7 @@ class _UserEditPageState extends State<UserEditPage> {
                 children: [
                   // User info card
                   _buildUserInfoCard(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Edit form
                   Text(
@@ -436,7 +545,84 @@ class _UserEditPageState extends State<UserEditPage> {
                     ),
                     keyboardType: TextInputType.phone,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
+
+                  // WhatsApp Settings Section
+                  Row(
+                    children: [
+                      const Icon(Icons.chat, color: Color(0xFF25D366)),
+                      const SizedBox(width: 8),
+                      Text(
+                        'WhatsApp Settings',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // WhatsApp phone number
+                  TextFormField(
+                    controller: _whatsappPhoneController,
+                    decoration: InputDecoration(
+                      labelText: 'WhatsApp Phone Number',
+                      hintText: '+254712345678',
+                      helperText: 'International format with country code',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.phone, color: Color(0xFF25D366)),
+                      suffixIcon: _whatsappVerified
+                          ? const Icon(Icons.verified, color: Colors.green)
+                          : const Icon(Icons.pending, color: Colors.orange),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value != null && value.trim().isNotEmpty) {
+                        if (!value.startsWith('+')) {
+                          return 'Phone number must start with + and country code';
+                        }
+                        if (value.length < 10) {
+                          return 'Phone number is too short';
+                        }
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // WhatsApp verification toggle
+                  Card(
+                    child: SwitchListTile(
+                      title: const Text('WhatsApp Verified'),
+                      subtitle: Text(
+                        _whatsappVerified
+                            ? 'User can receive WhatsApp notifications'
+                            : 'User cannot receive WhatsApp notifications',
+                      ),
+                      value: _whatsappVerified,
+                      onChanged: _whatsappPhoneController.text.trim().isEmpty
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _whatsappVerified = value;
+                              });
+                            },
+                      secondary: Icon(
+                        _whatsappVerified ? Icons.check_circle : Icons.cancel,
+                        color: _whatsappVerified ? Colors.green : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (_whatsappPhoneController.text.trim().isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Enter a WhatsApp phone number to enable verification',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.orange,
+                            ),
+                      ),
+                    ),
+                  SizedBox(height: 24),
 
                   // Role dropdown
                   Text(
@@ -507,7 +693,7 @@ class _UserEditPageState extends State<UserEditPage> {
                       });
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Reason field (only show if there are changes)
                   if (_hasChanges()) ...[
@@ -580,7 +766,7 @@ class _UserEditPageState extends State<UserEditPage> {
                     style: const TextStyle(fontSize: 24),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,7 +778,7 @@ class _UserEditPageState extends State<UserEditPage> {
                       Text(
                         _originalUser!.email,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.surfaceVariant,
                             ),
                       ),
                     ],
@@ -629,7 +815,7 @@ class _UserEditPageState extends State<UserEditPage> {
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.surfaceVariant,
               ),
         ),
       ],

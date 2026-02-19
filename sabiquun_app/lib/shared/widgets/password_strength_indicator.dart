@@ -74,9 +74,9 @@ class PasswordRequirements extends StatelessWidget {
     final requirements = Validators.checkPasswordRequirements(password);
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -129,14 +129,14 @@ class _RequirementItem extends StatelessWidget {
           Icon(
             isMet ? Icons.check_circle : Icons.radio_button_unchecked,
             size: 16,
-            color: isMet ? AppColors.success : AppColors.textHint,
+            color: isMet ? AppColors.success : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           const SizedBox(width: 8),
           Text(
             text,
             style: TextStyle(
               fontSize: 12,
-              color: isMet ? AppColors.textPrimary : AppColors.textSecondary,
+              color: isMet ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],

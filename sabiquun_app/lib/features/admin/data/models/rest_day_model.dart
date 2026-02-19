@@ -12,6 +12,9 @@ class RestDayModel with _$RestDayModel {
     required String description,
     @JsonKey(name: 'is_recurring') required bool isRecurring,
     @JsonKey(name: 'created_at') required DateTime createdAt,
+    @JsonKey(name: 'hijri_month') int? hijriMonth,
+    @JsonKey(name: 'hijri_day') int? hijriDay,
+    @JsonKey(name: 'is_hijri_based') @Default(false) bool isHijriBased,
   }) = _RestDayModel;
 
   factory RestDayModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +25,9 @@ class RestDayModel with _$RestDayModel {
       description: json['description'] as String,
       isRecurring: json['is_recurring'] as bool,
       createdAt: DateTime.parse(json['created_at'] as String),
+      hijriMonth: json['hijri_month'] as int?,
+      hijriDay: json['hijri_day'] as int?,
+      isHijriBased: json['is_hijri_based'] as bool? ?? false,
     );
   }
 }
@@ -35,6 +41,9 @@ extension RestDayModelX on RestDayModel {
       description: description,
       isRecurring: isRecurring,
       createdAt: createdAt,
+      hijriMonth: hijriMonth,
+      hijriDay: hijriDay,
+      isHijriBased: isHijriBased,
     );
   }
 }

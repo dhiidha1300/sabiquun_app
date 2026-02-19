@@ -3,6 +3,9 @@ import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
+import 'package:sabiquun_app/core/utils/date_formatter.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_state.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_state.dart';
@@ -19,7 +22,6 @@ class TodayDeedsPage extends StatefulWidget {
 
 class _TodayDeedsPageState extends State<TodayDeedsPage> {
   final Map<String, double> _deedValues = {};
-  String? _existingReportId;
   DateSelection _selectedDate = DateSelection.today;
   DateTime _currentReportDate = DateTime.now();
 
@@ -50,7 +52,6 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
           : DateTime.now().subtract(const Duration(days: 1));
       // Clear deed values when switching dates
       _deedValues.clear();
-      _existingReportId = null;
     });
 
     // Reload data for new date
@@ -96,13 +97,7 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
             );
             context.read<DeedBloc>().add(const LoadTodayReportRequested());
           } else if (state is DeedReportSubmitted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Report submitted for approval!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            context.pop();
+            _showSuccessDialog();
           }
         },
         builder: (context, state) {
@@ -113,7 +108,6 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
           if (state is TodayReportLoaded) {
             // Initialize values from existing report
             if (state.report != null && _deedValues.isEmpty) {
-              _existingReportId = state.report!.id;
               for (var entry in state.report!.entries ?? []) {
                 _deedValues[entry.deedTemplateId] = entry.deedValue;
               }
@@ -165,7 +159,6 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
   }
 
   Widget _buildDateCard() {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     final weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     final yesterdayAvailable = _isYesterdayAvailable();
 
@@ -177,7 +170,7 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -198,65 +191,73 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
             ),
           ),
 
-        // Date display card
-        Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF2E7D32), Color(0xFF388E3C)],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF2E7D32).withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
+        // Date display card with Hijri support
+        BlocBuilder<CalendarBloc, CalendarState>(
+          builder: (context, calendarState) {
+            return Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF2E7D32), Color(0xFF388E3C)],
                 ),
-                child: const Icon(
-                  Icons.calendar_today,
-                  color: Colors.white,
-                  size: 32,
-                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2E7D32).withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      weekdays[_currentReportDate.weekday - 1],
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
-                      ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${months[_currentReportDate.month - 1]} ${_currentReportDate.day}, ${_currentReportDate.year}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: Icon(
+                      Icons.calendar_today,
+                      color: Theme.of(context).colorScheme.surface,
+                      size: 32,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          weekdays[_currentReportDate.weekday - 1],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.surface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          DateFormatter.format(
+                            _currentReportDate,
+                            preference: calendarState.preference,
+                            shortFormat: false,
+                          ),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ],
     );
@@ -445,7 +446,7 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
           ),
           // Show slider for fractional deeds when editing
           if (canEdit && isFractional) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -558,16 +559,16 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
           ),
           borderRadius: BorderRadius.circular(16),
         ),
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
@@ -603,11 +604,11 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -765,54 +766,206 @@ class _TodayDeedsPageState extends State<TodayDeedsPage> {
     );
   }
 
-  void _saveReport({required bool submit}) async {
-    if (_existingReportId == null) {
-      // Create new report - we need to wait for it to be created before submitting
-      context.read<DeedBloc>().add(
-            CreateDeedReportRequested(
-              reportDate: _currentReportDate,
-              deedValues: _deedValues,
+  void _saveReport({required bool submit}) {
+    // Use createDeedReport with submitImmediately flag
+    // This handles both new reports and updates to existing reports
+    context.read<DeedBloc>().add(
+          CreateDeedReportRequested(
+            reportDate: _currentReportDate,
+            deedValues: _deedValues,
+            submitImmediately: submit,
+          ),
+        );
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const _SuccessDialog(),
+    ).then((_) {
+      if (mounted) {
+        context.pop();
+      }
+    });
+  }
+}
+
+class _SuccessDialog extends StatefulWidget {
+  const _SuccessDialog();
+
+  @override
+  State<_SuccessDialog> createState() => _SuccessDialogState();
+}
+
+class _SuccessDialogState extends State<_SuccessDialog>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _checkAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.elasticOut),
+      ),
+    );
+
+    _checkAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+      ),
+    );
+
+    _controller.forward();
+
+    // Auto dismiss after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: Container(
+              padding: EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2E7D32).withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: AnimatedBuilder(
+                        animation: _checkAnimation,
+                        builder: (context, child) {
+                          return CustomPaint(
+                            size: const Size(60, 60),
+                            painter: _CheckPainter(
+                              progress: _checkAnimation.value,
+                              color: const Color(0xFF2E7D32),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Report Submitted!',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Your daily deeds have been recorded successfully.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.surfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
+        },
+      ),
+    );
+  }
+}
 
-      // If submitting, we'll need to wait for the report to be created
-      // The submission will happen after the state updates with the new report ID
-      if (submit) {
-        // Wait for the report to be created and then submit
-        await Future.delayed(const Duration(milliseconds: 800));
-        if (!mounted) return;
+class _CheckPainter extends CustomPainter {
+  final double progress;
+  final Color color;
 
-        // Reload to get the report ID
-        context.read<DeedBloc>().add(const LoadTodayReportRequested());
+  _CheckPainter({required this.progress, required this.color});
 
-        // Wait for reload and then submit
-        await Future.delayed(const Duration(milliseconds: 500));
-        if (!mounted) return;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
 
-        if (_existingReportId != null) {
-          context.read<DeedBloc>().add(
-                SubmitDeedReportRequested(_existingReportId!),
-              );
-        }
-      }
+    final path = Path();
+
+    // Check mark path
+    final startPoint = Offset(size.width * 0.2, size.height * 0.5);
+    final midPoint = Offset(size.width * 0.4, size.height * 0.7);
+    final endPoint = Offset(size.width * 0.8, size.height * 0.3);
+
+    if (progress <= 0.5) {
+      // First part of check (down stroke)
+      final t = progress * 2;
+      final currentPoint = Offset(
+        startPoint.dx + (midPoint.dx - startPoint.dx) * t,
+        startPoint.dy + (midPoint.dy - startPoint.dy) * t,
+      );
+      path.moveTo(startPoint.dx, startPoint.dy);
+      path.lineTo(currentPoint.dx, currentPoint.dy);
     } else {
-      // Update existing report
-      context.read<DeedBloc>().add(
-            UpdateDeedReportRequested(
-              reportId: _existingReportId!,
-              deedValues: _deedValues,
-            ),
-          );
+      // Full first stroke + partial second stroke
+      path.moveTo(startPoint.dx, startPoint.dy);
+      path.lineTo(midPoint.dx, midPoint.dy);
 
-      // If submitting, trigger submit after update
-      if (submit) {
-        await Future.delayed(const Duration(milliseconds: 500));
-        if (!mounted) return;
-
-        context.read<DeedBloc>().add(
-              SubmitDeedReportRequested(_existingReportId!),
-            );
-      }
+      final t = (progress - 0.5) * 2;
+      final currentPoint = Offset(
+        midPoint.dx + (endPoint.dx - midPoint.dx) * t,
+        midPoint.dy + (endPoint.dy - midPoint.dy) * t,
+      );
+      path.lineTo(currentPoint.dx, currentPoint.dy);
     }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_CheckPainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }

@@ -14,7 +14,7 @@ class RecentActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (activities.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Column(
@@ -22,7 +22,7 @@ class RecentActivityCard extends StatelessWidget {
       children: [
         // Header
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -104,7 +104,7 @@ class ActivityItemCard extends StatelessWidget {
                     _buildStatusBadge(context),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // Title
                 Text(
@@ -115,13 +115,13 @@ class ActivityItemCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
 
                 // Description
                 Text(
                   activity.description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -134,14 +134,14 @@ class ActivityItemCard extends StatelessWidget {
                     Icon(
                       Icons.access_time,
                       size: 12,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       _formatTimestamp(activity.timestamp),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             fontSize: 10,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                     ),
                   ],

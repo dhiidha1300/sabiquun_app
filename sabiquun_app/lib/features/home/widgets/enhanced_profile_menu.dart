@@ -60,7 +60,7 @@ class EnhancedProfileMenu extends StatelessWidget {
             ),
         ],
       ),
-      offset: const Offset(0, 56),
+      offset: Offset(0, 56),
       itemBuilder: (context) => [
         // User Info Header
         PopupMenuItem(
@@ -70,35 +70,35 @@ class EnhancedProfileMenu extends StatelessWidget {
             children: [
               Text(
                 user.fullName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
               Text(
                 user.email,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Chip(
                 label: Text(user.role.displayName),
                 backgroundColor: _getRoleColor(user),
-                labelStyle: const TextStyle(
+                labelStyle: TextStyle(
                   color: AppColors.white,
                   fontSize: 11,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               // Profile Completion Progress
               if (profileCompletionPercentage < 100) ...[
                 Text(
                   'Profile $profileCompletionPercentage% complete',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -127,7 +127,7 @@ class EnhancedProfileMenu extends StatelessWidget {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.error,
                         shape: BoxShape.circle,
                       ),
@@ -141,9 +141,9 @@ class EnhancedProfileMenu extends StatelessWidget {
                   : 'Notifications',
             ),
             subtitle: unreadNotifications > 0
-                ? const Text(
+                ? Text(
                     'Coming Soon',
-                    style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                   )
                 : null,
             contentPadding: EdgeInsets.zero,
@@ -203,6 +203,16 @@ class EnhancedProfileMenu extends StatelessWidget {
           ),
         ),
 
+        // Theme Settings
+        const PopupMenuItem(
+          value: 'theme',
+          child: ListTile(
+            leading: Icon(Icons.palette),
+            title: Text('Theme'),
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+
         const PopupMenuDivider(),
 
         // Logout
@@ -238,6 +248,9 @@ class EnhancedProfileMenu extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Settings feature coming soon')),
             );
+            break;
+          case 'theme':
+            context.push('/theme-settings');
             break;
           case 'logout':
             context.read<AuthBloc>().add(const LogoutRequested());

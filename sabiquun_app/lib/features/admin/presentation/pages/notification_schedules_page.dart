@@ -191,11 +191,11 @@ class _NotificationSchedulesPageState extends State<NotificationSchedulesPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.schedule, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
+                  Icon(Icons.schedule, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                  SizedBox(height: 16),
                   Text(
                     'No notification schedules found',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
                   const SizedBox(height: 8),
                   TextButton.icon(
@@ -275,16 +275,16 @@ class _ScheduleCard extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: schedule.isActive ? Colors.green : Colors.red,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 schedule.isActive ? 'Active' : 'Inactive',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.w600,
                 ),
               ),

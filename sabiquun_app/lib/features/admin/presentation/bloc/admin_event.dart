@@ -498,6 +498,9 @@ class CreateNotificationTemplateRequested extends AdminEvent {
   final String? emailSubject;
   final String? emailBody;
   final String notificationType;
+  final String? whatsappTemplateName;
+  final String? whatsappTemplateLanguage;
+  final bool whatsappEnabled;
 
   const CreateNotificationTemplateRequested({
     required this.templateKey,
@@ -506,10 +509,13 @@ class CreateNotificationTemplateRequested extends AdminEvent {
     this.emailSubject,
     this.emailBody,
     required this.notificationType,
+    this.whatsappTemplateName,
+    this.whatsappTemplateLanguage,
+    this.whatsappEnabled = false,
   });
 
   @override
-  List<Object?> get props => [templateKey, title, body, emailSubject, emailBody, notificationType];
+  List<Object?> get props => [templateKey, title, body, emailSubject, emailBody, notificationType, whatsappTemplateName, whatsappTemplateLanguage, whatsappEnabled];
 }
 
 /// Update notification template
@@ -520,6 +526,9 @@ class UpdateNotificationTemplateRequested extends AdminEvent {
   final String? emailSubject;
   final String? emailBody;
   final bool? isEnabled;
+  final String? whatsappTemplateName;
+  final String? whatsappTemplateLanguage;
+  final bool? whatsappEnabled;
 
   const UpdateNotificationTemplateRequested({
     required this.templateId,
@@ -528,10 +537,13 @@ class UpdateNotificationTemplateRequested extends AdminEvent {
     this.emailSubject,
     this.emailBody,
     this.isEnabled,
+    this.whatsappTemplateName,
+    this.whatsappTemplateLanguage,
+    this.whatsappEnabled,
   });
 
   @override
-  List<Object?> get props => [templateId, title, body, emailSubject, emailBody, isEnabled];
+  List<Object?> get props => [templateId, title, body, emailSubject, emailBody, isEnabled, whatsappTemplateName, whatsappTemplateLanguage, whatsappEnabled];
 }
 
 /// Delete notification template

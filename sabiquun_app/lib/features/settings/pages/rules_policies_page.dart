@@ -53,18 +53,18 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
+                  Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                  SizedBox(height: 16),
                   Text(
                     'Failed to load content',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: EdgeInsets.symmetric(horizontal: 32),
                     child: Text(
                       state.message,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.surfaceVariant),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -91,16 +91,16 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
+                    Icon(Icons.article_outlined, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                    SizedBox(height: 16),
                     Text(
                       'No content available',
-                      style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Content will be added soon',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.surfaceVariant),
                     ),
                   ],
                 ),
@@ -116,7 +116,7 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
               children: [
                 // Tab Bar
                 Container(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -134,7 +134,7 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
                   child: RefreshIndicator(
                     onRefresh: () async => _loadContent(),
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       child: _buildContent(contentList[_selectedTab]),
                     ),
                   ),
@@ -147,11 +147,11 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.article, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
+                Icon(Icons.article, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                SizedBox(height: 16),
                 Text(
                   'No content available',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
@@ -232,12 +232,12 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         'Version ${content.version}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                         ),
                       ),
                     ],
@@ -307,20 +307,20 @@ class _RulesPoliciesPageState extends State<RulesPoliciesPage> {
                 ),
               ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             const Divider(),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Footer Info
             Row(
               children: [
-                Icon(Icons.update, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 6),
+                Icon(Icons.update, size: 16, color: Theme.of(context).colorScheme.surfaceVariant),
+                SizedBox(width: 6),
                 Text(
                   'Last updated: ${_formatDate(content.updatedAt)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
               ],

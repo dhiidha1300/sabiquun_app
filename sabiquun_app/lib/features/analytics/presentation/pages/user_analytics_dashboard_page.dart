@@ -152,12 +152,12 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${formatter.format(dates.$1)} - ${formatter.format(dates.$2)}',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                   ),
                 ],
@@ -254,12 +254,12 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 2),
+              SizedBox(height: 2),
               Text(
                 subtitle,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                 ),
               ),
             ],
@@ -280,14 +280,14 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
               elevation: 2,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(32),
                 child: Column(
                   children: [
-                    Icon(Icons.show_chart, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
+                    Icon(Icons.show_chart, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                    SizedBox(height: 16),
                     Text(
                       'No data available for selected period',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.surfaceVariant),
                     ),
                   ],
                 ),
@@ -340,7 +340,7 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   SizedBox(
                     height: 220,
                     child: LineChart(
@@ -351,7 +351,7 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                           horizontalInterval: 2,
                           getDrawingHorizontalLine: (value) {
                             return FlLine(
-                              color: Colors.grey[300]!,
+                              color: Theme.of(context).colorScheme.surfaceVariant!,
                               strokeWidth: 1,
                             );
                           },
@@ -372,12 +372,12 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                               getTitlesWidget: (value, meta) {
                                 final date = dates.$1.add(Duration(days: value.toInt()));
                                 return Padding(
-                                  padding: const EdgeInsets.only(top: 8),
+                                  padding: EdgeInsets.only(top: 8),
                                   child: Text(
                                     DateFormat('MMM dd').format(date),
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: Colors.grey[600],
+                                      color: Theme.of(context).colorScheme.surfaceVariant,
                                     ),
                                   ),
                                 );
@@ -394,7 +394,7 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                                   value.toInt().toString(),
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.grey[600],
+                                    color: Theme.of(context).colorScheme.surfaceVariant,
                                   ),
                                 );
                               },
@@ -404,8 +404,8 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                         borderData: FlBorderData(
                           show: true,
                           border: Border(
-                            bottom: BorderSide(color: Colors.grey[300]!, width: 1),
-                            left: BorderSide(color: Colors.grey[300]!, width: 1),
+                            bottom: BorderSide(color: Theme.of(context).colorScheme.surfaceVariant!, width: 1),
+                            left: BorderSide(color: Theme.of(context).colorScheme.surfaceVariant!, width: 1),
                           ),
                         ),
                         minX: 0,
@@ -445,8 +445,8 @@ class _UserAnalyticsDashboardPageState extends State<UserAnalyticsDashboardPage>
                                 final date = dates.$1.add(Duration(days: spot.x.toInt()));
                                 return LineTooltipItem(
                                   '${DateFormat('MMM dd').format(date)}\n${spot.y.toStringAsFixed(1)} deeds',
-                                  const TextStyle(
-                                    color: Colors.white,
+                                  TextStyle(
+                                    color: Theme.of(context).colorScheme.surface,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                   ),

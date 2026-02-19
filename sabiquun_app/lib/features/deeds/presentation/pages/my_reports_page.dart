@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
+import 'package:sabiquun_app/core/utils/date_formatter.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_bloc.dart';
+import 'package:sabiquun_app/features/calendar/presentation/bloc/calendar_state.dart';
 import 'package:sabiquun_app/features/deeds/domain/entities/deed_report_entity.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_bloc.dart';
 import 'package:sabiquun_app/features/deeds/presentation/bloc/deed_event.dart';
@@ -103,7 +105,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
     return RoleBasedScaffold(
       currentIndex: 1,
       child: Container(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Stack(
           children: [
             SafeArea(
@@ -238,8 +240,8 @@ class _MyReportsPageState extends State<MyReportsPage> {
                 backgroundColor: AppColors.success,
                 elevation: 6,
                 highlightElevation: 12,
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add, size: 28, color: Colors.white),
+                shape: CircleBorder(),
+                child: Icon(Icons.add, size: 28, color: Theme.of(context).colorScheme.surface),
               ),
             ),
           ],
@@ -254,7 +256,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
         children: [
           _buildHeader(),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: Column(
               children: List.generate(3, (index) => _buildSkeletonCard()),
             ),
@@ -266,10 +268,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
   Widget _buildSkeletonCard() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -283,9 +285,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSkeletonBox(width: 150, height: 20),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildSkeletonBox(width: double.infinity, height: 8),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildSkeletonBox(width: 200, height: 16),
         ],
       ),
@@ -297,7 +299,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(8),
       ),
     );
@@ -305,9 +307,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,17 +324,17 @@ class _MyReportsPageState extends State<MyReportsPage> {
                       _getGreeting(),
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
+                    SizedBox(height: 4),
+                    Text(
                       'My Reports',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.5,
                       ),
                     ),
@@ -378,23 +380,23 @@ class _MyReportsPageState extends State<MyReportsPage> {
             },
             borderRadius: BorderRadius.circular(20),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Statistics',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Icon(
                         _showStats ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                     ],
                   ),
@@ -438,12 +440,12 @@ class _MyReportsPageState extends State<MyReportsPage> {
   Widget _buildStatItem({required IconData icon, required String label, required String value}) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 28),
-        const SizedBox(height: 8),
+        Icon(icon, color: Theme.of(context).colorScheme.surface, size: 28),
+        SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surface,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -468,13 +470,13 @@ class _MyReportsPageState extends State<MyReportsPage> {
       children: [
         // Quick Date Filters
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 0, 8),
+          padding: EdgeInsets.fromLTRB(16, 0, 0, 8),
           child: Text(
             'Date Range',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
         ),
@@ -519,17 +521,17 @@ class _MyReportsPageState extends State<MyReportsPage> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
 
         // Status Filters
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 0, 8),
+          padding: EdgeInsets.fromLTRB(16, 0, 0, 8),
           child: Text(
             'Status',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
         ),
@@ -609,7 +611,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                 Icon(
                   icon,
                   size: 16,
-                  color: isSelected ? Colors.white : AppColors.textSecondary,
+                  color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 const SizedBox(width: 6),
               ],
@@ -618,7 +620,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -667,7 +669,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
@@ -678,16 +680,16 @@ class _MyReportsPageState extends State<MyReportsPage> {
                 color: AppColors.primary,
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
+            SizedBox(height: 24),
+            Text(
               'No Reports Found',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               _selectedStatusFilter != StatusFilter.all
                   ? 'No ${_selectedStatusFilter == StatusFilter.submitted ? "submitted" : "draft"} reports found'
@@ -695,7 +697,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 height: 1.5,
               ),
             ),
@@ -726,7 +728,6 @@ class _MyReportsPageState extends State<MyReportsPage> {
   }
 
   Widget _buildReportCard(DeedReportEntity report, int index) {
-    final dateFormat = DateFormat('MMM dd, yyyy');
     final completionPercentage = report.completionPercentage;
 
     // Determine border color based on completion
@@ -740,9 +741,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border(
           left: BorderSide(
@@ -790,28 +791,39 @@ class _MyReportsPageState extends State<MyReportsPage> {
                             color: borderColor,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              dateFormat.format(report.reportDate),
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BlocBuilder<CalendarBloc, CalendarState>(
+                                builder: (context, calendarState) {
+                                  return Text(
+                                    DateFormatter.format(
+                                      report.reportDate,
+                                      preference: calendarState.preference,
+                                      shortFormat: true,
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                },
                               ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${report.totalDeeds.toStringAsFixed(1)}/${report.totalDeedsCount} deeds',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(height: 2),
+                              Text(
+                                '${report.totalDeeds.toStringAsFixed(1)}/${report.totalDeedsCount} deeds',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -919,12 +931,12 @@ class _MyReportsPageState extends State<MyReportsPage> {
     return Row(
       children: [
         Icon(icon, size: 16, color: color),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           label,
           style: TextStyle(
             fontSize: 13,
-            color: Colors.grey[700],
+            color: Theme.of(context).colorScheme.surfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),

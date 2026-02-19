@@ -14,12 +14,19 @@ class SystemSettingsEntity extends Equatable {
   final String organizationName;
   final String receiptFooterText;
 
-  // Notification Configuration
+  // Notification Configuration - Email
   final String? emailApiKey;
   final String? emailDomain;
   final String? emailSenderEmail;
   final String? emailSenderName;
   final String? fcmServerKey;
+
+  // Notification Configuration - WhatsApp
+  final bool whatsappEnabled;
+  final String? whatsappPhoneNumberId;
+  final String? whatsappBusinessAccountId;
+  final String? whatsappAccessToken;
+  final String? whatsappApiVersion;
 
   // App Version Control
   final String appVersion;
@@ -44,6 +51,11 @@ class SystemSettingsEntity extends Equatable {
     this.emailSenderEmail,
     this.emailSenderName,
     this.fcmServerKey,
+    this.whatsappEnabled = false,
+    this.whatsappPhoneNumberId,
+    this.whatsappBusinessAccountId,
+    this.whatsappAccessToken,
+    this.whatsappApiVersion,
     required this.appVersion,
     required this.minimumRequiredVersion,
     required this.forceUpdate,
@@ -83,6 +95,11 @@ class SystemSettingsEntity extends Equatable {
         emailSenderEmail,
         emailSenderName,
         fcmServerKey,
+        whatsappEnabled,
+        whatsappPhoneNumberId,
+        whatsappBusinessAccountId,
+        whatsappAccessToken,
+        whatsappApiVersion,
         appVersion,
         minimumRequiredVersion,
         forceUpdate,

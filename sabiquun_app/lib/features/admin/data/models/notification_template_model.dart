@@ -15,6 +15,10 @@ class NotificationTemplateModel with _$NotificationTemplateModel {
     @JsonKey(name: 'notification_type') required String notificationType,
     @JsonKey(name: 'is_enabled') required bool isEnabled,
     @JsonKey(name: 'is_system_default') required bool isSystemDefault,
+    // WhatsApp template fields
+    @JsonKey(name: 'whatsapp_template_name') String? whatsappTemplateName,
+    @JsonKey(name: 'whatsapp_template_language') String? whatsappTemplateLanguage,
+    @JsonKey(name: 'whatsapp_enabled') @Default(false) bool whatsappEnabled,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
   }) = _NotificationTemplateModel;

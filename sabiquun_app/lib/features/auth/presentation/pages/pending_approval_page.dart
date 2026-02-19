@@ -32,7 +32,7 @@ class PendingApprovalPage extends StatelessWidget {
                 size: 100,
                 color: AppColors.pendingColor,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Thank You Message
               Text(
@@ -43,24 +43,24 @@ class PendingApprovalPage extends StatelessWidget {
                       color: AppColors.primary,
                     ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Pending Status Message
               Text(
                 'Your account is pending admin approval review',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Notification Promise
               Text(
                 'You will receive a notification once your account has been approved by an admin',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
               ),
               const SizedBox(height: 48),
@@ -90,13 +90,13 @@ class PendingApprovalPage extends StatelessWidget {
                 },
                 backgroundColor: AppColors.greyDark,
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: 48),
 
               // Support Contact
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
+                  color: Theme.of(context).colorScheme.surfaceVariant,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -106,12 +106,12 @@ class PendingApprovalPage extends StatelessWidget {
                       color: AppColors.primary,
                       size: 32,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Need help?',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       'Contact support at',
                       style: Theme.of(context).textTheme.bodySmall,

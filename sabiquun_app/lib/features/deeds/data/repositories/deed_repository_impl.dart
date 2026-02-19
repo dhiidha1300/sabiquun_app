@@ -32,12 +32,14 @@ class DeedRepositoryImpl implements DeedRepository {
   Future<DeedReportEntity> createDeedReport({
     required DateTime reportDate,
     required Map<String, double> deedValues,
+    bool submitImmediately = false,
   }) async {
     try {
       final model = await _remoteDataSource.createDeedReport(
         userId: _currentUserId,
         reportDate: reportDate,
         deedValues: deedValues,
+        submitImmediately: submitImmediately,
       );
       return model.toEntity();
     } catch (e) {

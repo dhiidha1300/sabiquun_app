@@ -18,21 +18,21 @@ class AppContentManagementPage extends StatelessWidget {
               size: 80,
               color: Colors.cyan.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Text(
               'App Content Management',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 'Manage app content including rules, policies, and informational pages',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
               ),
             ),

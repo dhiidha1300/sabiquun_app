@@ -36,7 +36,7 @@ class _NotificationTemplatesPageState extends State<NotificationTemplatesPage> {
       context: context,
       builder: (context) => _TemplateFormDialog(
         template: template,
-        onSave: (templateKey, title, body, emailSubject, emailBody, notificationType) {
+        onSave: (templateKey, title, body, emailSubject, emailBody, notificationType, whatsappTemplateName, whatsappTemplateLanguage, whatsappEnabled) {
           if (template == null) {
             // Create new template
             context.read<AdminBloc>().add(CreateNotificationTemplateRequested(
@@ -46,6 +46,9 @@ class _NotificationTemplatesPageState extends State<NotificationTemplatesPage> {
               emailSubject: emailSubject.isEmpty ? null : emailSubject,
               emailBody: emailBody.isEmpty ? null : emailBody,
               notificationType: notificationType,
+              whatsappTemplateName: whatsappTemplateName.isEmpty ? null : whatsappTemplateName,
+              whatsappTemplateLanguage: whatsappTemplateLanguage.isEmpty ? null : whatsappTemplateLanguage,
+              whatsappEnabled: whatsappEnabled,
             ));
           } else {
             // Update existing template
@@ -55,6 +58,9 @@ class _NotificationTemplatesPageState extends State<NotificationTemplatesPage> {
               body: body,
               emailSubject: emailSubject.isEmpty ? null : emailSubject,
               emailBody: emailBody.isEmpty ? null : emailBody,
+              whatsappTemplateName: whatsappTemplateName.isEmpty ? null : whatsappTemplateName,
+              whatsappTemplateLanguage: whatsappTemplateLanguage.isEmpty ? null : whatsappTemplateLanguage,
+              whatsappEnabled: whatsappEnabled,
             ));
           }
         },
@@ -209,11 +215,11 @@ class _NotificationTemplatesPageState extends State<NotificationTemplatesPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notifications_none, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
+                  Icon(Icons.notifications_none, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                  SizedBox(height: 16),
                   Text(
                     'No notification templates found',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
                   const SizedBox(height: 8),
                   TextButton.icon(
@@ -326,18 +332,18 @@ class _TemplateCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: template.isEnabled ? Colors.green : Colors.red,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     template.isEnabled ? 'Active' : 'Inactive',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -347,25 +353,42 @@ class _TemplateCard extends StatelessWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Push: ${template.body}',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (template.emailSubject != null) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Email: ${template.emailSubject}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
                 ],
-                const SizedBox(height: 4),
+                if (template.whatsappEnabled && template.whatsappTemplateName != null) ...[
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.chat, size: 14, color: Color(0xFF25D366)),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          'WhatsApp: ${template.whatsappTemplateName} (${template.whatsappTemplateLanguage ?? "en"})',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                SizedBox(height: 4),
                 Text(
                   'Key: ${template.templateKey}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.surfaceVariant),
                 ),
               ],
             ),
@@ -430,7 +453,7 @@ class _TemplateCard extends StatelessWidget {
 
 class _TemplateFormDialog extends StatefulWidget {
   final NotificationTemplateEntity? template;
-  final Function(String templateKey, String title, String body, String emailSubject, String emailBody, String notificationType) onSave;
+  final Function(String templateKey, String title, String body, String emailSubject, String emailBody, String notificationType, String whatsappTemplateName, String whatsappTemplateLanguage, bool whatsappEnabled) onSave;
 
   const _TemplateFormDialog({
     this.template,
@@ -448,7 +471,10 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
   late TextEditingController _bodyController;
   late TextEditingController _emailSubjectController;
   late TextEditingController _emailBodyController;
+  late TextEditingController _whatsappTemplateNameController;
   String _notificationType = 'manual';
+  String _whatsappTemplateLanguage = 'en';
+  bool _whatsappEnabled = false;
 
   @override
   void initState() {
@@ -458,7 +484,10 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
     _bodyController = TextEditingController(text: widget.template?.body ?? '');
     _emailSubjectController = TextEditingController(text: widget.template?.emailSubject ?? '');
     _emailBodyController = TextEditingController(text: widget.template?.emailBody ?? '');
+    _whatsappTemplateNameController = TextEditingController(text: widget.template?.whatsappTemplateName ?? '');
     _notificationType = widget.template?.notificationType ?? 'manual';
+    _whatsappTemplateLanguage = widget.template?.whatsappTemplateLanguage ?? 'en';
+    _whatsappEnabled = widget.template?.whatsappEnabled ?? false;
   }
 
   @override
@@ -468,6 +497,7 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
     _bodyController.dispose();
     _emailSubjectController.dispose();
     _emailBodyController.dispose();
+    _whatsappTemplateNameController.dispose();
     super.dispose();
   }
 
@@ -477,12 +507,15 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
 
     return AlertDialog(
       title: Text(isEdit ? 'Edit Template' : 'Create Template'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               if (!isEdit)
                 TextFormField(
                   controller: _templateKeyController,
@@ -574,10 +607,63 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
                 ),
                 maxLines: 5,
               ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.chat, color: Color(0xFF25D366)),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'WhatsApp Notification (Optional)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Switch(
+                    value: _whatsappEnabled,
+                    onChanged: (value) {
+                      setState(() => _whatsappEnabled = value);
+                    },
+                  ),
+                ],
+              ),
+              if (_whatsappEnabled) ...[
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _whatsappTemplateNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'WhatsApp Template Name',
+                    hintText: 'e.g., deed_reminder',
+                    helperText: 'Must be pre-approved in Meta Business Manager',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _whatsappTemplateLanguage,
+                  decoration: const InputDecoration(
+                    labelText: 'Template Language',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'en', child: Text('English (en)')),
+                    DropdownMenuItem(value: 'sw', child: Text('Swahili (sw)')),
+                    DropdownMenuItem(value: 'ar', child: Text('Arabic (ar)')),
+                    DropdownMenuItem(value: 'so', child: Text('Somali (so)')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _whatsappTemplateLanguage = value);
+                    }
+                  },
+                ),
+              ],
             ],
           ),
         ),
       ),
+    ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -593,6 +679,9 @@ class _TemplateFormDialogState extends State<_TemplateFormDialog> {
                 _emailSubjectController.text.trim(),
                 _emailBodyController.text.trim(),
                 _notificationType,
+                _whatsappTemplateNameController.text.trim(),
+                _whatsappTemplateLanguage,
+                _whatsappEnabled,
               );
             }
           },

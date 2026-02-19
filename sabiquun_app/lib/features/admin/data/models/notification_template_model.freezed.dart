@@ -37,7 +37,13 @@ mixin _$NotificationTemplateModel {
   @JsonKey(name: 'is_enabled')
   bool get isEnabled => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_system_default')
-  bool get isSystemDefault => throw _privateConstructorUsedError;
+  bool get isSystemDefault => throw _privateConstructorUsedError; // WhatsApp template fields
+  @JsonKey(name: 'whatsapp_template_name')
+  String? get whatsappTemplateName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_template_language')
+  String? get whatsappTemplateLanguage => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_enabled')
+  bool get whatsappEnabled => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
@@ -70,6 +76,10 @@ abstract class $NotificationTemplateModelCopyWith<$Res> {
     @JsonKey(name: 'notification_type') String notificationType,
     @JsonKey(name: 'is_enabled') bool isEnabled,
     @JsonKey(name: 'is_system_default') bool isSystemDefault,
+    @JsonKey(name: 'whatsapp_template_name') String? whatsappTemplateName,
+    @JsonKey(name: 'whatsapp_template_language')
+    String? whatsappTemplateLanguage,
+    @JsonKey(name: 'whatsapp_enabled') bool whatsappEnabled,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
@@ -102,6 +112,9 @@ class _$NotificationTemplateModelCopyWithImpl<
     Object? notificationType = null,
     Object? isEnabled = null,
     Object? isSystemDefault = null,
+    Object? whatsappTemplateName = freezed,
+    Object? whatsappTemplateLanguage = freezed,
+    Object? whatsappEnabled = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -143,6 +156,18 @@ class _$NotificationTemplateModelCopyWithImpl<
                 ? _value.isSystemDefault
                 : isSystemDefault // ignore: cast_nullable_to_non_nullable
                       as bool,
+            whatsappTemplateName: freezed == whatsappTemplateName
+                ? _value.whatsappTemplateName
+                : whatsappTemplateName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            whatsappTemplateLanguage: freezed == whatsappTemplateLanguage
+                ? _value.whatsappTemplateLanguage
+                : whatsappTemplateLanguage // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            whatsappEnabled: null == whatsappEnabled
+                ? _value.whatsappEnabled
+                : whatsappEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -176,6 +201,10 @@ abstract class _$$NotificationTemplateModelImplCopyWith<$Res>
     @JsonKey(name: 'notification_type') String notificationType,
     @JsonKey(name: 'is_enabled') bool isEnabled,
     @JsonKey(name: 'is_system_default') bool isSystemDefault,
+    @JsonKey(name: 'whatsapp_template_name') String? whatsappTemplateName,
+    @JsonKey(name: 'whatsapp_template_language')
+    String? whatsappTemplateLanguage,
+    @JsonKey(name: 'whatsapp_enabled') bool whatsappEnabled,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
@@ -208,6 +237,9 @@ class __$$NotificationTemplateModelImplCopyWithImpl<$Res>
     Object? notificationType = null,
     Object? isEnabled = null,
     Object? isSystemDefault = null,
+    Object? whatsappTemplateName = freezed,
+    Object? whatsappTemplateLanguage = freezed,
+    Object? whatsappEnabled = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -249,6 +281,18 @@ class __$$NotificationTemplateModelImplCopyWithImpl<$Res>
             ? _value.isSystemDefault
             : isSystemDefault // ignore: cast_nullable_to_non_nullable
                   as bool,
+        whatsappTemplateName: freezed == whatsappTemplateName
+            ? _value.whatsappTemplateName
+            : whatsappTemplateName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        whatsappTemplateLanguage: freezed == whatsappTemplateLanguage
+            ? _value.whatsappTemplateLanguage
+            : whatsappTemplateLanguage // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        whatsappEnabled: null == whatsappEnabled
+            ? _value.whatsappEnabled
+            : whatsappEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -275,6 +319,9 @@ class _$NotificationTemplateModelImpl implements _NotificationTemplateModel {
     @JsonKey(name: 'notification_type') required this.notificationType,
     @JsonKey(name: 'is_enabled') required this.isEnabled,
     @JsonKey(name: 'is_system_default') required this.isSystemDefault,
+    @JsonKey(name: 'whatsapp_template_name') this.whatsappTemplateName,
+    @JsonKey(name: 'whatsapp_template_language') this.whatsappTemplateLanguage,
+    @JsonKey(name: 'whatsapp_enabled') this.whatsappEnabled = false,
     @JsonKey(name: 'created_at') required this.createdAt,
     @JsonKey(name: 'updated_at') required this.updatedAt,
   });
@@ -306,6 +353,16 @@ class _$NotificationTemplateModelImpl implements _NotificationTemplateModel {
   @override
   @JsonKey(name: 'is_system_default')
   final bool isSystemDefault;
+  // WhatsApp template fields
+  @override
+  @JsonKey(name: 'whatsapp_template_name')
+  final String? whatsappTemplateName;
+  @override
+  @JsonKey(name: 'whatsapp_template_language')
+  final String? whatsappTemplateLanguage;
+  @override
+  @JsonKey(name: 'whatsapp_enabled')
+  final bool whatsappEnabled;
   @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
@@ -315,7 +372,7 @@ class _$NotificationTemplateModelImpl implements _NotificationTemplateModel {
 
   @override
   String toString() {
-    return 'NotificationTemplateModel(id: $id, templateKey: $templateKey, title: $title, body: $body, emailSubject: $emailSubject, emailBody: $emailBody, notificationType: $notificationType, isEnabled: $isEnabled, isSystemDefault: $isSystemDefault, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'NotificationTemplateModel(id: $id, templateKey: $templateKey, title: $title, body: $body, emailSubject: $emailSubject, emailBody: $emailBody, notificationType: $notificationType, isEnabled: $isEnabled, isSystemDefault: $isSystemDefault, whatsappTemplateName: $whatsappTemplateName, whatsappTemplateLanguage: $whatsappTemplateLanguage, whatsappEnabled: $whatsappEnabled, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -338,6 +395,15 @@ class _$NotificationTemplateModelImpl implements _NotificationTemplateModel {
                 other.isEnabled == isEnabled) &&
             (identical(other.isSystemDefault, isSystemDefault) ||
                 other.isSystemDefault == isSystemDefault) &&
+            (identical(other.whatsappTemplateName, whatsappTemplateName) ||
+                other.whatsappTemplateName == whatsappTemplateName) &&
+            (identical(
+                  other.whatsappTemplateLanguage,
+                  whatsappTemplateLanguage,
+                ) ||
+                other.whatsappTemplateLanguage == whatsappTemplateLanguage) &&
+            (identical(other.whatsappEnabled, whatsappEnabled) ||
+                other.whatsappEnabled == whatsappEnabled) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -357,6 +423,9 @@ class _$NotificationTemplateModelImpl implements _NotificationTemplateModel {
     notificationType,
     isEnabled,
     isSystemDefault,
+    whatsappTemplateName,
+    whatsappTemplateLanguage,
+    whatsappEnabled,
     createdAt,
     updatedAt,
   );
@@ -389,6 +458,10 @@ abstract class _NotificationTemplateModel implements NotificationTemplateModel {
     @JsonKey(name: 'notification_type') required final String notificationType,
     @JsonKey(name: 'is_enabled') required final bool isEnabled,
     @JsonKey(name: 'is_system_default') required final bool isSystemDefault,
+    @JsonKey(name: 'whatsapp_template_name') final String? whatsappTemplateName,
+    @JsonKey(name: 'whatsapp_template_language')
+    final String? whatsappTemplateLanguage,
+    @JsonKey(name: 'whatsapp_enabled') final bool whatsappEnabled,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
     @JsonKey(name: 'updated_at') required final DateTime updatedAt,
   }) = _$NotificationTemplateModelImpl;
@@ -419,7 +492,16 @@ abstract class _NotificationTemplateModel implements NotificationTemplateModel {
   bool get isEnabled;
   @override
   @JsonKey(name: 'is_system_default')
-  bool get isSystemDefault;
+  bool get isSystemDefault; // WhatsApp template fields
+  @override
+  @JsonKey(name: 'whatsapp_template_name')
+  String? get whatsappTemplateName;
+  @override
+  @JsonKey(name: 'whatsapp_template_language')
+  String? get whatsappTemplateLanguage;
+  @override
+  @JsonKey(name: 'whatsapp_enabled')
+  bool get whatsappEnabled;
   @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;

@@ -221,7 +221,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           SizedBox(
@@ -230,7 +230,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
+                color: Theme.of(context).colorScheme.surfaceVariant,
               ),
             ),
           ),
@@ -302,7 +302,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
                   'Original: ${entry.deedValue.toStringAsFixed(1)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
               ],
@@ -389,11 +389,11 @@ class _ReportEditPageState extends State<ReportEditPage> {
               '${difference >= 0 ? '+' : ''}${difference.toStringAsFixed(1)}',
               difference >= 0 ? Colors.green[700]! : Colors.red[700]!,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
@@ -419,7 +419,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
 
   Widget _buildSummaryRow(String label, String value, Color color) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -427,7 +427,7 @@ class _ReportEditPageState extends State<ReportEditPage> {
             label,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: Colors.grey[700],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
           Text(

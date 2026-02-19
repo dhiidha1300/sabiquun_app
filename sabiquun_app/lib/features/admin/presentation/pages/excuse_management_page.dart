@@ -301,13 +301,13 @@ class _ExcuseManagementPageState extends State<ExcuseManagementPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.inbox, size: 64, color: Colors.grey[400]),
-                          const SizedBox(height: 16),
+                          Icon(Icons.inbox, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                          SizedBox(height: 16),
                           Text(
                             'No excuses found',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             state.appliedFilter != null
                                 ? 'No ${state.appliedFilter?.toLowerCase()} excuses'
@@ -461,11 +461,11 @@ class _ExcuseCard extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           '${_formatExcuseType(excuseType)} - ${DateFormat('MMM dd, yyyy').format(reportDate)}',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                             fontSize: 14,
                           ),
                         ),
@@ -491,22 +491,22 @@ class _ExcuseCard extends StatelessWidget {
                 ],
               ),
               if (description != null && description.isNotEmpty) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   description,
-                  style: TextStyle(color: Colors.grey[700]),
+                  style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
-                  const SizedBox(width: 4),
+                  Icon(Icons.calendar_today, size: 14, color: Theme.of(context).colorScheme.surfaceVariant),
+                  SizedBox(width: 4),
                   Text(
                     'Submitted ${DateFormat('MMM dd, HH:mm').format(submittedAt)}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
                   const Spacer(),
                   Container(

@@ -22,7 +22,7 @@ class PenaltyCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -41,7 +41,7 @@ class PenaltyCard extends StatelessWidget {
                   _buildStatusBadge(context),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Amount
               Text(
@@ -51,14 +51,14 @@ class PenaltyCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               // Missed Deeds (if available)
               if (penalty.missedDeeds != null) ...[
                 Text(
                   '${penalty.missedDeeds!.toStringAsFixed(1)} deeds missed',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                       ),
                 ),
                 const SizedBox(height: 8),
@@ -66,18 +66,18 @@ class PenaltyCard extends StatelessWidget {
 
               // Payment Progress (if partially paid)
               if (penalty.status.isPartiallyPaid) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildPaymentProgress(context),
               ],
 
               // Waived Info (if waived)
               if (penalty.status.isWaived) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 if (penalty.waivedReason != null)
                   Text(
                     'Reason: ${penalty.waivedReason}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           fontStyle: FontStyle.italic,
                         ),
                   ),
@@ -91,7 +91,7 @@ class PenaltyCard extends StatelessWidget {
 
   Widget _buildStatusBadge(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: _getStatusColor().withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -120,13 +120,13 @@ class PenaltyCard extends StatelessWidget {
             Text(
               'Paid: ${penalty.formattedPaidAmount}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[700],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
             ),
             Text(
               'Remaining: ${penalty.formattedRemainingAmount}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[700],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                     fontWeight: FontWeight.bold,
                   ),
             ),

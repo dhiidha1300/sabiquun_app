@@ -18,6 +18,9 @@ _$NotificationTemplateModelImpl _$$NotificationTemplateModelImplFromJson(
   notificationType: json['notification_type'] as String,
   isEnabled: json['is_enabled'] as bool,
   isSystemDefault: json['is_system_default'] as bool,
+  whatsappTemplateName: json['whatsapp_template_name'] as String?,
+  whatsappTemplateLanguage: json['whatsapp_template_language'] as String?,
+  whatsappEnabled: json['whatsapp_enabled'] as bool? ?? false,
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
 );
@@ -34,6 +37,9 @@ Map<String, dynamic> _$$NotificationTemplateModelImplToJson(
   'notification_type': instance.notificationType,
   'is_enabled': instance.isEnabled,
   'is_system_default': instance.isSystemDefault,
+  'whatsapp_template_name': instance.whatsappTemplateName,
+  'whatsapp_template_language': instance.whatsappTemplateLanguage,
+  'whatsapp_enabled': instance.whatsappEnabled,
   'created_at': instance.createdAt.toIso8601String(),
   'updated_at': instance.updatedAt.toIso8601String(),
 };

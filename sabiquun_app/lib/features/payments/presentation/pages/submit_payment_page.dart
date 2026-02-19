@@ -130,7 +130,7 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
           return Card(
             color: Colors.blue.shade50,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -140,7 +140,7 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
                           color: Colors.blue.shade900,
                         ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     '${state.totalBalance.toStringAsFixed(0)} Shillings',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -149,7 +149,7 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
                         ),
                   ),
                   if (state.penalties.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       '${state.penalties.length} unpaid ${state.penalties.length == 1 ? 'penalty' : 'penalties'}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -173,31 +173,31 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
         if (state is UnpaidPenaltiesLoaded && state.penalties.isNotEmpty) {
           return Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       const Icon(Icons.info_outline, size: 20),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         'Outstanding Penalties (FIFO)',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Oldest penalties will be paid first',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           fontStyle: FontStyle.italic,
                         ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   ...state.penalties.take(5).map((penalty) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: 8),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -218,7 +218,7 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
                     Text(
                       '+ ${state.penalties.length - 5} more...',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                           ),
                     ),
                 ],
@@ -226,7 +226,7 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
             ),
           );
         }
-        return const SizedBox.shrink();
+        return SizedBox.shrink();
       },
     );
   }
@@ -355,14 +355,14 @@ class _SubmitPaymentPageState extends State<SubmitPaymentPage> {
             );
           },
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
 
         // Payment Type
         Text(
           'Payment Type',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Card(
           child: Column(
             children: [

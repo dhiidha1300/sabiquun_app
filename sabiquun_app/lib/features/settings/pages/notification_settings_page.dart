@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../auth/presentation/bloc/auth_bloc.dart';
+import '../../auth/presentation/bloc/auth_state.dart';
 
 class NotificationSettingsPage extends StatefulWidget {
   const NotificationSettingsPage({super.key});
@@ -12,6 +15,9 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   // Settings state
   bool _pushNotificationsEnabled = true;
   bool _emailNotificationsEnabled = true;
+  bool _whatsappNotificationsEnabled = false;
+  String? _whatsappPhone;
+  bool _whatsappVerified = false;
   bool _reportRemindersEnabled = true;
   bool _paymentRemindersEnabled = true;
   bool _excuseUpdatesEnabled = true;
@@ -154,6 +160,120 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                             });
                           },
                   ),
+                ],
+              ),
+            ),
+
+            // WhatsApp Notifications
+            _buildSectionHeader('WhatsApp'),
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                  // WhatsApp Status
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF25D366).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.chat,
+                        color: Color(0xFF25D366),
+                      ),
+                    ),
+                    title: const Text('WhatsApp Notifications'),
+                    subtitle: _whatsappVerified
+                        ? Text(
+                            'Verified: ${_whatsappPhone ?? "N/A"}',
+                            style: const TextStyle(color: Color(0xFF25D366)),
+                          )
+                        : const Text(
+                            'Not verified - Contact admin to enable',
+                            style: TextStyle(color: Colors.orange),
+                          ),
+                    trailing: _whatsappVerified
+                        ? Switch(
+                            value: _whatsappNotificationsEnabled,
+                            activeColor: const Color(0xFF25D366),
+                            onChanged: _isLoading
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      _whatsappNotificationsEnabled = value;
+                                    });
+                                  },
+                          )
+                        : Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'Pending',
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
+                  if (!_whatsappVerified) ...[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            size: 20,
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'To receive WhatsApp notifications, please contact your administrator to verify your WhatsApp number.',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.surfaceVariant,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (_whatsappVerified) ...[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle,
+                            color: Color(0xFF25D366),
+                            size: 20,
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Your WhatsApp number has been verified. You will receive notifications such as deadline reminders, payment updates, and more.',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.surfaceVariant,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -375,13 +495,13 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Colors.grey,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
       ),
     );

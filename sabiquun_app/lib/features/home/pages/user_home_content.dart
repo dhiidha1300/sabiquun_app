@@ -70,7 +70,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
   Future<void> _onRefresh() async {
     _loadData();
     // Wait a bit for the data to load
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 500));
   }
 
   @override
@@ -89,7 +89,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
         ),
       ],
       child: Container(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Stack(
           children: [
             SafeArea(
@@ -219,9 +219,9 @@ class _UserHomeContentState extends State<UserHomeContent> {
     final membershipBadge = MembershipHelper.getBadge(user.createdAt ?? DateTime.now());
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: Row(
         children: [
@@ -268,11 +268,11 @@ class _UserHomeContentState extends State<UserHomeContent> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   user.fullName,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
@@ -299,7 +299,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
@@ -313,7 +313,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
           return Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -441,7 +441,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -492,17 +492,17 @@ class _UserHomeContentState extends State<UserHomeContent> {
                         children: [
                           TextSpan(
                             text: totalDeeds.toStringAsFixed(1),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          const TextSpan(
+                          TextSpan(
                             text: ' /10',
                             style: TextStyle(
                               fontSize: 18,
-                              color: Colors.grey,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                         ],
@@ -513,14 +513,14 @@ class _UserHomeContentState extends State<UserHomeContent> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Deed breakdown
           Text(
             '${faraid.toStringAsFixed(1)}/5 Fara\'id | ${sunnah.toStringAsFixed(1)}/5 Sunnah',
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
 
@@ -585,12 +585,12 @@ class _UserHomeContentState extends State<UserHomeContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Quick Actions',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 12),
@@ -635,7 +635,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
     required VoidCallback onTap,
   }) {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () {
@@ -644,16 +644,16 @@ class _UserHomeContentState extends State<UserHomeContent> {
         },
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: Theme.of(context).colorScheme.surfaceVariant!),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -664,13 +664,13 @@ class _UserHomeContentState extends State<UserHomeContent> {
                   size: 24,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -685,13 +685,13 @@ class _UserHomeContentState extends State<UserHomeContent> {
 
   Widget _buildModernDrawer() {
     return Drawer(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       child: Column(
         children: [
           // Drawer Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+            padding: EdgeInsets.fromLTRB(24, 60, 24, 24),
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
@@ -702,7 +702,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -724,11 +724,11 @@ class _UserHomeContentState extends State<UserHomeContent> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   widget.user.fullName,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -919,7 +919,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
           ),
           child: Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
             size: 22,
           ),
         ),
@@ -928,7 +928,7 @@ class _UserHomeContentState extends State<UserHomeContent> {
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             fontSize: 15,
-            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
           ),
         ),
         onTap: onTap,
@@ -944,18 +944,18 @@ class _UserHomeContentState extends State<UserHomeContent> {
 class _ModernDrawer extends StatelessWidget {
   final UserEntity user;
 
-  const _ModernDrawer({required this.user});
+  _ModernDrawer({required this.user});
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       child: Column(
         children: [
           // Drawer Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+            padding: EdgeInsets.fromLTRB(24, 60, 24, 24),
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
@@ -966,7 +966,7 @@ class _ModernDrawer extends StatelessWidget {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -988,11 +988,11 @@ class _ModernDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   user.fullName,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
@@ -1079,6 +1079,15 @@ class _ModernDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                     // TODO: Navigate to settings
+                  },
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  icon: Icons.palette_rounded,
+                  title: 'Theme',
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/theme-settings');
                   },
                 ),
                 _buildDrawerItem(
@@ -1192,7 +1201,7 @@ class _ModernDrawer extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
             size: 22,
           ),
         ),
@@ -1201,7 +1210,7 @@ class _ModernDrawer extends StatelessWidget {
           style: TextStyle(
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             fontSize: 15,
-            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
           ),
         ),
         onTap: onTap,

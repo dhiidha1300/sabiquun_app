@@ -71,18 +71,18 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'User Report',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: BlocConsumer<SupervisorBloc, SupervisorState>(
         listener: (context, state) {
@@ -122,7 +122,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
         },
         builder: (context, state) {
           if (state is SupervisorLoading) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
@@ -132,12 +132,12 @@ class _UserDetailPageState extends State<UserDetailPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-                  const SizedBox(height: 16),
+                  Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                  SizedBox(height: 16),
                   Text(
                     state.message,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -180,7 +180,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
           // Deed Details Table
           _buildDeedDetailsTable(report),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
         ],
       ),
     );
@@ -188,10 +188,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Widget _buildUserInfoCard(DetailedUserReportEntity report) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -208,32 +208,32 @@ class _UserDetailPageState extends State<UserDetailPage> {
             backgroundColor: AppColors.primary,
             child: Text(
               report.fullName.isNotEmpty ? report.fullName[0].toUpperCase() : '?',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   report.fullName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   report.email,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -282,7 +282,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
               AppColors.success,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: _buildStatCard(
               'Compliance',
@@ -298,16 +298,16 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Widget _buildStatCard(String label, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             value,
             style: TextStyle(
@@ -316,12 +316,12 @@ class _UserDetailPageState extends State<UserDetailPage> {
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -331,10 +331,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Widget _buildControlsSection() {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -342,31 +342,31 @@ class _UserDetailPageState extends State<UserDetailPage> {
         children: [
           Row(
             children: [
-              const Icon(Icons.date_range, color: AppColors.primary, size: 20),
-              const SizedBox(width: 8),
-              const Text(
+              Icon(Icons.date_range, color: AppColors.primary, size: 20),
+              SizedBox(width: 8),
+              Text(
                 'Date Range:',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              const Spacer(),
+              Spacer(),
               TextButton.icon(
                 onPressed: _selectDateRange,
-                icon: const Icon(Icons.edit, size: 16),
-                label: const Text('Change'),
+                icon: Icon(Icons.edit, size: 16),
+                label: Text('Change'),
                 style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             '${_dateFormat.format(_startDate)} - ${_dateFormat.format(_endDate)}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 16),
@@ -393,7 +393,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade600,
                     foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
@@ -407,20 +407,20 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Widget _buildDeedDetailsTable(DetailedUserReportEntity report) {
     if (report.dailyReports.isEmpty) {
       return Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(32),
+        margin: EdgeInsets.all(16),
+        padding: EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Center(
+        child: Center(
           child: Column(
             children: [
-              Icon(Icons.inbox, size: 64, color: AppColors.textSecondary),
+              Icon(Icons.inbox, size: 64, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
               SizedBox(height: 16),
               Text(
                 'No reports found for selected date range',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
               ),
             ],
           ),
@@ -434,22 +434,22 @@ class _UserDetailPageState extends State<UserDetailPage> {
         .toList();
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(16),
             child: Text(
               'Daily Deed Details',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),

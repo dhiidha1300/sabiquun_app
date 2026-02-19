@@ -25,6 +25,12 @@ mixin _$RestDayModel {
   bool get isRecurring => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'hijri_month')
+  int? get hijriMonth => throw _privateConstructorUsedError;
+  @JsonKey(name: 'hijri_day')
+  int? get hijriDay => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_hijri_based')
+  bool get isHijriBased => throw _privateConstructorUsedError;
 
   /// Create a copy of RestDayModel
   /// with the given fields replaced by the non-null parameter values.
@@ -47,6 +53,9 @@ abstract class $RestDayModelCopyWith<$Res> {
     String description,
     @JsonKey(name: 'is_recurring') bool isRecurring,
     @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'hijri_month') int? hijriMonth,
+    @JsonKey(name: 'hijri_day') int? hijriDay,
+    @JsonKey(name: 'is_hijri_based') bool isHijriBased,
   });
 }
 
@@ -71,6 +80,9 @@ class _$RestDayModelCopyWithImpl<$Res, $Val extends RestDayModel>
     Object? description = null,
     Object? isRecurring = null,
     Object? createdAt = null,
+    Object? hijriMonth = freezed,
+    Object? hijriDay = freezed,
+    Object? isHijriBased = null,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +110,18 @@ class _$RestDayModelCopyWithImpl<$Res, $Val extends RestDayModel>
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            hijriMonth: freezed == hijriMonth
+                ? _value.hijriMonth
+                : hijriMonth // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            hijriDay: freezed == hijriDay
+                ? _value.hijriDay
+                : hijriDay // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            isHijriBased: null == isHijriBased
+                ? _value.isHijriBased
+                : isHijriBased // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -120,6 +144,9 @@ abstract class _$$RestDayModelImplCopyWith<$Res>
     String description,
     @JsonKey(name: 'is_recurring') bool isRecurring,
     @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'hijri_month') int? hijriMonth,
+    @JsonKey(name: 'hijri_day') int? hijriDay,
+    @JsonKey(name: 'is_hijri_based') bool isHijriBased,
   });
 }
 
@@ -143,6 +170,9 @@ class __$$RestDayModelImplCopyWithImpl<$Res>
     Object? description = null,
     Object? isRecurring = null,
     Object? createdAt = null,
+    Object? hijriMonth = freezed,
+    Object? hijriDay = freezed,
+    Object? isHijriBased = null,
   }) {
     return _then(
       _$RestDayModelImpl(
@@ -170,6 +200,18 @@ class __$$RestDayModelImplCopyWithImpl<$Res>
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        hijriMonth: freezed == hijriMonth
+            ? _value.hijriMonth
+            : hijriMonth // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        hijriDay: freezed == hijriDay
+            ? _value.hijriDay
+            : hijriDay // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        isHijriBased: null == isHijriBased
+            ? _value.isHijriBased
+            : isHijriBased // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -185,6 +227,9 @@ class _$RestDayModelImpl implements _RestDayModel {
     required this.description,
     @JsonKey(name: 'is_recurring') required this.isRecurring,
     @JsonKey(name: 'created_at') required this.createdAt,
+    @JsonKey(name: 'hijri_month') this.hijriMonth,
+    @JsonKey(name: 'hijri_day') this.hijriDay,
+    @JsonKey(name: 'is_hijri_based') this.isHijriBased = false,
   });
 
   @override
@@ -201,10 +246,19 @@ class _$RestDayModelImpl implements _RestDayModel {
   @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  @override
+  @JsonKey(name: 'hijri_month')
+  final int? hijriMonth;
+  @override
+  @JsonKey(name: 'hijri_day')
+  final int? hijriDay;
+  @override
+  @JsonKey(name: 'is_hijri_based')
+  final bool isHijriBased;
 
   @override
   String toString() {
-    return 'RestDayModel(id: $id, date: $date, endDate: $endDate, description: $description, isRecurring: $isRecurring, createdAt: $createdAt)';
+    return 'RestDayModel(id: $id, date: $date, endDate: $endDate, description: $description, isRecurring: $isRecurring, createdAt: $createdAt, hijriMonth: $hijriMonth, hijriDay: $hijriDay, isHijriBased: $isHijriBased)';
   }
 
   @override
@@ -220,7 +274,13 @@ class _$RestDayModelImpl implements _RestDayModel {
             (identical(other.isRecurring, isRecurring) ||
                 other.isRecurring == isRecurring) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.hijriMonth, hijriMonth) ||
+                other.hijriMonth == hijriMonth) &&
+            (identical(other.hijriDay, hijriDay) ||
+                other.hijriDay == hijriDay) &&
+            (identical(other.isHijriBased, isHijriBased) ||
+                other.isHijriBased == isHijriBased));
   }
 
   @override
@@ -232,6 +292,9 @@ class _$RestDayModelImpl implements _RestDayModel {
     description,
     isRecurring,
     createdAt,
+    hijriMonth,
+    hijriDay,
+    isHijriBased,
   );
 
   /// Create a copy of RestDayModel
@@ -251,6 +314,9 @@ abstract class _RestDayModel implements RestDayModel {
     required final String description,
     @JsonKey(name: 'is_recurring') required final bool isRecurring,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
+    @JsonKey(name: 'hijri_month') final int? hijriMonth,
+    @JsonKey(name: 'hijri_day') final int? hijriDay,
+    @JsonKey(name: 'is_hijri_based') final bool isHijriBased,
   }) = _$RestDayModelImpl;
 
   @override
@@ -267,6 +333,15 @@ abstract class _RestDayModel implements RestDayModel {
   @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;
+  @override
+  @JsonKey(name: 'hijri_month')
+  int? get hijriMonth;
+  @override
+  @JsonKey(name: 'hijri_day')
+  int? get hijriDay;
+  @override
+  @JsonKey(name: 'is_hijri_based')
+  bool get isHijriBased;
 
   /// Create a copy of RestDayModel
   /// with the given fields replaced by the non-null parameter values.

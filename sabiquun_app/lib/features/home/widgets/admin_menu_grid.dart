@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sabiquun_app/core/theme/app_colors.dart';
+import 'package:sabiquun_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sabiquun_app/features/auth/presentation/bloc/auth_event.dart';
 
 /// Modern Interactive Sidebar Menu with hover effects and animations
 class AdminMenuGrid extends StatefulWidget {
@@ -126,6 +129,8 @@ class AdminMenuGridState extends State<AdminMenuGrid>
                             ),
                           ),
                         ),
+                        // Logout button at bottom
+                        _buildLogoutButton(context),
                       ],
                     ),
                   ),
@@ -183,21 +188,21 @@ class AdminMenuGridState extends State<AdminMenuGrid>
               ),
             ),
           ),
-          const SizedBox(width: 14),
-          const Expanded(
+          SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Sabiquun',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     fontSize: 19,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0.5,
                     shadows: [
                       Shadow(
-                        color: Colors.black26,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.26),
                         blurRadius: 4,
                       ),
                     ],
@@ -207,7 +212,7 @@ class AdminMenuGridState extends State<AdminMenuGrid>
                 Text(
                   'Admin Portal',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
@@ -221,14 +226,14 @@ class AdminMenuGridState extends State<AdminMenuGrid>
               onTap: closeDrawer,
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.close_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   size: 22,
                 ),
               ),
@@ -244,17 +249,17 @@ class AdminMenuGridState extends State<AdminMenuGrid>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(18, 16, 18, 10),
+          padding: EdgeInsets.fromLTRB(18, 16, 18, 10),
           child: Row(
             children: [
               Icon(icon, size: 15, color: AppColors.primary),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 title,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   letterSpacing: 1.0,
                 ),
               ),
@@ -355,7 +360,7 @@ class AdminMenuGridState extends State<AdminMenuGrid>
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: isHovered ? FontWeight.w700 : FontWeight.w600,
-                        color: isHovered ? item.color : AppColors.textPrimary,
+                        color: isHovered ? item.color : Theme.of(context).colorScheme.onSurface,
                         letterSpacing: 0.2,
                       ),
                     ),
@@ -366,7 +371,7 @@ class AdminMenuGridState extends State<AdminMenuGrid>
                     child: Icon(
                       Icons.arrow_forward_rounded,
                       size: 16,
-                      color: isHovered ? item.color : AppColors.textSecondary.withValues(alpha: 0.5),
+                      color: isHovered ? item.color : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -374,6 +379,129 @@ class AdminMenuGridState extends State<AdminMenuGrid>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showLogoutConfirmation(context),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  AppColors.error.withValues(alpha: 0.1),
+                  AppColors.error.withValues(alpha: 0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.error.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.logout_rounded,
+                  size: 20,
+                  color: AppColors.error,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.error,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.logout_rounded,
+                color: AppColors.error,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Logout',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Are you sure you want to logout?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              closeDrawer();
+              context.read<AuthBloc>().add(const LogoutRequested());
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Logout'),
+          ),
+        ],
       ),
     );
   }
@@ -389,6 +517,7 @@ class AdminMenuGridState extends State<AdminMenuGrid>
 
   List<_MenuItem> get _personalActions => [
         _MenuItem(icon: Icons.account_circle_rounded, title: 'Profile', route: '/profile', color: Colors.blueGrey),
+        _MenuItem(icon: Icons.palette_rounded, title: 'Theme', route: '/theme-settings', color: Colors.deepPurple),
         _MenuItem(icon: Icons.today_rounded, title: 'Today\'s Deeds', route: '/today-deeds', color: Colors.blue),
         _MenuItem(icon: Icons.assignment_rounded, title: 'My Reports', route: '/my-reports', color: Colors.teal),
         _MenuItem(icon: Icons.account_balance_wallet_rounded, title: 'Penalty History', route: '/penalty-history', color: Colors.orange),
@@ -404,7 +533,7 @@ class AdminMenuGridState extends State<AdminMenuGrid>
         _MenuItem(icon: Icons.payment_rounded, title: 'Payment Review', route: '/payment-review', color: Colors.green),
         _MenuItem(icon: Icons.settings_rounded, title: 'System Settings', route: '/admin/system-settings', color: Colors.blueGrey),
         _MenuItem(icon: Icons.notifications_active_rounded, title: 'Notification Templates', route: '/admin/notification-templates', color: Colors.deepOrange),
-        _MenuItem(icon: Icons.history_rounded, title: 'Audit Logs', route: '/admin/audit-logs', color: Colors.grey),
+        _MenuItem(icon: Icons.history_rounded, title: 'Audit Logs', route: '/admin/audit-logs', color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
       ];
 
   List<_MenuItem> get _contentActions => [

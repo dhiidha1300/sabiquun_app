@@ -75,11 +75,11 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: AppColors.white,
               surface: AppColors.surface,
-              onSurface: AppColors.textPrimary,
+              onSurface: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           child: child!,
@@ -104,11 +104,11 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: AppColors.white,
               surface: AppColors.surface,
-              onSurface: AppColors.textPrimary,
+              onSurface: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           child: child!,
@@ -129,9 +129,9 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
+      padding: EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -141,32 +141,32 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
           // Header
           Row(
             children: [
-              const Icon(Icons.date_range, color: AppColors.primary, size: 28),
-              const SizedBox(width: 12),
-              const Text(
+              Icon(Icons.date_range, color: AppColors.primary, size: 28),
+              SizedBox(width: 12),
+              Text(
                 'Select Date Range',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              const Spacer(),
+              Spacer(),
               IconButton(
-                icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Quick Presets
-          const Text(
+          Text(
             'Quick Select',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 12),
@@ -212,18 +212,18 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Custom Date Selection
-          const Text(
+          Text(
             'Custom Range',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -233,9 +233,9 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
                   onTap: _pickStartDate,
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.arrow_forward, color: AppColors.textSecondary, size: 20),
+                child: Icon(Icons.arrow_forward, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 20),
               ),
               Expanded(
                 child: _DateButton(
@@ -258,14 +258,14 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: AppColors.primary, size: 20),
-                const SizedBox(width: 8),
+                Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Selected: ${_endDate.difference(_startDate).inDays + 1} days',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -329,9 +329,9 @@ class _PresetChip extends StatelessWidget {
       onSelected: (_) => onSelected(value),
       selectedColor: AppColors.primary,
       checkmarkColor: AppColors.white,
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       labelStyle: TextStyle(
-        color: isSelected ? AppColors.white : AppColors.textPrimary,
+        color: isSelected ? AppColors.white : Theme.of(context).colorScheme.onSurface,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
         fontSize: 13,
       ),
@@ -350,7 +350,7 @@ class _DateButton extends StatelessWidget {
   final String date;
   final VoidCallback onTap;
 
-  const _DateButton({
+  _DateButton({
     required this.label,
     required this.date,
     required this.onTap,
@@ -362,9 +362,9 @@ class _DateButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.border),
         ),
@@ -373,22 +373,22 @@ class _DateButton extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.calendar_today, size: 16, color: AppColors.primary),
-                const SizedBox(width: 6),
+                Icon(Icons.calendar_today, size: 16, color: AppColors.primary),
+                SizedBox(width: 6),
                 Text(
                   date,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -145,15 +145,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           right: 0,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2E7D32),
+                              color: Color(0xFF2E7D32),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 width: 2,
                               ),
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                              icon: Icon(Icons.camera_alt, color: Theme.of(context).colorScheme.surface, size: 20),
                               onPressed: _isLoading ? null : () {
                                 // TODO: Implement photo upload
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -168,48 +168,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // Email (Read-only)
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Email',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Row(
                             children: [
-                              const Icon(Icons.email_outlined, size: 20, color: Colors.grey),
-                              const SizedBox(width: 12),
+                              Icon(Icons.email_outlined, size: 20, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                              SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   user.email ?? 'No email',
-                                  style: const TextStyle(fontSize: 16),
+                                  style: TextStyle(fontSize: 16),
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[200],
+                                  color: Theme.of(context).colorScheme.surfaceVariant,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Cannot change',
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.grey,
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ),

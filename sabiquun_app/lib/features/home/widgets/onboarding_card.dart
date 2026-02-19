@@ -81,7 +81,7 @@ class _OnboardingCardState extends State<OnboardingCard> {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +96,7 @@ class _OnboardingCardState extends State<OnboardingCard> {
                           Text(
                             '🆕 Training Period - ${widget.daysRemaining} days remaining (No penalties)',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                   fontSize: 11,
                                 ),
                           ),
@@ -106,7 +106,7 @@ class _OnboardingCardState extends State<OnboardingCard> {
                   IconButton(
                     icon: Icon(
                       _isExpanded ? Icons.expand_less : Icons.expand_more,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     onPressed: () {
                       setState(() {
@@ -115,9 +115,9 @@ class _OnboardingCardState extends State<OnboardingCard> {
                     },
                   ),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     onPressed: _dismissOnboarding,
                   ),
@@ -129,12 +129,12 @@ class _OnboardingCardState extends State<OnboardingCard> {
           // Expandable Checklist
           if (_isExpanded)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Divider(),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Getting Started Checklist',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -187,7 +187,7 @@ class _OnboardingCardState extends State<OnboardingCard> {
     required bool isCompleted,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
           Icon(
@@ -195,13 +195,13 @@ class _OnboardingCardState extends State<OnboardingCard> {
             size: 20,
             color: isCompleted ? AppColors.success : AppColors.grey,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     decoration: isCompleted ? TextDecoration.lineThrough : null,
-                    color: isCompleted ? AppColors.textSecondary : AppColors.textPrimary,
+                    color: isCompleted ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7) : Theme.of(context).colorScheme.onSurface,
                   ),
             ),
           ),

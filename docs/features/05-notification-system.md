@@ -1,6 +1,6 @@
 # Notification System
 
-The notification system provides multi-channel communication to keep users informed about deadlines, penalties, payments, and other important events. It supports push notifications, email, and in-app notifications.
+The notification system provides multi-channel communication to keep users informed about deadlines, penalties, payments, and other important events. It supports push notifications, email, WhatsApp, and in-app notifications.
 
 ## Notification Infrastructure
 
@@ -10,7 +10,46 @@ The system uses multiple channels for reliable notification delivery:
 |---------|-----------|---------|
 | **Push Notifications** | Firebase Cloud Messaging (FCM) | Real-time mobile alerts |
 | **Email Notifications** | Mailgun (configurable) | Email alerts and summaries |
+| **WhatsApp Notifications** | WhatsApp Business Cloud API | Direct WhatsApp messages |
 | **In-App Notifications** | Notification bell with badge | Historical notification center |
+
+## WhatsApp Business Cloud API Integration (Phase 70)
+
+### Overview
+WhatsApp notifications allow users to receive important updates directly via WhatsApp. This feature uses Meta's WhatsApp Business Cloud API with pre-approved message templates.
+
+### Configuration (Admin)
+1. Navigate to System Settings > WhatsApp tab
+2. Enable WhatsApp notifications
+3. Enter API credentials:
+   - Phone Number ID (from Meta Business Suite)
+   - Business Account ID (WABA ID)
+   - Permanent Access Token (from System User)
+   - API Version (default: v18.0)
+
+### User Verification
+- Admin manually verifies each user's WhatsApp number
+- Users cannot self-enable WhatsApp (prevents abuse)
+- Verification status shown in user's Notification Settings
+
+### Supported Notification Types
+- Deeds submission confirmation
+- Deadline reminders
+- Penalty notifications
+- Payment approvals/rejections
+- Account warnings
+- Account deactivation notices
+
+### Message Templates
+Templates must be pre-approved by Meta. Configured mappings:
+- `deed_reminder` - Daily reminder to submit deeds
+- `penalty_alert` - Penalty notification
+- `payment_confirmed` - Payment approved
+- `payment_rejected` - Payment rejection
+- `deeds_confirmation` - Submission confirmation
+- `account_warning` - Deactivation warning
+- `account_deactivated` - Account deactivated
+- `deadline_warning` - Grace period ending
 
 ## Notification Types
 

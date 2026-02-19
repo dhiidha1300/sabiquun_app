@@ -87,7 +87,7 @@ class NotificationBell extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       width: 2,
                     ),
                     boxShadow: [
@@ -100,8 +100,8 @@ class NotificationBell extends StatelessWidget {
                   ),
                   child: Text(
                     unreadCount > 99 ? '99+' : unreadCount.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       height: 1,

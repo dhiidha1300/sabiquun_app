@@ -75,7 +75,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
 
                     // Lock Icon
                     Icon(
@@ -83,7 +83,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       size: 80,
                       color: AppColors.primary,
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
 
                     // Title
                     Text(
@@ -93,14 +93,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // Instructions
                     Text(
                       'Enter your email address and we will send you a link to reset your password',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                     ),
                     const SizedBox(height: 32),
@@ -163,7 +163,7 @@ class _SuccessDialog extends StatelessWidget {
             size: 64,
             color: AppColors.success,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Email Sent Successfully!',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -171,13 +171,13 @@ class _SuccessDialog extends StatelessWidget {
                 ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             "We've sent a password reset link to your email address:",
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             email,
             textAlign: TextAlign.center,
@@ -186,7 +186,7 @@ class _SuccessDialog extends StatelessWidget {
                   color: AppColors.primary,
                 ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Please check your inbox and follow the instructions to reset your password. The link expires in 1 hour.',
             textAlign: TextAlign.center,

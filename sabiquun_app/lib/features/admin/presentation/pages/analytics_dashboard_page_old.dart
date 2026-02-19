@@ -94,14 +94,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'Error loading analytics',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: EdgeInsets.symmetric(horizontal: 32),
                     child: Text(
                       state.message,
                       textAlign: TextAlign.center,
@@ -134,11 +134,11 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                     if (_startDate != null || _endDate != null)
                       Card(
                         child: Padding(
-                          padding: const EdgeInsets.all(12),
+                          padding: EdgeInsets.all(12),
                           child: Row(
                             children: [
                               const Icon(Icons.date_range, size: 20),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(
                                 'Filtered: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
                                 style: Theme.of(context).textTheme.bodyMedium,
@@ -184,7 +184,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
             );
           }
 
-          return const SizedBox.shrink();
+          return SizedBox.shrink();
         },
       ),
     );
@@ -194,7 +194,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
     return Row(
       children: [
         Icon(icon, size: 24, color: Theme.of(context).primaryColor),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -240,13 +240,13 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                 color: Colors.red,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: AnalyticsMetricCard(
                 title: 'Deactivated',
                 value: userMetrics.deactivatedUsers.toString(),
                 icon: Icons.cancel,
-                color: Colors.grey,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -440,14 +440,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
           ],
         ),
         if (excuseMetrics.mostCommonReason != null) ...[
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Row(
                 children: [
                   const Icon(Icons.info_outline),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -456,7 +456,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                           'Most Common Reason',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           '${excuseMetrics.mostCommonReason} (${excuseMetrics.mostCommonReasonCount} requests)',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(

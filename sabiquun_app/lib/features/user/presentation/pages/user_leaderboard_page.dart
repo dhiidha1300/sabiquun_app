@@ -97,8 +97,8 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
 
   Color _getRankColor(int rank) {
     if (rank == 1) return const Color(0xFFFFD700); // Gold
-    if (rank == 2) return const Color(0xFFC0C0C0); // Silver
-    if (rank == 3) return const Color(0xFFCD7F32); // Bronze
+    if (rank == 2) return Color(0xFFC0C0C0); // Silver
+    if (rank == 3) return Color(0xFFCD7F32); // Bronze
     return AppColors.primary;
   }
 
@@ -111,7 +111,7 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // Beautiful App Bar
@@ -121,17 +121,17 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
             pinned: true,
             backgroundColor: AppColors.primary,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.surface),
               onPressed: () {
                 HapticFeedback.mediumImpact();
                 context.go('/home');
               },
             ),
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
+              title: Text(
                 'Leaderboard',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -173,15 +173,15 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
               ),
             ),
             bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(60),
+              preferredSize: Size.fromHeight(60),
               child: Container(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 child: TabBar(
                   controller: _tabController,
                   indicatorColor: AppColors.primary,
                   indicatorWeight: 3,
                   labelColor: AppColors.primary,
-                  unselectedLabelColor: AppColors.textSecondary,
+                  unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
@@ -240,16 +240,16 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
 
   Widget _buildLoadingState() {
     return Container(
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.all(40),
       child: Column(
         children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16),
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
           Text(
             'Loading rankings...',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
         ],
@@ -259,7 +259,7 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
 
   Widget _buildErrorState(String message) {
     return Container(
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.all(40),
       child: Column(
         children: [
           Icon(
@@ -267,22 +267,22 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
             size: 64,
             color: Colors.red[300],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Oops! Something went wrong',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             message,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
           const SizedBox(height: 24),
@@ -309,30 +309,30 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
 
   Widget _buildEmptyState() {
     return Container(
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.all(40),
       child: Column(
         children: [
           Icon(
             Icons.emoji_events_outlined,
             size: 80,
-            color: Colors.grey[300],
+            color: Theme.of(context).colorScheme.surfaceVariant,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'No Rankings Yet',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Start submitting your daily deeds\nto appear on the leaderboard!',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
               height: 1.5,
             ),
           ),
@@ -409,19 +409,19 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
               color: Colors.amber.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.emoji_events,
               size: 40,
               color: Color(0xFFFFD700),
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'Top Performers',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 24),
@@ -472,17 +472,17 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
               BoxShadow(
                 color: rankColor.withValues(alpha: 0.4),
                 blurRadius: 12,
-                offset: const Offset(0, 4),
+                offset: Offset(0, 4),
               ),
             ],
           ),
           child: Center(
             child: isCurrentUser
-                ? const Icon(Icons.person, size: 32, color: Colors.white)
+                ? Icon(Icons.person, size: 32, color: Theme.of(context).colorScheme.surface)
                 : Icon(
                     _getRankIcon(rank),
                     size: 32,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
           ),
         ),
@@ -499,7 +499,7 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
             style: TextStyle(
               fontSize: 12,
               fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.w600,
-              color: isCurrentUser ? AppColors.primary : AppColors.textPrimary,
+              color: isCurrentUser ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -529,7 +529,7 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
                 rankColor.withValues(alpha: 0.5),
               ],
             ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             border: Border.all(
               color: rankColor,
               width: 2,
@@ -538,10 +538,10 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
           child: Center(
             child: Text(
               '#$rank',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
           ),
@@ -576,7 +576,7 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
         children: [
           // Rank badge
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
@@ -585,42 +585,42 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
               children: [
                 Icon(
                   _getRankIcon(entry.rank),
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   size: 28,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   '#${entry.rank}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
 
           // Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Your Ranking',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white70,
+                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
+                SizedBox(height: 4),
+                Text(
                   'Keep up the great work!',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -634,17 +634,17 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
             children: [
               Text(
                 entry.averageDeeds.toStringAsFixed(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
-              const Text(
+              Text(
                 'avg deeds',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.white70,
+                  color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -753,10 +753,10 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
                       fontWeight: FontWeight.w700,
                       color: isCurrentUser
                           ? AppColors.primary
-                          : AppColors.textPrimary,
+                          : Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(
@@ -764,27 +764,27 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
                         size: 14,
                         color: Colors.orange[600],
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         '${entry.currentStreak} day streak',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Icon(
                         Icons.check_circle,
                         size: 14,
                         color: Colors.green[600],
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         '${entry.complianceRate.toStringAsFixed(0)}%',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -810,7 +810,7 @@ class _UserLeaderboardPageState extends State<UserLeaderboardPage>
                   'avg deeds',
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
               ],

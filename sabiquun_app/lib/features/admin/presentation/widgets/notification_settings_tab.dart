@@ -143,6 +143,11 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
       emailSenderEmail: _emailSenderEmailController.text.trim().isEmpty ? null : _emailSenderEmailController.text.trim(),
       emailSenderName: _emailSenderNameController.text.trim().isEmpty ? null : _emailSenderNameController.text.trim(),
       fcmServerKey: _fcmServerKeyController.text.trim().isEmpty ? null : _fcmServerKeyController.text.trim(),
+      whatsappEnabled: widget.settings.whatsappEnabled,
+      whatsappPhoneNumberId: widget.settings.whatsappPhoneNumberId,
+      whatsappBusinessAccountId: widget.settings.whatsappBusinessAccountId,
+      whatsappAccessToken: widget.settings.whatsappAccessToken,
+      whatsappApiVersion: widget.settings.whatsappApiVersion,
       appVersion: widget.settings.appVersion,
       minimumRequiredVersion: widget.settings.minimumRequiredVersion,
       forceUpdate: widget.settings.forceUpdate,
@@ -197,7 +202,7 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -207,13 +212,13 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Email Settings Section
               Row(
                 children: [
                   const Icon(Icons.email, color: Colors.blue),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     'Email Settings (Mailgun)',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -302,13 +307,13 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
                   label: const Text('Test Email Configuration'),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Push Notification Settings Section
               Row(
                 children: [
                   const Icon(Icons.notifications_active, color: Colors.orange),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     'Push Notification Settings (FCM)',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -353,11 +358,11 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
               Card(
                 color: Colors.blue[50],
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   child: Row(
                     children: [
                       const Icon(Icons.security, color: Colors.blue),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,7 +374,7 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
                                     color: Colors.blue[900],
                                   ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               'API keys are stored securely and never exposed in application logs or error messages.',
                               style: Theme.of(context).textTheme.bodySmall,
@@ -381,7 +386,7 @@ class _NotificationSettingsTabState extends State<NotificationSettingsTab> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Reason field (only show if changes detected)
               if (_hasChanges()) ...[

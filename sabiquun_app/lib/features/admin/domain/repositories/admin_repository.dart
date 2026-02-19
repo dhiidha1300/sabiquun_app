@@ -180,6 +180,9 @@ abstract class AdminRepository {
     String? emailSubject,
     String? emailBody,
     required String notificationType,
+    String? whatsappTemplateName,
+    String? whatsappTemplateLanguage,
+    bool whatsappEnabled = false,
   });
 
   /// Update notification template
@@ -190,6 +193,9 @@ abstract class AdminRepository {
     String? emailSubject,
     String? emailBody,
     bool? isEnabled,
+    String? whatsappTemplateName,
+    String? whatsappTemplateLanguage,
+    bool? whatsappEnabled,
   });
 
   /// Delete notification template

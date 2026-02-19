@@ -258,6 +258,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     Emitter<AdminState> emit,
   ) async {
     emit(const AdminLoading());
+
     try {
       await _repository.updateSystemSettings(
         settings: event.settings,

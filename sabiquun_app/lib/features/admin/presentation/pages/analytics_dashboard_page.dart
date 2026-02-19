@@ -236,7 +236,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(label),
         ],
       ),
@@ -266,14 +266,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Row(
                   children: [
                     Icon(Icons.date_range,
                       size: 20,
                       color: Theme.of(context).primaryColor,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       'Period: ${_formatDate(_startDate)} - ${_formatDate(_endDate)}',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -414,13 +414,13 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                       maxLines: 1,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     title,
                     style: TextStyle(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       letterSpacing: 0.1,
                       height: 1.2,
                     ),
@@ -438,7 +438,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
 
   Widget _buildSectionHeader(String title, IconData icon) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -459,7 +459,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
       child: Row(
         children: [
           Icon(icon, size: 20, color: Theme.of(context).primaryColor),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -509,7 +509,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
               title: 'Deactivated',
               value: userMetrics.deactivatedUsers.toString(),
               icon: Icons.cancel,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             AnalyticsMetricCard(
               title: 'At Risk',
@@ -691,14 +691,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.blue.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.info_outline, color: Colors.blue, size: 22),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -706,12 +706,12 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                         Text(
                           'Most Common Excuse',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           '${excuseMetrics.mostCommonReason} (${excuseMetrics.mostCommonReasonCount})',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -739,14 +739,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Error loading analytics',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               message,
               textAlign: TextAlign.center,

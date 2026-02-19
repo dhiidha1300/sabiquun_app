@@ -41,7 +41,7 @@ class EmptyStateWidget extends StatelessWidget {
                 color: color,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Title
             Text(
@@ -51,13 +51,13 @@ class EmptyStateWidget extends StatelessWidget {
                   ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Description
             Text(
               description,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
               textAlign: TextAlign.center,
             ),

@@ -37,9 +37,9 @@ class _CollapsibleDeedTrackerState extends State<CollapsibleDeedTracker> {
         }
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
+        margin: EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -157,12 +157,12 @@ class _CollapsibleDeedTrackerState extends State<CollapsibleDeedTracker> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         '${(progress * 100).toStringAsFixed(0)}%',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                         ),
                       ),
                     ],
@@ -174,7 +174,7 @@ class _CollapsibleDeedTrackerState extends State<CollapsibleDeedTracker> {
             // Expand/collapse icon
             Icon(
               _isExpanded ? Icons.expand_less : Icons.expand_more,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
             ),
           ],
         ),
@@ -184,12 +184,12 @@ class _CollapsibleDeedTrackerState extends State<CollapsibleDeedTracker> {
 
   Widget _buildExpandedContent() {
     if (_todayReport == null) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.all(16),
         child: Center(
           child: Text(
             'No report data available',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
           ),
         ),
       );
@@ -288,12 +288,12 @@ class _CollapsibleDeedTrackerState extends State<CollapsibleDeedTracker> {
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[700],
+              color: Theme.of(context).colorScheme.surfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),

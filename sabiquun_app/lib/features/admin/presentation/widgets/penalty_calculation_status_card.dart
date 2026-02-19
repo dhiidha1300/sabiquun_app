@@ -115,7 +115,7 @@ class _PenaltyCalculationStatusCardState
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Card(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         child: const Padding(
           padding: EdgeInsets.all(16.0),
           child: Center(
@@ -144,7 +144,7 @@ class _PenaltyCalculationStatusCardState
             ? AppColors.warning
             : isHealthy
                 ? AppColors.success
-                : AppColors.textSecondary;
+                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7);
 
     final IconData statusIcon = isCritical
         ? Icons.error
@@ -155,7 +155,7 @@ class _PenaltyCalculationStatusCardState
                 : Icons.help_outline;
 
     return Card(
-      color: AppColors.surface,
+      color: Theme.of(context).colorScheme.surface,
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -170,7 +170,7 @@ class _PenaltyCalculationStatusCardState
                   color: statusColor,
                   size: 24,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +180,7 @@ class _PenaltyCalculationStatusCardState
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -279,14 +279,14 @@ class _PenaltyCalculationStatusCardState
                 ),
               ],
             ] else ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Center(
                 child: Text(
                   'No execution history found.\nClick refresh to trigger manually.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ),
@@ -311,13 +311,13 @@ class _PenaltyCalculationStatusCardState
                     size: 16,
                     color: AppColors.primary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Scheduled: Daily at 12:00 PM EAT (9:00 AM UTC)',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ),
@@ -341,14 +341,14 @@ class _PenaltyCalculationStatusCardState
         Icon(
           icon,
           size: 16,
-          color: AppColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           '$label:',
           style: TextStyle(
             fontSize: 13,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(width: 8),
@@ -358,7 +358,7 @@ class _PenaltyCalculationStatusCardState
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: valueColor ?? AppColors.textPrimary,
+              color: valueColor ?? Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.right,
           ),

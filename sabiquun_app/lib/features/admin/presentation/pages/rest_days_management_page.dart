@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../../../../core/constants/date_constants.dart';
+import '../../../../core/services/hijri_date_service.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../calendar/presentation/bloc/calendar_bloc.dart';
+import '../../../calendar/presentation/bloc/calendar_state.dart';
 import '../bloc/admin_bloc.dart';
 import '../bloc/admin_event.dart';
 import '../bloc/admin_state.dart';
@@ -309,13 +314,13 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: Column(
         children: [
           // Summary card
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 children: [
                   Text(
@@ -325,7 +330,7 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
                           color: Theme.of(context).primaryColor,
                         ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   if (_filterYear != null)
                     Text(
                       'in $_filterYear',
@@ -389,14 +394,14 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.event, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   dateStr,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -455,18 +460,18 @@ class _RestDaysManagementPageState extends State<RestDaysManagementPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_busy, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
+            Icon(Icons.event_busy, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+            SizedBox(height: 16),
             Text(
               'No rest days found',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.surfaceVariant),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               _filterYear != null
                   ? 'Try changing the year filter'
                   : 'Add your first rest day',
-              style: TextStyle(color: Colors.grey[500]),
+              style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
             ),
           ],
         ),
@@ -595,6 +600,9 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
   DateTime? _endDate;
   bool _isDateRange = false;
   bool _isRecurring = false;
+  bool _isHijriBased = false;
+  int? _hijriMonth;
+  int? _hijriDay;
 
   @override
   void initState() {
@@ -610,6 +618,9 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
           : restDay.date;
       final endDateValue = restDay is Map ? restDay['end_date'] : restDay.endDate;
       final isRecurring = restDay is Map ? (restDay['is_recurring'] ?? false) : restDay.isRecurring;
+      final isHijriBased = restDay is Map ? (restDay['is_hijri_based'] ?? false) : (restDay.isHijriBased ?? false);
+      final hijriMonth = restDay is Map ? restDay['hijri_month'] : restDay.hijriMonth;
+      final hijriDay = restDay is Map ? restDay['hijri_day'] : restDay.hijriDay;
 
       _descriptionController.text = description;
       _startDate = dateValue is DateTime ? dateValue : DateTime.parse(dateValue.toString());
@@ -620,6 +631,9 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
       }
 
       _isRecurring = isRecurring;
+      _isHijriBased = isHijriBased;
+      _hijriMonth = hijriMonth;
+      _hijriDay = hijriDay;
     }
   }
 
@@ -658,6 +672,24 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
     }
   }
 
+  void _updateDateFromHijri() {
+    if (_hijriMonth != null && _hijriDay != null) {
+      final nextDate = HijriDateService.instance.getNextOccurrence(_hijriMonth!, _hijriDay!);
+      setState(() {
+        _startDate = nextDate;
+      });
+    }
+  }
+
+  String _getNextHijriOccurrence() {
+    if (_hijriMonth == null || _hijriDay == null) return 'Select date';
+    final nextDate = HijriDateService.instance.getNextOccurrence(_hijriMonth!, _hijriDay!);
+    return DateFormatter.format(
+      nextDate,
+      preference: CalendarPreference.hijriPrimary,
+    );
+  }
+
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null) {
@@ -678,6 +710,9 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
       'endDate': _isDateRange ? _endDate : null,
       'description': _descriptionController.text.trim(),
       'isRecurring': _isRecurring,
+      'isHijriBased': _isHijriBased,
+      'hijriMonth': _isHijriBased ? _hijriMonth : null,
+      'hijriDay': _isHijriBased ? _hijriDay : null,
     });
   }
 
@@ -750,6 +785,106 @@ class _RestDayFormDialogState extends State<_RestDayFormDialog> {
                 onChanged: (value) => setState(() => _isRecurring = value),
                 contentPadding: EdgeInsets.zero,
               ),
+              const Divider(height: 24),
+              // Hijri-based holiday section
+              SwitchListTile(
+                title: const Text('Hijri-Based Holiday'),
+                subtitle: const Text('Use Islamic calendar (e.g., Eid)'),
+                value: _isHijriBased,
+                onChanged: (value) {
+                  setState(() {
+                    _isHijriBased = value;
+                    if (value && _hijriMonth == null) {
+                      _hijriMonth = 10; // Default to Shawwal (Eid al-Fitr month)
+                      _hijriDay = 1;
+                    }
+                  });
+                },
+                contentPadding: EdgeInsets.zero,
+              ),
+              if (_isHijriBased) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: DropdownButtonFormField<int>(
+                        value: _hijriMonth,
+                        decoration: const InputDecoration(
+                          labelText: 'Hijri Month',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        items: List.generate(12, (index) {
+                          final month = index + 1;
+                          return DropdownMenuItem(
+                            value: month,
+                            child: Text(DateConstants.hijriMonthsEnglish[index]),
+                          );
+                        }),
+                        onChanged: (value) {
+                          setState(() {
+                            _hijriMonth = value;
+                            _updateDateFromHijri();
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        value: _hijriDay,
+                        decoration: const InputDecoration(
+                          labelText: 'Day',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                        items: List.generate(30, (index) {
+                          final day = index + 1;
+                          return DropdownMenuItem(
+                            value: day,
+                            child: Text('$day'),
+                          );
+                        }),
+                        onChanged: (value) {
+                          setState(() {
+                            _hijriDay = value;
+                            _updateDateFromHijri();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                if (_hijriMonth != null && _hijriDay != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Next occurrence: ${_getNextHijriOccurrence()}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ],
           ),
         ),

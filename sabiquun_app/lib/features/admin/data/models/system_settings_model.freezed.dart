@@ -47,6 +47,16 @@ mixin _$SystemSettingsModel {
   String? get emailSenderName => throw _privateConstructorUsedError;
   @JsonKey(name: 'fcm_server_key')
   String? get fcmServerKey => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_enabled')
+  bool get whatsappEnabled => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_phone_number_id')
+  String? get whatsappPhoneNumberId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_business_account_id')
+  String? get whatsappBusinessAccountId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_access_token')
+  String? get whatsappAccessToken => throw _privateConstructorUsedError;
+  @JsonKey(name: 'whatsapp_api_version')
+  String? get whatsappApiVersion => throw _privateConstructorUsedError;
   @JsonKey(name: 'app_version')
   String get appVersion => throw _privateConstructorUsedError;
   @JsonKey(name: 'minimum_required_version')
@@ -94,6 +104,12 @@ abstract class $SystemSettingsModelCopyWith<$Res> {
     @JsonKey(name: 'email_sender_email') String? emailSenderEmail,
     @JsonKey(name: 'email_sender_name') String? emailSenderName,
     @JsonKey(name: 'fcm_server_key') String? fcmServerKey,
+    @JsonKey(name: 'whatsapp_enabled') bool whatsappEnabled,
+    @JsonKey(name: 'whatsapp_phone_number_id') String? whatsappPhoneNumberId,
+    @JsonKey(name: 'whatsapp_business_account_id')
+    String? whatsappBusinessAccountId,
+    @JsonKey(name: 'whatsapp_access_token') String? whatsappAccessToken,
+    @JsonKey(name: 'whatsapp_api_version') String? whatsappApiVersion,
     @JsonKey(name: 'app_version') String appVersion,
     @JsonKey(name: 'minimum_required_version') String minimumRequiredVersion,
     @JsonKey(name: 'force_update') bool forceUpdate,
@@ -132,6 +148,11 @@ class _$SystemSettingsModelCopyWithImpl<$Res, $Val extends SystemSettingsModel>
     Object? emailSenderEmail = freezed,
     Object? emailSenderName = freezed,
     Object? fcmServerKey = freezed,
+    Object? whatsappEnabled = null,
+    Object? whatsappPhoneNumberId = freezed,
+    Object? whatsappBusinessAccountId = freezed,
+    Object? whatsappAccessToken = freezed,
+    Object? whatsappApiVersion = freezed,
     Object? appVersion = null,
     Object? minimumRequiredVersion = null,
     Object? forceUpdate = null,
@@ -194,6 +215,26 @@ class _$SystemSettingsModelCopyWithImpl<$Res, $Val extends SystemSettingsModel>
                 ? _value.fcmServerKey
                 : fcmServerKey // ignore: cast_nullable_to_non_nullable
                       as String?,
+            whatsappEnabled: null == whatsappEnabled
+                ? _value.whatsappEnabled
+                : whatsappEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            whatsappPhoneNumberId: freezed == whatsappPhoneNumberId
+                ? _value.whatsappPhoneNumberId
+                : whatsappPhoneNumberId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            whatsappBusinessAccountId: freezed == whatsappBusinessAccountId
+                ? _value.whatsappBusinessAccountId
+                : whatsappBusinessAccountId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            whatsappAccessToken: freezed == whatsappAccessToken
+                ? _value.whatsappAccessToken
+                : whatsappAccessToken // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            whatsappApiVersion: freezed == whatsappApiVersion
+                ? _value.whatsappApiVersion
+                : whatsappApiVersion // ignore: cast_nullable_to_non_nullable
+                      as String?,
             appVersion: null == appVersion
                 ? _value.appVersion
                 : appVersion // ignore: cast_nullable_to_non_nullable
@@ -252,6 +293,12 @@ abstract class _$$SystemSettingsModelImplCopyWith<$Res>
     @JsonKey(name: 'email_sender_email') String? emailSenderEmail,
     @JsonKey(name: 'email_sender_name') String? emailSenderName,
     @JsonKey(name: 'fcm_server_key') String? fcmServerKey,
+    @JsonKey(name: 'whatsapp_enabled') bool whatsappEnabled,
+    @JsonKey(name: 'whatsapp_phone_number_id') String? whatsappPhoneNumberId,
+    @JsonKey(name: 'whatsapp_business_account_id')
+    String? whatsappBusinessAccountId,
+    @JsonKey(name: 'whatsapp_access_token') String? whatsappAccessToken,
+    @JsonKey(name: 'whatsapp_api_version') String? whatsappApiVersion,
     @JsonKey(name: 'app_version') String appVersion,
     @JsonKey(name: 'minimum_required_version') String minimumRequiredVersion,
     @JsonKey(name: 'force_update') bool forceUpdate,
@@ -289,6 +336,11 @@ class __$$SystemSettingsModelImplCopyWithImpl<$Res>
     Object? emailSenderEmail = freezed,
     Object? emailSenderName = freezed,
     Object? fcmServerKey = freezed,
+    Object? whatsappEnabled = null,
+    Object? whatsappPhoneNumberId = freezed,
+    Object? whatsappBusinessAccountId = freezed,
+    Object? whatsappAccessToken = freezed,
+    Object? whatsappApiVersion = freezed,
     Object? appVersion = null,
     Object? minimumRequiredVersion = null,
     Object? forceUpdate = null,
@@ -351,6 +403,26 @@ class __$$SystemSettingsModelImplCopyWithImpl<$Res>
             ? _value.fcmServerKey
             : fcmServerKey // ignore: cast_nullable_to_non_nullable
                   as String?,
+        whatsappEnabled: null == whatsappEnabled
+            ? _value.whatsappEnabled
+            : whatsappEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        whatsappPhoneNumberId: freezed == whatsappPhoneNumberId
+            ? _value.whatsappPhoneNumberId
+            : whatsappPhoneNumberId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        whatsappBusinessAccountId: freezed == whatsappBusinessAccountId
+            ? _value.whatsappBusinessAccountId
+            : whatsappBusinessAccountId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        whatsappAccessToken: freezed == whatsappAccessToken
+            ? _value.whatsappAccessToken
+            : whatsappAccessToken // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        whatsappApiVersion: freezed == whatsappApiVersion
+            ? _value.whatsappApiVersion
+            : whatsappApiVersion // ignore: cast_nullable_to_non_nullable
+                  as String?,
         appVersion: null == appVersion
             ? _value.appVersion
             : appVersion // ignore: cast_nullable_to_non_nullable
@@ -403,6 +475,12 @@ class _$SystemSettingsModelImpl extends _SystemSettingsModel {
     @JsonKey(name: 'email_sender_email') this.emailSenderEmail,
     @JsonKey(name: 'email_sender_name') this.emailSenderName,
     @JsonKey(name: 'fcm_server_key') this.fcmServerKey,
+    @JsonKey(name: 'whatsapp_enabled') this.whatsappEnabled = false,
+    @JsonKey(name: 'whatsapp_phone_number_id') this.whatsappPhoneNumberId,
+    @JsonKey(name: 'whatsapp_business_account_id')
+    this.whatsappBusinessAccountId,
+    @JsonKey(name: 'whatsapp_access_token') this.whatsappAccessToken,
+    @JsonKey(name: 'whatsapp_api_version') this.whatsappApiVersion,
     @JsonKey(name: 'app_version') required this.appVersion,
     @JsonKey(name: 'minimum_required_version')
     required this.minimumRequiredVersion,
@@ -464,6 +542,21 @@ class _$SystemSettingsModelImpl extends _SystemSettingsModel {
   @JsonKey(name: 'fcm_server_key')
   final String? fcmServerKey;
   @override
+  @JsonKey(name: 'whatsapp_enabled')
+  final bool whatsappEnabled;
+  @override
+  @JsonKey(name: 'whatsapp_phone_number_id')
+  final String? whatsappPhoneNumberId;
+  @override
+  @JsonKey(name: 'whatsapp_business_account_id')
+  final String? whatsappBusinessAccountId;
+  @override
+  @JsonKey(name: 'whatsapp_access_token')
+  final String? whatsappAccessToken;
+  @override
+  @JsonKey(name: 'whatsapp_api_version')
+  final String? whatsappApiVersion;
+  @override
   @JsonKey(name: 'app_version')
   final String appVersion;
   @override
@@ -487,7 +580,7 @@ class _$SystemSettingsModelImpl extends _SystemSettingsModel {
 
   @override
   String toString() {
-    return 'SystemSettingsModel(dailyDeedTarget: $dailyDeedTarget, penaltyPerDeed: $penaltyPerDeed, gracePeriodHours: $gracePeriodHours, trainingPeriodDays: $trainingPeriodDays, autoDeactivationThreshold: $autoDeactivationThreshold, warningThresholds: $warningThresholds, organizationName: $organizationName, receiptFooterText: $receiptFooterText, emailApiKey: $emailApiKey, emailDomain: $emailDomain, emailSenderEmail: $emailSenderEmail, emailSenderName: $emailSenderName, fcmServerKey: $fcmServerKey, appVersion: $appVersion, minimumRequiredVersion: $minimumRequiredVersion, forceUpdate: $forceUpdate, updateTitle: $updateTitle, updateMessage: $updateMessage, iosMinVersion: $iosMinVersion, androidMinVersion: $androidMinVersion)';
+    return 'SystemSettingsModel(dailyDeedTarget: $dailyDeedTarget, penaltyPerDeed: $penaltyPerDeed, gracePeriodHours: $gracePeriodHours, trainingPeriodDays: $trainingPeriodDays, autoDeactivationThreshold: $autoDeactivationThreshold, warningThresholds: $warningThresholds, organizationName: $organizationName, receiptFooterText: $receiptFooterText, emailApiKey: $emailApiKey, emailDomain: $emailDomain, emailSenderEmail: $emailSenderEmail, emailSenderName: $emailSenderName, fcmServerKey: $fcmServerKey, whatsappEnabled: $whatsappEnabled, whatsappPhoneNumberId: $whatsappPhoneNumberId, whatsappBusinessAccountId: $whatsappBusinessAccountId, whatsappAccessToken: $whatsappAccessToken, whatsappApiVersion: $whatsappApiVersion, appVersion: $appVersion, minimumRequiredVersion: $minimumRequiredVersion, forceUpdate: $forceUpdate, updateTitle: $updateTitle, updateMessage: $updateMessage, iosMinVersion: $iosMinVersion, androidMinVersion: $androidMinVersion)';
   }
 
   @override
@@ -526,6 +619,19 @@ class _$SystemSettingsModelImpl extends _SystemSettingsModel {
                 other.emailSenderName == emailSenderName) &&
             (identical(other.fcmServerKey, fcmServerKey) ||
                 other.fcmServerKey == fcmServerKey) &&
+            (identical(other.whatsappEnabled, whatsappEnabled) ||
+                other.whatsappEnabled == whatsappEnabled) &&
+            (identical(other.whatsappPhoneNumberId, whatsappPhoneNumberId) ||
+                other.whatsappPhoneNumberId == whatsappPhoneNumberId) &&
+            (identical(
+                  other.whatsappBusinessAccountId,
+                  whatsappBusinessAccountId,
+                ) ||
+                other.whatsappBusinessAccountId == whatsappBusinessAccountId) &&
+            (identical(other.whatsappAccessToken, whatsappAccessToken) ||
+                other.whatsappAccessToken == whatsappAccessToken) &&
+            (identical(other.whatsappApiVersion, whatsappApiVersion) ||
+                other.whatsappApiVersion == whatsappApiVersion) &&
             (identical(other.appVersion, appVersion) ||
                 other.appVersion == appVersion) &&
             (identical(other.minimumRequiredVersion, minimumRequiredVersion) ||
@@ -559,6 +665,11 @@ class _$SystemSettingsModelImpl extends _SystemSettingsModel {
     emailSenderEmail,
     emailSenderName,
     fcmServerKey,
+    whatsappEnabled,
+    whatsappPhoneNumberId,
+    whatsappBusinessAccountId,
+    whatsappAccessToken,
+    whatsappApiVersion,
     appVersion,
     minimumRequiredVersion,
     forceUpdate,
@@ -604,6 +715,13 @@ abstract class _SystemSettingsModel extends SystemSettingsModel {
     @JsonKey(name: 'email_sender_email') final String? emailSenderEmail,
     @JsonKey(name: 'email_sender_name') final String? emailSenderName,
     @JsonKey(name: 'fcm_server_key') final String? fcmServerKey,
+    @JsonKey(name: 'whatsapp_enabled') final bool whatsappEnabled,
+    @JsonKey(name: 'whatsapp_phone_number_id')
+    final String? whatsappPhoneNumberId,
+    @JsonKey(name: 'whatsapp_business_account_id')
+    final String? whatsappBusinessAccountId,
+    @JsonKey(name: 'whatsapp_access_token') final String? whatsappAccessToken,
+    @JsonKey(name: 'whatsapp_api_version') final String? whatsappApiVersion,
     @JsonKey(name: 'app_version') required final String appVersion,
     @JsonKey(name: 'minimum_required_version')
     required final String minimumRequiredVersion,
@@ -657,6 +775,21 @@ abstract class _SystemSettingsModel extends SystemSettingsModel {
   @override
   @JsonKey(name: 'fcm_server_key')
   String? get fcmServerKey;
+  @override
+  @JsonKey(name: 'whatsapp_enabled')
+  bool get whatsappEnabled;
+  @override
+  @JsonKey(name: 'whatsapp_phone_number_id')
+  String? get whatsappPhoneNumberId;
+  @override
+  @JsonKey(name: 'whatsapp_business_account_id')
+  String? get whatsappBusinessAccountId;
+  @override
+  @JsonKey(name: 'whatsapp_access_token')
+  String? get whatsappAccessToken;
+  @override
+  @JsonKey(name: 'whatsapp_api_version')
+  String? get whatsappApiVersion;
   @override
   @JsonKey(name: 'app_version')
   String get appVersion;

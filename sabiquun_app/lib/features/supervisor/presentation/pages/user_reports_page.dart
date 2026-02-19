@@ -90,24 +90,24 @@ class _UserReportsPageState extends State<UserReportsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'All User Reports',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           // View toggle button
           IconButton(
             icon: Icon(
               _isTableView ? Icons.view_list : Icons.table_chart,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             tooltip: _isTableView ? 'Card View' : 'Table View',
             onPressed: () {
@@ -121,16 +121,16 @@ class _UserReportsPageState extends State<UserReportsPage> {
               isLabelVisible: _membershipFilter != null ||
                   _complianceFilter != null ||
                   _reportStatusFilter != null,
-              child: const Icon(Icons.filter_list, color: AppColors.textPrimary),
+              child: Icon(Icons.filter_list, color: Theme.of(context).colorScheme.onSurface),
             ),
             onPressed: _showFilterSheet,
           ),
           IconButton(
-            icon: const Icon(Icons.download_outlined, color: AppColors.textPrimary),
+            icon: Icon(Icons.download_outlined, color: Theme.of(context).colorScheme.onSurface),
             onPressed: () {
               // TODO: Implement export functionality
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Export feature coming soon')),
+                SnackBar(content: Text('Export feature coming soon')),
               );
             },
           ),
@@ -140,8 +140,8 @@ class _UserReportsPageState extends State<UserReportsPage> {
         children: [
           // Search Bar
           Container(
-            padding: const EdgeInsets.all(16),
-            color: AppColors.surface,
+            padding: EdgeInsets.all(16),
+            color: Theme.of(context).colorScheme.surface,
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -189,7 +189,7 @@ class _UserReportsPageState extends State<UserReportsPage> {
                 },
                 builder: (context, state) {
                   if (state is SupervisorLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator());
                   }
 
                   if (state is SupervisorError) {
@@ -197,15 +197,15 @@ class _UserReportsPageState extends State<UserReportsPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-                          const SizedBox(height: 16),
+                          Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                          SizedBox(height: 16),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            padding: EdgeInsets.symmetric(horizontal: 32),
                             child: Text(
                               state.message,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontSize: 14,
                               ),
                             ),

@@ -130,7 +130,7 @@ class _QuickStatChip extends StatelessWidget {
                 size: 20,
                 color: color,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +139,7 @@ class _QuickStatChip extends StatelessWidget {
                     label,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontSize: 10,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                   ),
                   Text(

@@ -132,12 +132,12 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
     return RefreshIndicator(
       onRefresh: () async => _loadTemplates(),
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
           // Summary Card
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -145,7 +145,7 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
                     'Daily Deed Target',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     '${_templates.where((t) => t.isActive).length} deeds',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -153,7 +153,7 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${faraidDeeds.where((t) => t.isActive).length} Fara\'id + ${sunnahDeeds.where((t) => t.isActive).length} Sunnah',
                     style: Theme.of(context).textTheme.bodySmall,
@@ -201,7 +201,7 @@ class _DeedManagementPageState extends State<DeedManagementPage> {
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -582,7 +582,7 @@ class _ReorderDeedsDialogState extends State<_ReorderDeedsDialog> {
     final sunnahDeeds = _reorderedTemplates.where((t) => t.category == 'sunnah').toList();
 
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
           Icon(Icons.swap_vert),
           SizedBox(width: 8),
@@ -596,9 +596,9 @@ class _ReorderDeedsDialogState extends State<_ReorderDeedsDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Drag to reorder deeds. This will affect the order shown in daily reports.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
               ),
               const SizedBox(height: 16),
 
@@ -663,12 +663,12 @@ class _ReorderDeedsDialogState extends State<_ReorderDeedsDialog> {
         final deed = deeds[index];
         return Card(
           key: ValueKey(deed.id),
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.drag_handle, color: Colors.grey),
+                Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                 const SizedBox(width: 8),
                 Container(
                   width: 32,

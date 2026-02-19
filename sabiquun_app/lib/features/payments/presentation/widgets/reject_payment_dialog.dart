@@ -68,23 +68,23 @@ class _RejectPaymentDialogState extends State<RejectPaymentDialog> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.cancel,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           size: 28,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      SizedBox(width: 12),
+                      Expanded(
                         child: Text(
                           'Reject Payment',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -92,7 +92,7 @@ class _RejectPaymentDialogState extends State<RejectPaymentDialog> {
                       ),
                       IconButton(
                         onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close, color: Colors.white),
+                        icon: Icon(Icons.close, color: Theme.of(context).colorScheme.surface),
                       ),
                     ],
                   ),
@@ -280,18 +280,18 @@ class _RejectPaymentDialogState extends State<RejectPaymentDialog> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         flex: 2,
                         child: ElevatedButton.icon(
                           onPressed: _isSubmitting ? null : _handleReject,
                           icon: _isSubmitting
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.surface,
                                   ),
                                 )
                               : const Icon(Icons.cancel),

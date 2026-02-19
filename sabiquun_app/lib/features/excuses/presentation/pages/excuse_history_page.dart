@@ -162,15 +162,15 @@ class _ExcuseHistoryPageState extends State<ExcuseHistoryPage> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -280,24 +280,24 @@ class _ExcuseHistoryPageState extends State<ExcuseHistoryPage> {
                     Icon(
                       Icons.event_busy,
                       size: 64,
-                      color: Colors.grey[400],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       _statusFilter == null
                           ? 'No excuses yet'
                           : 'No ${_statusFilter!.displayName.toLowerCase()} excuses',
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Submit an excuse when you need one',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[500],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                       ),
                     ),
                   ],
@@ -363,36 +363,36 @@ class _ExcuseHistoryPageState extends State<ExcuseHistoryPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             Row(
                               children: [
-                                const Icon(Icons.info_outline, size: 16, color: Colors.grey),
-                                const SizedBox(width: 8),
+                                Icon(Icons.info_outline, size: 16, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                                SizedBox(width: 8),
                                 Text(
                                   excuse.excuseType.displayName,
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Row(
                               children: [
-                                const Icon(Icons.event_note, size: 16, color: Colors.grey),
-                                const SizedBox(width: 8),
+                                Icon(Icons.event_note, size: 16, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                                SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     excuse.affectedDeedsDisplay,
-                                    style: const TextStyle(color: Colors.grey),
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                                   ),
                                 ),
                               ],
                             ),
                             if (excuse.reviewNotes != null && excuse.reviewNotes!.isNotEmpty) ...[
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12),
                               Container(
-                                padding: const EdgeInsets.all(12),
+                                padding: EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[100],
+                                  color: Theme.of(context).colorScheme.surfaceVariant,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Column(

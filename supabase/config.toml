@@ -1,0 +1,23 @@
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public"]
+max_rows = 1000
+
+[functions]
+# Global function settings
+enabled = true
+
+# Disable JWT verification for webhook function
+[functions.whatsapp-hook]
+verify_jwt = false
+
+[functions.process-whatsapp-logs]
+verify_jwt = true
+
+[functions.send-whatsapp-notification]
+verify_jwt = true
+
+[functions.sync-whatsapp-templates]
+verify_jwt = true

@@ -16,10 +16,10 @@ class PenaltyBalanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(16),
       color: _getBackgroundColor(),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -27,22 +27,22 @@ class PenaltyBalanceCard extends StatelessWidget {
             Text(
               'Penalty Balance',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.w500,
                   ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Balance Amount
             Text(
               balance.formattedBalance,
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.bold,
                   ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             // Unpaid Penalties Count
             if (balance.unpaidPenaltiesCount > 0)
@@ -119,15 +119,15 @@ class PenaltyBalanceCard extends StatelessWidget {
     required String description,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 24),
-          const SizedBox(width: 12),
+          Icon(icon, color: Theme.of(context).colorScheme.surface, size: 24),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +135,7 @@ class PenaltyBalanceCard extends StatelessWidget {
                 Text(
                   message,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         fontWeight: FontWeight.bold,
                       ),
                 ),

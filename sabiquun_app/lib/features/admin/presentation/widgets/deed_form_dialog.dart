@@ -181,11 +181,11 @@ class _DeedFormDialogState extends State<DeedFormDialog> {
                 },
               ),
               if (isEdit)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 4),
                   child: Text(
                     'Key cannot be changed after creation',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                   ),
                 ),
               const SizedBox(height: 16),

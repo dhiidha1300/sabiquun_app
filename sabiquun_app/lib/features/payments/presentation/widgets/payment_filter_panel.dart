@@ -162,25 +162,25 @@ class _PaymentFilterPanelState extends State<PaymentFilterPanel> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.blue[700]!, Colors.blue[500]!],
         ),
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.filter_list, color: Colors.white, size: 28),
-          const SizedBox(width: 12),
-          const Expanded(
+          Icon(Icons.filter_list, color: Theme.of(context).colorScheme.surface, size: 28),
+          SizedBox(width: 12),
+          Expanded(
             child: Text(
               'Filter Payments',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -188,9 +188,9 @@ class _PaymentFilterPanelState extends State<PaymentFilterPanel> {
           ),
           if (_filters.hasActiveFilters)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -202,10 +202,10 @@ class _PaymentFilterPanelState extends State<PaymentFilterPanel> {
                 ),
               ),
             ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.close, color: Colors.white),
+            icon: Icon(Icons.close, color: Theme.of(context).colorScheme.surface),
           ),
         ],
       ),
@@ -215,10 +215,10 @@ class _PaymentFilterPanelState extends State<PaymentFilterPanel> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        color: Colors.black87,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.87),
       ),
     );
   }
@@ -419,9 +419,9 @@ class _PaymentFilterPanelState extends State<PaymentFilterPanel> {
 
   Widget _buildActionButtons(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),

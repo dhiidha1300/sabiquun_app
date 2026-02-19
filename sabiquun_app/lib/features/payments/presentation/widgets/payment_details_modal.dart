@@ -83,16 +83,16 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
                         children: [
                           Icon(Icons.error_outline,
                               size: 48, color: Colors.red[300]),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
                             'Error loading penalty data',
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             state.message,
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: Theme.of(context).colorScheme.surfaceVariant,
                               fontSize: 12,
                             ),
                             textAlign: TextAlign.center,
@@ -116,10 +116,10 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.blue[700],
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -128,22 +128,22 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
         children: [
           Icon(
             Icons.receipt_long,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             size: 28,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               'Payment Details',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.w700,
                   ),
             ),
           ),
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.close, color: Colors.white),
+            icon: Icon(Icons.close, color: Theme.of(context).colorScheme.surface),
             tooltip: 'Close',
           ),
         ],
@@ -248,7 +248,7 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
                     color: Colors.red[700],
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildInfoRow(
                   'After Payment',
                   distribution.formattedNewBalance,
@@ -259,7 +259,7 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
                         : Colors.green[700],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Penalty breakdown
                 if (penalties.isNotEmpty) ...[
@@ -268,14 +268,14 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(
-                    constraints: const BoxConstraints(maxHeight: 200),
+                    constraints: BoxConstraints(maxHeight: 200),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
+                      border: Border.all(color: Theme.of(context).colorScheme.surfaceVariant!),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: SingleChildScrollView(
@@ -285,12 +285,12 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
                     ),
                   ),
                   if (penalties.length > 5) ...[
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       '+ ${penalties.length - 5} more penalties',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -408,24 +408,24 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
         Row(
           children: [
             Icon(icon, size: 20, color: Colors.blue[700]),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               title,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: Colors.grey[700],
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                     letterSpacing: 0.5,
                   ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color: Theme.of(context).colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: Theme.of(context).colorScheme.surfaceVariant!),
           ),
           child: child,
         ),
@@ -447,7 +447,7 @@ class _PaymentDetailsModalState extends State<PaymentDetailsModal> {
             label,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.surfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),

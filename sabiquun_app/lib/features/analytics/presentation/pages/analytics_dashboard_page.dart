@@ -55,16 +55,16 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
+                  Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                  SizedBox(height: 16),
                   Text(
                     'Failed to load analytics',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     state.message,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                    style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.surfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -104,7 +104,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
 
                     // Deed Performance
                     _buildDeedPerformanceCard(deedPerformance),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // Additional Stats
                     _buildAdditionalStatsCard(stats),
@@ -118,11 +118,11 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.analytics, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
+                Icon(Icons.analytics, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                SizedBox(height: 16),
                 Text(
                   'No analytics data available',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.surfaceVariant),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
@@ -200,7 +200,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                 color: color,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               title,
               style: const TextStyle(
@@ -213,7 +213,7 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
               subtitle,
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.surfaceVariant,
               ),
             ),
           ],
@@ -242,14 +242,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                 Icon(Icons.show_chart, color: AppColors.primary, size: 20),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             SizedBox(
               height: 200,
               child: monthlyReports.isEmpty
                   ? Center(
                       child: Text(
                         'No data available',
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                       ),
                     )
                   : ListView.builder(
@@ -283,12 +283,12 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text(
                                 report.monthName,
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.surfaceVariant,
                                 ),
                               ),
                             ],
@@ -323,14 +323,14 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                 Icon(Icons.emoji_events, color: AppColors.warning, size: 20),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             if (deedPerformance.isEmpty)
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Text(
                     'No deed data available',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: TextStyle(color: Theme.of(context).colorScheme.surfaceVariant),
                   ),
                 ),
               )
@@ -371,12 +371,12 @@ class _AnalyticsDashboardPageState extends State<AnalyticsDashboardPage> {
                           minHeight: 8,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         '${deed.totalSubmitted} completed • ${deed.totalMissed} missed',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                         ),
                       ),
                     ],

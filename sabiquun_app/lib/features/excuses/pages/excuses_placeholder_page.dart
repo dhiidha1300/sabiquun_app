@@ -35,7 +35,7 @@ class ExcusesPlaceholderPage extends StatelessWidget {
                   color: AppColors.warning,
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Title
               Text(
@@ -44,23 +44,23 @@ class ExcusesPlaceholderPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Description
               Text(
                 'The Excuse System is currently under development.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               // Features list
               Card(
-                margin: const EdgeInsets.only(top: 24),
+                margin: EdgeInsets.only(top: 24),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -112,11 +112,11 @@ class ExcusesPlaceholderPage extends StatelessWidget {
 
   Widget _buildFeatureItem(BuildContext context, IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Icon(icon, size: 20, color: AppColors.warning),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               text,

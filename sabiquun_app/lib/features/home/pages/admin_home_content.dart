@@ -65,7 +65,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
       children: [
         // Main Scaffold content
         Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: _onRefresh,
@@ -111,9 +111,9 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: Row(
         children: [
@@ -123,7 +123,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
               _menuKey.currentState?.toggleDrawer();
             },
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
 
           // Welcome text with user greeting
           Expanded(
@@ -133,18 +133,18 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
                 Text(
                   'Welcome back,',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Row(
                   children: [
                     Text(
                       widget.user.fullName.split(' ').first,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.3,
@@ -201,13 +201,13 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.only(bottom: 16),
           child: Text(
             'Quick Actions',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: 0.3,
             ),
           ),
@@ -283,16 +283,16 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
 
   Widget _buildModernActionItem(_QuickAction action) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => context.push(action.route),
           borderRadius: BorderRadius.circular(16),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: action.color.withValues(alpha: 0.1),
@@ -321,7 +321,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
 
                 // Title and subtitle
                 Expanded(
@@ -333,18 +333,18 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: 0.2,
                         ),
                       ),
                       if (action.subtitle != null) ...[
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2),
                         Text(
                           action.subtitle!,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -376,8 +376,8 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
                     ),
                     child: Text(
                       action.badgeCount > 99 ? '99+' : '${action.badgeCount}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.3,
@@ -388,7 +388,7 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 16,
-                    color: AppColors.textSecondary.withValues(alpha: 0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
               ],
             ),
@@ -417,14 +417,14 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
             child: Column(
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'Error loading analytics',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: EdgeInsets.symmetric(horizontal: 32),
                   child: Text(
                     state.message,
                     textAlign: TextAlign.center,
@@ -479,20 +479,20 @@ class _AdminHomeContentState extends State<AdminHomeContent> with RouteAware {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.primary),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Text(
             title,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
               letterSpacing: 0.3,
             ),
           ),

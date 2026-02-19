@@ -59,7 +59,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
           );
     }
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 500));
   }
 
   @override
@@ -67,7 +67,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         if (authState is! Authenticated) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(child: Text('Please log in')),
           );
         }
@@ -75,23 +75,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
         final userId = authState.user.id;
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: AppColors.surface,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             elevation: 0,
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
+            title: Text(
               'Notifications',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             actions: [
@@ -103,7 +103,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       : Icons.mark_email_unread,
                   color: _showUnreadOnly
                       ? AppColors.primary
-                      : AppColors.textSecondary,
+                      : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 onPressed: () {
                   setState(() {
@@ -129,7 +129,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       Icons.done_all,
                       color: hasUnread
                           ? AppColors.primary
-                          : AppColors.textHint,
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     onPressed: hasUnread
                         ? () {
@@ -257,7 +257,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -272,28 +272,28 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     ? Icons.mark_email_read
                     : Icons.notifications_off_outlined,
                 size: 64,
-                color: AppColors.textHint,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Text(
               _showUnreadOnly
                   ? 'No unread notifications'
                   : 'No notifications yet',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               _showUnreadOnly
                   ? 'You\'re all caught up!'
                   : 'We\'ll notify you when something new happens',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),

@@ -27,6 +27,8 @@ import 'package:sabiquun_app/features/settings/pages/edit_profile_page.dart';
 import 'package:sabiquun_app/features/settings/pages/change_password_page.dart';
 import 'package:sabiquun_app/features/settings/pages/notification_settings_page.dart';
 import 'package:sabiquun_app/features/settings/pages/rules_policies_page.dart';
+import 'package:sabiquun_app/features/settings/pages/theme_settings_page.dart';
+import 'package:sabiquun_app/features/settings/pages/calendar_settings_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_management_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/user_edit_page.dart';
 import 'package:sabiquun_app/features/admin/presentation/pages/analytics_dashboard_page.dart';
@@ -261,6 +263,16 @@ class AppRouter {
         name: 'settings-rules',
         builder: (context, state) => const RulesPoliciesPage(),
       ),
+      GoRoute(
+        path: '/theme-settings',
+        name: 'theme-settings',
+        builder: (context, state) => const ThemeSettingsPage(),
+      ),
+      GoRoute(
+        path: '/calendar-settings',
+        name: 'calendar-settings',
+        builder: (context, state) => const CalendarSettingsPage(),
+      ),
 
       // Admin Routes
       GoRoute(
@@ -408,12 +420,12 @@ class AppRouter {
               size: 64,
               color: Colors.red,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Page not found',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               state.uri.toString(),
               style: Theme.of(context).textTheme.bodyMedium,

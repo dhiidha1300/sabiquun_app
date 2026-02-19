@@ -162,9 +162,9 @@ class _UsersTableViewState extends State<UsersTableView> {
       children: [
         // Header with export button
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
@@ -184,20 +184,20 @@ class _UsersTableViewState extends State<UsersTableView> {
                       widget.dateRangeStart != null && widget.dateRangeEnd != null
                           ? 'Date Range Overview'
                           : 'Last 7 Days Overview',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       widget.dateRangeStart != null && widget.dateRangeEnd != null
                           ? '${DateFormat('MMM dd').format(widget.dateRangeStart!)} - ${DateFormat('MMM dd, yyyy').format(widget.dateRangeEnd!)} • ${widget.users.length} users'
                           : '${widget.users.length} users',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -206,10 +206,10 @@ class _UsersTableViewState extends State<UsersTableView> {
               ElevatedButton.icon(
                 onPressed: _isExporting ? null : _exportToExcel,
                 icon: _isExporting
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
                       )
                     : const Icon(Icons.file_download, size: 20),
                 label: Text(_isExporting ? 'Exporting...' : 'Export Excel'),
@@ -230,9 +230,9 @@ class _UsersTableViewState extends State<UsersTableView> {
         // Table
         Expanded(
           child: Container(
-            margin: const EdgeInsets.all(16),
+            margin: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: const Border.fromBorderSide(BorderSide(color: AppColors.border)),
               boxShadow: [
@@ -260,7 +260,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                     horizontalMargin: 20,
                     columns: [
                       // User column
-                      const DataColumn(
+                      DataColumn(
                         label: SizedBox(
                           width: 180,
                           child: Text(
@@ -268,7 +268,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -295,7 +295,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
-                                    color: isToday ? AppColors.primary : AppColors.textPrimary,
+                                    color: isToday ? AppColors.primary : Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -305,7 +305,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                                     fontSize: 11,
                                     color: isToday
                                         ? AppColors.primary.withValues(alpha: 0.7)
-                                        : AppColors.textSecondary,
+                                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ],
@@ -314,7 +314,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                         );
                       }),
                       // Total column
-                      const DataColumn(
+                      DataColumn(
                         label: SizedBox(
                           width: 80,
                           child: Text(
@@ -322,13 +322,13 @@ class _UsersTableViewState extends State<UsersTableView> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
                       ),
                       // Compliance column
-                      const DataColumn(
+                      DataColumn(
                         label: SizedBox(
                           width: 110,
                           child: Text(
@@ -336,7 +336,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -363,7 +363,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,10 +371,10 @@ class _UsersTableViewState extends State<UsersTableView> {
                                       children: [
                                         Text(
                                           user.fullName,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
+                                            color: Theme.of(context).colorScheme.onSurface,
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -454,7 +454,7 @@ class _UsersTableViewState extends State<UsersTableView> {
                                                 : deeds > 0
                                                     ? AppColors.warning
                                                     : AppColors.error)
-                                            : AppColors.textSecondary,
+                                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                       ),
                                     ),
                                   ),
@@ -482,10 +482,10 @@ class _UsersTableViewState extends State<UsersTableView> {
 
                                     return Text(
                                       totalDeeds.toString(),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                     );
                                   },
@@ -553,7 +553,7 @@ class _UsersTableViewState extends State<UsersTableView> {
       case 'legacy':
         return AppColors.warning;
       default:
-        return AppColors.textSecondary;
+        return Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7);
     }
   }
 

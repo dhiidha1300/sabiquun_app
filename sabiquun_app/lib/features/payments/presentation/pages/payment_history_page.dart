@@ -139,19 +139,19 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.payment, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
+                    Icon(Icons.payment, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                    SizedBox(height: 16),
                     Text(
                       'No payments found',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                           ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       'Your payment history will appear here',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[500],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                           ),
                     ),
                   ],
@@ -164,12 +164,12 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.filter_list_off, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
+                    Icon(Icons.filter_list_off, size: 64, color: Theme.of(context).colorScheme.surfaceVariant),
+                    SizedBox(height: 16),
                     Text(
                       'No payments match your filter',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.surfaceVariant,
                           ),
                     ),
                     const SizedBox(height: 8),
@@ -222,9 +222,9 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   Widget _buildPaymentCard(PaymentEntity payment) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _getStatusColor(payment.status).withValues(alpha: 0.2),
@@ -246,7 +246,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -263,11 +263,11 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                             ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     _buildStatusBadge(payment.status),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Amount
                 Text(
@@ -311,16 +311,16 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
               Row(
                 children: [
                   const Icon(Icons.person, size: 16),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text('Reviewed by: ${payment.reviewerName ?? 'Admin'}'),
                 ],
               ),
               if (payment.reviewedAt != null) ...[
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   DateFormat('MMM dd, yyyy - hh:mm a').format(payment.reviewedAt!),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                       ),
                 ),
               ],

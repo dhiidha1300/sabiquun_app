@@ -104,7 +104,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Payment Analytics'),
         backgroundColor: AppColors.primary,
@@ -147,7 +147,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
         children: [
           // Time Period Selector (moved outside tab view for both tabs)
           Container(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.all(16),
             child: _buildPeriodSelector(),
           ),
@@ -169,9 +169,9 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
   Widget _buildPeriodSelector() {
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
@@ -215,7 +215,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
             style: TextStyle(
               fontSize: 14,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -253,7 +253,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
       onRefresh: _onRefresh,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -266,7 +266,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Row(
@@ -315,7 +315,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -481,7 +481,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                 subtitle,
                 style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -508,7 +508,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 16),
@@ -555,7 +555,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   Text(
                     '${NumberFormat('#,###').format(totalOutstanding)} Shillings',
                     style: TextStyle(
@@ -564,12 +564,12 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                       color: AppColors.error,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Total unpaid penalties across all users',
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -592,12 +592,12 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         _buildPaymentTrendChart(),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
 
         // Payment Distribution Pie Chart
         Text(
@@ -605,7 +605,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -632,9 +632,9 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
         return Container(
           height: 250,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
           ),
@@ -646,7 +646,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                 horizontalInterval: 50000,
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
-                    color: AppColors.textSecondary.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                     strokeWidth: 1,
                   );
                 },
@@ -671,7 +671,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                         child: Text(
                           DateFormat('EEE').format(date),
                           style: TextStyle(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -689,7 +689,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                       return Text(
                         '${(value / 1000).toInt()}K',
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                         ),
@@ -701,7 +701,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
               borderData: FlBorderData(
                 show: true,
                 border: Border.all(
-                  color: AppColors.textSecondary.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                 ),
               ),
               minX: 0,
@@ -752,8 +752,8 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                     return touchedBarSpots.map((barSpot) {
                       return LineTooltipItem(
                         '${NumberFormat('#,###').format(barSpot.y)} Sh',
-                        const TextStyle(
-                          color: Colors.white,
+                        TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -790,9 +790,9 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
         return Container(
           height: 280,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
           ),
@@ -837,7 +837,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -847,14 +847,14 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 Text(
                                   '$percentage%',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ],
@@ -884,10 +884,10 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
         value: entry.value,
         title: '${percentage.toStringAsFixed(0)}%',
         radius: 60,
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
         ),
       );
     }).toList();
@@ -895,21 +895,21 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
   Widget _buildEmptyState(String message) {
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.info_outline, size: 48, color: Colors.grey[400]),
-            const SizedBox(height: 16),
+            Icon(Icons.info_outline, size: 48, color: Theme.of(context).colorScheme.surfaceVariant),
+            SizedBox(height: 16),
             Text(
               message,
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -940,9 +940,9 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
       builder: (context, state) {
         if (state is AdminLoading) {
           return Container(
-            padding: const EdgeInsets.all(48),
+            padding: EdgeInsets.all(48),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
             ),
@@ -952,28 +952,28 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
         if (state is AdminError) {
           return Container(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
                 Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'Error loading user balances',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   state.message,
-                  style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -986,9 +986,9 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
           if (users.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
               ),
@@ -999,13 +999,13 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                     size: 48,
                     color: AppColors.primary.withValues(alpha: 0.3),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'No users found',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -1021,7 +1021,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
 
           return Container(
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
             ),
@@ -1038,14 +1038,14 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                     ),
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       Expanded(
                         flex: 2,
                         child: Text(
                           'User Name',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontSize: 13,
                           ),
                         ),
@@ -1056,7 +1056,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                           'Email',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontSize: 13,
                           ),
                         ),
@@ -1067,7 +1067,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontSize: 13,
                           ),
                         ),
@@ -1101,7 +1101,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -1112,7 +1112,7 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
                               user.email,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -1199,9 +1199,9 @@ class _PaymentAnalyticsPageState extends State<PaymentAnalyticsPage>
         });
 
         return Container(
-          padding: const EdgeInsets.all(48),
+          padding: EdgeInsets.all(48),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
           ),

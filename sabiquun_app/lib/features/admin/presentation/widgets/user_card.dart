@@ -105,14 +105,14 @@ class _UserCardState extends State<UserCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -178,7 +178,7 @@ class _UserCardState extends State<UserCard> {
                                   color: _getStatusColor(),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.surface,
+                                    color: Theme.of(context).colorScheme.surface,
                                     width: 2,
                                   ),
                                   boxShadow: [
@@ -193,7 +193,7 @@ class _UserCardState extends State<UserCard> {
                             ),
                           ],
                         ),
-                        const SizedBox(width: 14),
+                        SizedBox(width: 14),
                         // Name and membership info
                         Expanded(
                           child: Column(
@@ -204,7 +204,7 @@ class _UserCardState extends State<UserCard> {
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   letterSpacing: 0.2,
                                 ),
                               ),
@@ -325,20 +325,20 @@ class _UserCardState extends State<UserCard> {
 
                     // Last report date
                     if (widget.user.lastReportDate != null) ...[
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Row(
                         children: [
                           Icon(
                             Icons.access_time_rounded,
                             size: 14,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6),
                           Text(
                             'Last report: ${_formatDate(widget.user.lastReportDate!)}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -348,20 +348,20 @@ class _UserCardState extends State<UserCard> {
 
                     // Registration date for pending users
                     if (widget.user.isPending) ...[
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Row(
                         children: [
                           Icon(
                             Icons.calendar_today_rounded,
                             size: 14,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6),
                           Text(
                             'Registered: ${_formatDate(widget.user.createdAt)}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -433,7 +433,7 @@ class _UserCardState extends State<UserCard> {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,17 +442,17 @@ class _UserCardState extends State<UserCard> {
                 label,
                 style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
                 ),
               ),
-              const SizedBox(height: 2),
+              SizedBox(height: 2),
               Text(
                 value,
                 style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -497,12 +497,12 @@ class _UserCardState extends State<UserCard> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
               fontSize: 10,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,
             ),
           ),

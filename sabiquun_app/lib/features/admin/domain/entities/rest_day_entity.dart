@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/services/hijri_date_service.dart';
+import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/constants/date_constants.dart';
+
 /// Entity representing a rest day (penalty-free day)
 class RestDayEntity extends Equatable {
   final String id;
@@ -9,6 +13,11 @@ class RestDayEntity extends Equatable {
   final bool isRecurring; // Recurring annually
   final DateTime createdAt;
 
+  // Hijri-based fields for Islamic holidays
+  final int? hijriMonth; // 1-12 (Muharram to Dhul Hijjah)
+  final int? hijriDay; // 1-30
+  final bool isHijriBased; // True if this is a Hijri-based recurring holiday
+
   const RestDayEntity({
     required this.id,
     required this.date,
@@ -16,6 +25,9 @@ class RestDayEntity extends Equatable {
     required this.description,
     required this.isRecurring,
     required this.createdAt,
+    this.hijriMonth,
+    this.hijriDay,
+    this.isHijriBased = false,
   });
 
   /// Check if this is a single day or date range
@@ -68,6 +80,24 @@ class RestDayEntity extends Equatable {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
+  /// Get Hijri date display for Hijri-based holidays
+  String? get hijriDateDisplay {
+    if (!isHijriBased || hijriMonth == null || hijriDay == null) return null;
+    final monthName = DateConstants.hijriMonthsEnglish[hijriMonth! - 1];
+    return '$hijriDay $monthName';
+  }
+
+  /// Get formatted date with Hijri support
+  String getFormattedDate(CalendarPreference preference) {
+    return DateFormatter.format(date, preference: preference);
+  }
+
+  /// Calculate next occurrence for Hijri-based holidays
+  DateTime? getNextHijriOccurrence() {
+    if (!isHijriBased || hijriMonth == null || hijriDay == null) return null;
+    return HijriDateService.instance.getNextOccurrence(hijriMonth!, hijriDay!);
+  }
+
   @override
   List<Object?> get props => [
         id,
@@ -76,5 +106,8 @@ class RestDayEntity extends Equatable {
         description,
         isRecurring,
         createdAt,
+        hijriMonth,
+        hijriDay,
+        isHijriBased,
       ];
 }

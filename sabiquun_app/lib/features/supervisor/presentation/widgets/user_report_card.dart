@@ -150,7 +150,7 @@ class UserReportCard extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Progress Bar
               Row(
@@ -162,11 +162,11 @@ class UserReportCard extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Today',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey,
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               ),
                             ),
                             Text(
@@ -203,11 +203,13 @@ class UserReportCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildStat(
+                    context,
                     'Last Report',
                     _getRelativeTime(),
                     isWarning ? Colors.orange : Colors.grey,
                   ),
                   _buildStat(
+                    context,
                     'Compliance',
                     '${(userReport.complianceRate * 100).toStringAsFixed(0)}%',
                     userReport.complianceRate >= 0.8 ? Colors.green : Colors.orange,
@@ -248,15 +250,15 @@ class UserReportCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(String label, String value, Color color) {
+  Widget _buildStat(BuildContext context, String label, String value, Color color) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 2),

@@ -113,11 +113,11 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       errorText: widget.errorText,
       obscureText: _obscureText,
       keyboardType: TextInputType.visiblePassword,
-      prefixIcon: const Icon(Icons.lock_outline),
+      prefixIcon: Icon(Icons.lock_outline),
       suffixIcon: IconButton(
         icon: Icon(
           _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-          color: AppColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
         onPressed: () {
           setState(() {

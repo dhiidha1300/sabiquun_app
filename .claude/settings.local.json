@@ -18,7 +18,16 @@
       "Bash(flutter doctor:*)",
       "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/keytool\" -genkey -v -keystore \"a:/sabiquun_app/sabiquun_app/android/app/sabiquun-release-key.jks\" -keyalg RSA -keysize 2048 -validity 10000 -alias sabiquun-key -storepass sabiquun2025 -keypass sabiquun2025 -dname \"CN=Negeeyedev, OU=Development, O=Negeeyedev, L=Unknown, ST=Unknown, C=US\")",
       "Bash(flutter clean:*)",
-      "Bash(flutter build:*)"
+      "Bash(flutter build:*)",
+      "Bash(dart scripts/fix_theme_colors.dart:*)",
+      "Bash(python scripts/fix_const_multiline.py:*)",
+      "Bash(python scripts/final_const_fix.py:*)",
+      "Bash(python scripts/final_const_cleanup.py:*)",
+      "Bash(python scripts/fix_text_colors.py:*)",
+      "Bash(python scripts/fix_all_text_colors.py:*)",
+      "Bash(git checkout:*)",
+      "Bash(python scripts/fix_text_color_errors.py:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

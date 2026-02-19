@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       width: 120,
                       height: 120,
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // App Name
                     Text(
@@ -91,14 +91,14 @@ class _LoginPageState extends State<LoginPage> {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
 
                     // Tagline
                     Text(
                       'Track Your Daily Deeds',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                     ),
                     const SizedBox(height: 48),
@@ -209,11 +209,11 @@ class _OrDivider extends StatelessWidget {
       children: [
         Expanded(child: Divider(color: AppColors.border)),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'Or',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
           ),
         ),

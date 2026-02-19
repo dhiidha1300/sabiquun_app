@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../bloc/admin_bloc.dart';
 import '../bloc/admin_event.dart';
@@ -8,6 +9,7 @@ import '../widgets/general_settings_tab.dart';
 import '../widgets/payment_settings_tab.dart';
 import '../widgets/notification_settings_tab.dart';
 import '../widgets/app_settings_tab.dart';
+import '../widgets/whatsapp_settings_tab.dart';
 
 class SystemSettingsPage extends StatefulWidget {
   const SystemSettingsPage({super.key});
@@ -23,7 +25,7 @@ class _SystemSettingsPageState extends State<SystemSettingsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     _loadSettings();
   }
 
@@ -41,14 +43,21 @@ class _SystemSettingsPageState extends State<SystemSettingsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'),
+          tooltip: 'Back to Home',
+        ),
         title: const Text('System Settings'),
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           tabs: const [
             Tab(text: 'General', icon: Icon(Icons.settings)),
             Tab(text: 'Payment', icon: Icon(Icons.payment)),
             Tab(text: 'Notifications', icon: Icon(Icons.notifications)),
             Tab(text: 'App', icon: Icon(Icons.phone_android)),
+            Tab(text: 'WhatsApp', icon: Icon(Icons.chat, color: Color(0xFF25D366))),
           ],
         ),
         actions: [
@@ -73,14 +82,14 @@ class _SystemSettingsPageState extends State<SystemSettingsPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'Error loading settings',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: EdgeInsets.symmetric(horizontal: 32),
                     child: Text(
                       state.message,
                       textAlign: TextAlign.center,
@@ -108,6 +117,7 @@ class _SystemSettingsPageState extends State<SystemSettingsPage>
                 PaymentSettingsTab(settings: settings),
                 NotificationSettingsTab(settings: settings),
                 AppSettingsTab(settings: settings),
+                WhatsAppSettingsTab(settings: settings),
               ],
             );
           }

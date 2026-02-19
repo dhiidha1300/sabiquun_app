@@ -120,6 +120,11 @@ class _PaymentSettingsTabState extends State<PaymentSettingsTab> {
       emailSenderEmail: widget.settings.emailSenderEmail,
       emailSenderName: widget.settings.emailSenderName,
       fcmServerKey: widget.settings.fcmServerKey,
+      whatsappEnabled: widget.settings.whatsappEnabled,
+      whatsappPhoneNumberId: widget.settings.whatsappPhoneNumberId,
+      whatsappBusinessAccountId: widget.settings.whatsappBusinessAccountId,
+      whatsappAccessToken: widget.settings.whatsappAccessToken,
+      whatsappApiVersion: widget.settings.whatsappApiVersion,
       appVersion: widget.settings.appVersion,
       minimumRequiredVersion: widget.settings.minimumRequiredVersion,
       forceUpdate: widget.settings.forceUpdate,
@@ -154,7 +159,7 @@ class _PaymentSettingsTabState extends State<PaymentSettingsTab> {
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -208,14 +213,14 @@ class _PaymentSettingsTabState extends State<PaymentSettingsTab> {
               Card(
                 elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           const Icon(Icons.visibility, color: Colors.blue),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             'Receipt Preview',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -225,7 +230,7 @@ class _PaymentSettingsTabState extends State<PaymentSettingsTab> {
                         ],
                       ),
                       const Divider(),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Center(
                         child: Text(
                           _organizationNameController.text.trim().isEmpty
@@ -237,12 +242,12 @@ class _PaymentSettingsTabState extends State<PaymentSettingsTab> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       const Text('Receipt #: 001234'),
                       const Text('Date: 2025-11-01'),
                       const Text('Amount: 50,000 Shillings'),
                       const Divider(),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         _receiptFooterController.text.trim().isEmpty
                             ? 'Receipt footer text will appear here'
@@ -254,7 +259,7 @@ class _PaymentSettingsTabState extends State<PaymentSettingsTab> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Reason field (only show if changes detected)
               if (_hasChanges()) ...[

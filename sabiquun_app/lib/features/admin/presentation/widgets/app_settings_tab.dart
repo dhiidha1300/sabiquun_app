@@ -156,6 +156,11 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
       emailSenderEmail: widget.settings.emailSenderEmail,
       emailSenderName: widget.settings.emailSenderName,
       fcmServerKey: widget.settings.fcmServerKey,
+      whatsappEnabled: widget.settings.whatsappEnabled,
+      whatsappPhoneNumberId: widget.settings.whatsappPhoneNumberId,
+      whatsappBusinessAccountId: widget.settings.whatsappBusinessAccountId,
+      whatsappAccessToken: widget.settings.whatsappAccessToken,
+      whatsappApiVersion: widget.settings.whatsappApiVersion,
       appVersion: _appVersionController.text.trim(),
       minimumRequiredVersion: _minVersionController.text.trim(),
       forceUpdate: _forceUpdate,
@@ -190,7 +195,7 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -270,7 +275,7 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Platform Specific Versions
               Text(
@@ -279,11 +284,11 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Optional: Override minimum version for specific platforms',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
               ),
               const SizedBox(height: 12),
@@ -326,7 +331,7 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Update Prompt Customization
               Text(
@@ -369,14 +374,14 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                 Card(
                   elevation: 2,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             const Icon(Icons.visibility, color: Colors.blue),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               'Update Dialog Preview',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -386,7 +391,7 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                           ],
                         ),
                         const Divider(),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           _updateTitleController.text.isEmpty
                               ? 'Update Available'
@@ -429,11 +434,11 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                 Card(
                   color: Colors.red[50],
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     child: Row(
                       children: [
                         const Icon(Icons.warning, color: Colors.red, size: 32),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,7 +450,7 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                                       color: Colors.red[900],
                                     ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4),
                               Text(
                                 'Users below version ${_minVersionController.text} will not be able to use the app until they update.',
                                 style: Theme.of(context).textTheme.bodySmall,
@@ -457,7 +462,7 @@ class _AppSettingsTabState extends State<AppSettingsTab> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
               ],
 
               // Reason field (only show if changes detected)

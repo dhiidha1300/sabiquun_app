@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check WhatsApp Templates</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>WhatsApp Template Checker</h1>
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        async function checkTemplates() {
+            const resultsDiv = document.getElementById('results')
+
+            try {
+                // Check all templates
+                const { data: allTemplates, error: allError } = await supabase
+                    .from('notification_templates')
+                    .select('*')
+                    .order('template_key')
+
+                if (allError) throw allError
+
+                // Check WhatsApp-enabled templates
+                const { data: whatsappTemplates, error: whatsappError } = await supabase
+                    .from('notification_templates')
+                    .select('*')
+                    .eq('whatsapp_enabled', true)
+
+                if (whatsappError) throw whatsappError
+
+                let html = `
+                    <h2>Total Templates: ${allTemplates?.length || 0}</h2>
+                    <h2>WhatsApp Enabled Templates: ${whatsappTemplates?.length || 0}</h2>
+
+                    <h3>All Templates:</h3>
+                    <table border="1" cellpadding="5">
+                        <tr>
+                            <th>Template Key</th>
+                            <th>Title</th>
+                            <th>WhatsApp Enabled</th>
+                            <th>WhatsApp Template Name</th>
+                            <th>Language</th>
+                        </tr>
+                `
+
+                allTemplates?.forEach(t => {
+                    html += `
+                        <tr style="background: ${t.whatsapp_enabled ? '#d4edda' : '#f8d7da'}">
+                            <td>${t.template_key}</td>
+                            <td>${t.title}</td>
+                            <td>${t.whatsapp_enabled ? '✅ YES' : '❌ NO'}</td>
+                            <td>${t.whatsapp_template_name || 'Not set'}</td>
+                            <td>${t.whatsapp_template_language || 'Not set'}</td>
+                        </tr>
+                    `
+                })
+
+                html += '</table>'
+                resultsDiv.innerHTML = html
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red">Error: ${error.message}</p>`
+            }
+        }
+
+        checkTemplates()
+    </script>
+</body>
+</html>

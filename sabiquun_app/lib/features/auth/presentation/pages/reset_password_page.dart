@@ -71,7 +71,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // Lock Icon
                   Icon(
@@ -79,7 +79,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     size: 80,
                     color: AppColors.primary,
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // Title
                   Text(
@@ -89,14 +89,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Instructions
                   Text(
                     'Enter a strong password for your account',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                   ),
                   const SizedBox(height: 32),
